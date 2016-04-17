@@ -3,127 +3,85 @@
 #include "ShiftEngine.h"
 
 using namespace MathLib;
+using namespace ShiftEngine;
 
-ShiftEngine::IProgramPtr ShiftEngine::Sprite::SpriteShader;
+Sprite::Sprite()
+    : Sprite {nullptr}
+{}
 
-ShiftEngine::Sprite::Sprite()
-    : Sprite{ L"" }
+Sprite::Sprite(ITexturePtr spriteTexture, const vec2f & texCoordLeftTop, const vec2f & texCoordRightBottom)
+    : spriteTexture(spriteTexture)
+{}
+
+void Sprite::SetTexture(ShiftEngine::ITexturePtr ptr)
 {
-}
-
-ShiftEngine::Sprite::Sprite(const std::wstring & filename, const vec2f & texCoordLeftTop, const vec2f & texCoordRightBottom)
-{
-    LoadShader();
-    CreateBuffers(texCoordLeftTop, texCoordRightBottom);
-    if (!filename.empty())
-        SetTexture(filename);
-}
-
-ShiftEngine::Sprite::~Sprite()
-{
-    ShiftEngine::GetContextManager()->ResetPipeline();
-}
-
-void ShiftEngine::Sprite::Draw()
-{
-    if (!texture)
-        return;
-
-    auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
-
-    mat4f mat, scale, pos, rot;
-    pos = matrixTranslation(Position.x, Position.y, 0.0f);
-    scale = matrixScaling(Scale.x, Scale.y, 0.0f);
-    rot = matrixRotationZ(Rotation);
-    mat = matrixOrthoOffCenterLH<float>(0.0, (float)settings.screenWidth, (float)settings.screenHeight, 0.0f, 0.0f, 1.0f);
-    mat = (scale * rot * pos) * mat;
-
-    SpriteShader->SetMatrixConstantByName("matRes", (float*)mat);
-    SpriteShader->SetTextureByName("Texture", texture);
-    SpriteShader->SetVectorConstantByName("MaskColor", MaskColor.ptr());
-    SpriteShader->Apply(true);
-    ShiftEngine::GetContextManager()->DrawMesh(spriteMesh);
-}
-
-void ShiftEngine::Sprite::SetTexture(ShiftEngine::ITexturePtr ptr)
-{
-    texture = ptr;
+    spriteTexture = ptr;
 
     if (ptr)
-        SetScale(vec2f(1.0f, 1.0f));
+        SetScale({1.0f, 1.0f});
 }
 
-void ShiftEngine::Sprite::SetTexture(const std::wstring & filename)
+void Sprite::SetPosition(const vec2f & pos)
 {
-    if (filename.empty())
-        texture = nullptr;
-    else
-        texture = ShiftEngine::GetContextManager()->LoadTexture(filename);
-    SetScale(vec2f(1.0f, 1.0f));
+    position = pos;
 }
 
-void ShiftEngine::Sprite::SetPosition(const vec2f & pos)
+void Sprite::SetRotation(float rot)
 {
-    Position = pos;
+    rotation = rot;
 }
 
-void ShiftEngine::Sprite::SetRotation(float rot)
+void Sprite::SetScale(const vec2f & sc)
 {
-    Rotation = rot;
-}
+    scale = sc;
 
-void ShiftEngine::Sprite::SetScale(const vec2f & sc)
-{
-    Scale = sc;
-
-    if (!texture)
+    if (!spriteTexture)
         return;
 
-    Scale.x *= texture->GetWidth();
-    Scale.y *= texture->GetHeight();
+    scale.x *= spriteTexture->GetWidth();
+    scale.y *= spriteTexture->GetHeight();
 }
 
-vec2f ShiftEngine::Sprite::GetTextureDimensions() const
+vec2f Sprite::GetTextureDimensions() const
 {
-    if (!texture)
-        return{ 0.0f, 0.0f };
-    return vec2f((float)texture->GetWidth(), (float)texture->GetHeight());
+    if (!spriteTexture)
+        return {0.0f, 0.0f};
+
+    return {(float)spriteTexture->GetWidth(), (float)spriteTexture->GetHeight()};
 }
 
-void ShiftEngine::Sprite::SetMaskColor(const vec4f & color)
+const ITexturePtr & Sprite::GetTexture() const
 {
-    MaskColor = color;
+    return spriteTexture;
 }
 
-void ShiftEngine::Sprite::CreateBuffers(const vec2f & LT, const vec2f & RB)
+void Sprite::SetMaskColor(const vec4f & color)
 {
-    std::vector<PlainSpriteVertex> ver(4);
-    ver[0] = { { -0.5f, -0.5f }, { LT.x, LT.y } };
-    ver[1] = { { 0.5f, -0.5f }, { RB.x, LT.y } };
-    ver[2] = { { -0.5f, 0.5f }, { LT.x, RB.y } };
-    ver[3] = { { 0.5f, 0.5f }, { RB.x, RB.y } };
-
-    std::vector<uint32_t> ind = { 0, 1, 2, 1, 3, 2 };
-
-    IMeshManager * pMeshManager = GetContextManager()->GetMeshManager();
-    spriteMesh = pMeshManager->CreateMeshFromVertices(
-        (uint8_t*)ver.data(),
-        ver.size() * sizeof(PlainSpriteVertex),
-        ind,
-        &ShiftEngine::plainSpriteVertexSemantic,
-        {});
+    maskColor = color;
 }
 
-void ShiftEngine::Sprite::SetSizeInPixels(int x, int y)
+void Sprite::SetSizeInPixels(int x, int y)
 {
-    if (!texture)
-        return;
-
-    SetScale(vec2f((float)x / texture->GetWidth(), (float)y / texture->GetHeight()));
+    if (!spriteTexture)
+        SetScale({(float)x / spriteTexture->GetWidth(), (float)y / spriteTexture->GetHeight()});
 }
 
-void ShiftEngine::Sprite::LoadShader()
+const MathLib::vec2f & ShiftEngine::Sprite::GetPosition() const
 {
-    if (!SpriteShader)
-        SpriteShader = ShiftEngine::GetContextManager()->LoadShader(L"SpriteShader.fx");
+    return position;
+}
+
+const MathLib::vec2f & ShiftEngine::Sprite::GetScale() const
+{
+    return scale;
+}
+
+float ShiftEngine::Sprite::GetRotation() const
+{
+    return rotation;
+}
+
+const MathLib::vec4f & ShiftEngine::Sprite::GetMaskColor() const
+{
+    return maskColor;
 }

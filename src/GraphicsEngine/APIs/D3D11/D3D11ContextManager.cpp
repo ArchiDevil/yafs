@@ -281,12 +281,12 @@ void ShiftEngine::D3D11ContextManager::SetZState(bool enabled)
         graphicsContext.DeviceContext->OMSetDepthStencilState(graphicsContext.dsStateZOff, 1);
 }
 
-ShiftEngine::GraphicEngineSettings ShiftEngine::D3D11ContextManager::GetEngineSettings() const
+const ShiftEngine::GraphicEngineSettings & ShiftEngine::D3D11ContextManager::GetEngineSettings() const
 {
     return engineSettings;
 }
 
-ShiftEngine::PathSettings ShiftEngine::D3D11ContextManager::GetPaths() const
+const ShiftEngine::PathSettings & ShiftEngine::D3D11ContextManager::GetPaths() const
 {
     return enginePaths;
 }

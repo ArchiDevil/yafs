@@ -48,8 +48,8 @@ namespace ShiftEngine
         BlendingState                       GetBlendingState() const override;
         void                                SetRasterizerState(RasterizerState rs) override;
         RasterizerState                     GetRasterizerState() const override;
-        GraphicEngineSettings               GetEngineSettings() const override;
-        PathSettings                        GetPaths() const override;
+        const GraphicEngineSettings &       GetEngineSettings() const override;
+        const PathSettings &                GetPaths() const override;
         int                                 DrawMesh(IMeshDataPtr & mesh) override;
         IVertexDeclarationPtr               GetVertexDeclaration(const VertexSemantic & semantic) override;
 
