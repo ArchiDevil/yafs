@@ -37,9 +37,9 @@ bool GameState::initState()
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     Game * pGame = LostIsland::GetGamePtr();
 
-    ::utils::filesystem::CreateDir(L"saves/worlds/");
-    ::utils::filesystem::CreateDir(L"saves/players/");
-    ::utils::filesystem::CreateDir(L"saves/worlds/tempWorld/");
+    ::utils::filesystem::create_dir(L"saves/worlds/");
+    ::utils::filesystem::create_dir(L"saves/players/");
+    ::utils::filesystem::create_dir(L"saves/worlds/tempWorld/");
 
     //pGame->gameHud.reset(new GameHUD(guiModule));
     //LOG_INFO("HUD has been created");

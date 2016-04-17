@@ -56,7 +56,7 @@ std::string IniWorker::GetString(const std::string & Parameter) const
 
 std::wstring IniWorker::GetWString(const std::string & Parameter) const
 {
-    return utils::Widen(GetKey(Parameter));
+    return utils::widen(GetKey(Parameter));
 }
 
 void IniWorker::CollectKeys(std::ifstream & stream)

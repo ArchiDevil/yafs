@@ -68,7 +68,7 @@ ShiftEngine::MaterialPtr ShiftEngine::MaterialManager::LoadMaterial(const std::w
     std::map<std::string, XMLElement*> keyVal;	//name/node map
 
     tinyxml2::XMLDocument materialDoc;
-    auto result = materialDoc.LoadFile(utils::Narrow(filename).c_str());
+    auto result = materialDoc.LoadFile(utils::narrow(filename).c_str());
 
     if (result != XML_NO_ERROR)
     {
@@ -111,7 +111,7 @@ ShiftEngine::MaterialPtr ShiftEngine::MaterialManager::LoadMaterial(const std::w
         }
         else
         {
-            if (utils::Narrow(mtlName) == std::string(name))
+            if (utils::narrow(mtlName) == std::string(name))
             {
                 break;
             }
@@ -181,7 +181,7 @@ ShiftEngine::MaterialPtr ShiftEngine::MaterialManager::LoadMaterial(const std::w
     }
 
     if (!shaderName.empty())
-        pMaterial = std::make_shared<Material>(ShiftEngine::GetContextManager()->LoadShader(utils::Widen(shaderName)), mtlInfo);
+        pMaterial = std::make_shared<Material>(ShiftEngine::GetContextManager()->LoadShader(utils::widen(shaderName)), mtlInfo);
     else
         pMaterial = std::make_shared<Material>(mtlInfo);
 
@@ -227,7 +227,7 @@ bool ShiftEngine::MaterialManager::LoadTextures(MaterialInfo & info, MaterialPtr
     if (info.diffuseMap.GetType() != TextureType::Unknown)
     {
         //TODO: form map here, but now it works only for 2d textures!
-        std::wstring wstr = utils::Widen(info.diffuseMap.GetMaps()[0]);
+        std::wstring wstr = utils::widen(info.diffuseMap.GetMaps()[0]);
         auto tex = pTextureManager->CreateTexture2D(wstr);
         if (!tex)
             tex = pTextureManager->GetErrorTexture();
@@ -237,7 +237,7 @@ bool ShiftEngine::MaterialManager::LoadTextures(MaterialInfo & info, MaterialPtr
     if (info.alphaMap.GetType() != TextureType::Unknown)
     {
         //TODO: form map here, but now it works only for 2d textures!
-        std::wstring wstr = utils::Widen(info.alphaMap.GetMaps()[0]);
+        std::wstring wstr = utils::widen(info.alphaMap.GetMaps()[0]);
         auto tex = pTextureManager->CreateTexture2D(wstr);
         if (!tex)
             tex = pTextureManager->GetErrorTexture();

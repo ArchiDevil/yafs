@@ -30,13 +30,13 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTexture2D(const
         DirectX::ScratchImage image;
         if (FAILED(DirectX::LoadFromWICFile(innerName.c_str(), 0, &metadata, image)))
         {
-            LOG_ERROR("Unable to load file: ", utils::Narrow(FileName));
+            LOG_ERROR("Unable to load file: ", utils::narrow(FileName));
             return GetErrorTexture();
         }
 
         if (FAILED(DirectX::CreateTexture(pDevice, image.GetImage(0, 0, 0), 1, metadata, (ID3D11Resource**)&textureResource)))
         {
-            LOG_ERROR("Unable to create texture from file: ", utils::Narrow(FileName));
+            LOG_ERROR("Unable to create texture from file: ", utils::narrow(FileName));
             return GetErrorTexture();
         }
 
@@ -84,7 +84,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
     {
         DirectX::TexMetadata ii;
         if (FAILED(DirectX::GetMetadataFromWICFile((texturesPath + items[i]).c_str(), 0, ii)))
-            LOG_ERROR("Unable to get image info for: ", utils::Narrow(items[i]));
+            LOG_ERROR("Unable to get image info for: ", utils::narrow(items[i]));
 
         metadatas.push_back(ii);
     }
@@ -117,7 +117,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
 
         if (error)
         {
-            LOG_ERROR("Unable to load texture in cubemap: ", utils::Narrow(items[i]));
+            LOG_ERROR("Unable to load texture in cubemap: ", utils::narrow(items[i]));
 
             D3D11_TEXTURE2D_DESC desc;
             desc.ArraySize = 1;
@@ -222,7 +222,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(co
     {
         DirectX::TexMetadata ii;
         if (FAILED(DirectX::GetMetadataFromWICFile((texturesPath + names[i]).c_str(), 0, ii)))
-            LOG_ERROR("Unable to get image info for: ", utils::Narrow(names[i]));
+            LOG_ERROR("Unable to get image info for: ", utils::narrow(names[i]));
 
         metadatas.push_back(ii);
     }
@@ -254,7 +254,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(co
 
         if (error)
         {
-            LOG_ERROR("Unable to load texture in texture array: ", utils::Narrow(names[i]));
+            LOG_ERROR("Unable to load texture in texture array: ", utils::narrow(names[i]));
 
             D3D11_TEXTURE2D_DESC desc;
             desc.ArraySize = 1;
@@ -344,7 +344,7 @@ ShiftEngine::TextureInfo ShiftEngine::D3D11TextureManager::GetTextureInfo(const 
     }
     else
     {
-        LOG_ERROR("Unable to get info for texture: ", utils::Narrow(filename));
+        LOG_ERROR("Unable to get info for texture: ", utils::narrow(filename));
         return TextureInfo();
     }
 }

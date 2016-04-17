@@ -1,12 +1,8 @@
-file(GLOB SRC *.cpp *.h *.hpp System/*.cpp System/*.h)
+file(GLOB SRC *.cpp *.h *.hpp)
 
-if(NOT WIN32)
-    list(REMOVE_ITEM SRC    System/Application.cpp
-							System/System.cpp
-							cRegWorker.cpp
-                            System/Application.h
-							System/System.h
-							cRegWorker.h)
+if(WIN32)
+    file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/Win32/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Win32/*.h)
+    list(APPEND SRC ${LS})
 endif()
 
 add_library(Utilities STATIC ${SRC})

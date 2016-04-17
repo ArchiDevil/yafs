@@ -12,17 +12,17 @@
 
 extern Log MainLog("Application.log");
 
-std::string utils::Narrow(const std::wstring & str)
+std::string utils::narrow(const std::wstring & str)
 {
     return std::string(str.begin(), str.end());
 }
 
-std::wstring utils::Widen(const std::string & str)
+std::wstring utils::widen(const std::string & str)
 {
     return std::wstring(str.begin(), str.end());
 }
 
-std::vector<std::string> utils::filesystem::CollectFileNames(const std::string & Path, const std::string & Extension)
+std::vector<std::string> utils::filesystem::collect_file_names(const std::string & Path, const std::string & Extension)
 {
 #if defined (WIN32) || (_WIN32)
     std::string bufferPath = Path;
@@ -63,7 +63,7 @@ std::vector<std::string> utils::filesystem::CollectFileNames(const std::string &
 #endif
 }
 
-std::vector<std::wstring> utils::filesystem::CollectFileNames(const std::wstring & Path, const std::wstring & Extension /*= L"*"*/)
+std::vector<std::wstring> utils::filesystem::collect_file_names(const std::wstring & Path, const std::wstring & Extension /*= L"*"*/)
 {
 #if defined (WIN32) || (_WIN32)
     std::wstring bufferPath = Path;
@@ -78,7 +78,7 @@ std::vector<std::wstring> utils::filesystem::CollectFileNames(const std::wstring
     file = FindFirstFileW(fName.c_str(), &data);
     if (file == INVALID_HANDLE_VALUE)
     {
-        LOG_ERROR("Unable to get filenames from ", utils::Narrow(bufferPath), ", may be directory is not exist or it's empty.");
+        LOG_ERROR("Unable to get filenames from ", utils::narrow(bufferPath), ", may be directory is not exist or it's empty.");
         return std::vector<std::wstring>();
     }
 
@@ -104,7 +104,7 @@ std::vector<std::wstring> utils::filesystem::CollectFileNames(const std::wstring
 #endif
 }
 
-std::string utils::ExtractName(const std::string & filename)
+std::string utils::extract_name(const std::string & filename)
 {
     std::string::size_type pos = filename.rfind('.');
     if (pos == filename.npos)
@@ -113,7 +113,7 @@ std::string utils::ExtractName(const std::string & filename)
         return filename.substr(0, pos);
 }
 
-std::wstring utils::ExtractName(const std::wstring & filename)
+std::wstring utils::extract_name(const std::wstring & filename)
 {
     std::wstring::size_type pos = filename.rfind(L'.');
     if (pos == filename.npos)
@@ -122,7 +122,7 @@ std::wstring utils::ExtractName(const std::wstring & filename)
         return filename.substr(0, pos);
 }
 
-std::string utils::ExtractExtension(const std::string & filename)
+std::string utils::extract_extension(const std::string & filename)
 {
     std::string::size_type pos = filename.rfind('.');
     if (pos == filename.npos)
@@ -131,7 +131,7 @@ std::string utils::ExtractExtension(const std::string & filename)
         return filename.substr(pos + 1, filename.npos);
 }
 
-std::wstring utils::ExtractExtension(const std::wstring & filename)
+std::wstring utils::extract_extension(const std::wstring & filename)
 {
     std::wstring::size_type pos = filename.rfind(L'.');
     if (pos == filename.npos)
@@ -140,21 +140,21 @@ std::wstring utils::ExtractExtension(const std::wstring & filename)
         return filename.substr(pos + 1, filename.npos);
 }
 
-bool utils::IsNumber(const std::string & str)
+bool utils::is_number(const std::string & str)
 {
     if (str.empty())
         return false;
     return std::all_of(str.cbegin(), str.cend(), ::isdigit);
 }
 
-bool utils::IsNumber(const std::wstring & str)
+bool utils::is_number(const std::wstring & str)
 {
     if (str.empty())
         return false;
     return std::all_of(str.cbegin(), str.cend(), ::isdigit);
 }
 
-bool utils::filesystem::CreateDir(const std::string & directoryName)
+bool utils::filesystem::create_dir(const std::string & directoryName)
 {
 #ifdef WIN32
     return ::CreateDirectoryA(directoryName.c_str(), NULL) != 0;
@@ -164,7 +164,7 @@ bool utils::filesystem::CreateDir(const std::string & directoryName)
 #endif
 }
 
-bool utils::filesystem::CreateDir(const std::wstring & directoryName)
+bool utils::filesystem::create_dir(const std::wstring & directoryName)
 {
 #ifdef WIN32
     return ::CreateDirectoryW(directoryName.c_str(), NULL) != 0;
@@ -174,7 +174,7 @@ bool utils::filesystem::CreateDir(const std::wstring & directoryName)
 #endif
 }
 
-bool utils::filesystem::IsDirectory(const std::string & directoryName)
+bool utils::filesystem::is_directory(const std::string & directoryName)
 {
 #ifdef WIN32
     DWORD ftyp = GetFileAttributesA(directoryName.c_str());
@@ -189,7 +189,7 @@ bool utils::filesystem::IsDirectory(const std::string & directoryName)
 #endif
 }
 
-bool utils::filesystem::IsDirectory(const std::wstring & directoryName)
+bool utils::filesystem::is_directory(const std::wstring & directoryName)
 {
 #ifdef WIN32
     DWORD ftyp = GetFileAttributesW(directoryName.c_str());
@@ -204,7 +204,7 @@ bool utils::filesystem::IsDirectory(const std::wstring & directoryName)
 #endif
 }
 
-bool utils::filesystem::RemoveFile(const std::string & fileName)
+bool utils::filesystem::remove_file(const std::string & fileName)
 {
 #if defined (WIN32) || (_WIN32)
     return !!DeleteFileA(fileName.c_str());
@@ -214,7 +214,7 @@ bool utils::filesystem::RemoveFile(const std::string & fileName)
 #endif
 }
 
-bool utils::filesystem::RemoveFile(const std::wstring & fileName)
+bool utils::filesystem::remove_file(const std::wstring & fileName)
 {
 #if defined (WIN32) || (_WIN32)
     return !!DeleteFileW(fileName.c_str());

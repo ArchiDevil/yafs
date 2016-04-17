@@ -237,7 +237,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11ContextManager::LoadTexture(const std
     ITexturePtr out = textureManager->CreateTexture2D(FileName);
     if (out == nullptr)
     {
-        LOG_ERROR("Unable to load ", utils::Narrow(FileName), ", loaded empty texture.");
+        LOG_ERROR("Unable to load ", utils::narrow(FileName), ", loaded empty texture.");
         out = textureManager->GetErrorTexture();
     }
     return out;
@@ -253,7 +253,7 @@ ShiftEngine::IMeshDataPtr ShiftEngine::D3D11ContextManager::LoadMesh(const std::
     IMeshDataPtr out = meshManager->LoadMesh(enginePaths.MeshPath + FileName);
     if (out == nullptr)
     {
-        LOG_ERROR("Unable to load: ", utils::Narrow(FileName), ", trying to use default cube mesh");
+        LOG_ERROR("Unable to load: ", utils::narrow(FileName), ", trying to use default cube mesh");
         out = meshManager->LoadErrorMesh();
     }
     return out;
@@ -265,7 +265,7 @@ ShiftEngine::MaterialPtr ShiftEngine::D3D11ContextManager::LoadMaterial(const st
 
     if (ptr == nullptr)
     {
-        LOG_ERROR("Unable to load ", utils::Narrow(FileName));
+        LOG_ERROR("Unable to load ", utils::narrow(FileName));
         return materialManager->LoadMaterial(enginePaths.MaterialsPath + L"error.mtl");
     }
 

@@ -40,7 +40,7 @@ private:
     void SaveTechInfo();
 
     AppStateMachine                             stateMachine;
-    cTimer                                      gameTimer;         //frame timer
+    windows_high_reference_timer                gameTimer;         //frame timer
     IniWorker                                   settingsLoader;    //settings loader
     cRegWorker                                  registryWorker;    //registry handler
 

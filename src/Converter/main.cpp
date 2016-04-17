@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 
     std::string open = argv[1];
     std::string save = "";
-    auto ext = utils::ExtractExtension(utils::Widen(open));
+    auto ext = utils::extract_extension(utils::widen(open));
 
     if (argc == 2)
     {

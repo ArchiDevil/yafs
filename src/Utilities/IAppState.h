@@ -3,20 +3,20 @@
 class IAppState
 {
 public:
-    IAppState() : Dead(false) {}
+    IAppState() : dead(false) {}
     virtual ~IAppState() {}
 
-    virtual bool initState() = 0;           //вызываетс€, когда стейт инициализируетс€
-    virtual bool update(double dt) = 0;     //вызываетс€ дл€ обновлени€ состо€ний подконтрольных стейту
-    virtual bool render(double dt) = 0;     //рендер
-    virtual void onKill() = 0;              //вызываетс€ при убийстве стейта
-    virtual void onSuspend() = 0;           //вызываетс€ при смене стейта на другой
-    virtual void onResume() = 0;            //вызываетс€ при возвращении к этому стейту
+    virtual bool initState() = 0;           //when the state initializing
+    virtual bool update(double dt) = 0;     //when the state should update
+    virtual bool render(double dt) = 0;     //when the state should render
+    virtual void onKill() = 0;              //when the state dies
+    virtual void onSuspend() = 0;           //when the state changes to another
+    virtual void onResume() = 0;            //when the state resumes it's work
 
-    bool isDead() const { return Dead; }
-    void kill() { Dead = true; }
+    bool isDead() const { return dead; }
+    void kill() { dead = true; }
 
 private:
-    bool Dead;
+    bool dead;
 
 };

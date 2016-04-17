@@ -25,7 +25,7 @@ ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::LoadMesh(const std::wst
         D3D11MeshDataPtr ptr = std::make_shared<D3D11MeshData>(nullptr, nullptr, pDevice, pImmediate);
         if (!Load(fileName, ptr.get()))
         {
-            LOG_ERROR("Unable to load mesh", utils::Narrow(fileName));
+            LOG_ERROR("Unable to load mesh", utils::narrow(fileName));
             return nullptr;
         }
         else

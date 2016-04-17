@@ -160,7 +160,7 @@ ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromFile(
 
         if (in.fail())
         {
-            LOG_ERROR("Unable to open ", utils::Narrow(fileName));
+            LOG_ERROR("Unable to open ", utils::narrow(fileName));
             return nullptr;
         }
 

@@ -1,9 +1,12 @@
 #include "timer.h"
 
 #if defined (WIN32) || (_WIN32)
+#include <Windows.h>
+#endif
 
-cTimer::cTimer()
-    : stopped(true)
+#if defined (WIN32) || (_WIN32)
+
+windows_high_reference_timer::windows_high_reference_timer()
 {
     QueryPerformanceFrequency((LARGE_INTEGER*)&countsPerSec);
     secPerCount = 1.0 / countsPerSec;
@@ -11,17 +14,17 @@ cTimer::cTimer()
     tickCount = startCount;
 }
 
-void cTimer::Start()
+void windows_high_reference_timer::start()
 {
     if (stopped)
     {
         QueryPerformanceCounter((LARGE_INTEGER*)&startCount);
         stopped = false;
-        this->Tick();
+        this->tick();
     }
 }
 
-void cTimer::Tick()
+void windows_high_reference_timer::tick()
 {
     if (!stopped)
     {
@@ -29,7 +32,7 @@ void cTimer::Tick()
     }
 }
 
-void cTimer::Stop()
+void windows_high_reference_timer::stop()
 {
     if (!stopped)
     {
@@ -38,7 +41,7 @@ void cTimer::Stop()
     }
 }
 
-double cTimer::GetStoppedTime() const
+double windows_high_reference_timer::get_stopped_time() const
 {
     if (stopped)
     {
@@ -52,7 +55,7 @@ double cTimer::GetStoppedTime() const
     }
 }
 
-double cTimer::GetRunningTime() const
+double windows_high_reference_timer::get_running_time() const
 {
     if (!stopped)
     {
@@ -63,7 +66,7 @@ double cTimer::GetRunningTime() const
     return 0.0f;
 }
 
-double cTimer::GetDeltaTime() const
+double windows_high_reference_timer::get_delta_time() const
 {
     if (!stopped)
     {

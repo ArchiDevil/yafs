@@ -83,7 +83,7 @@ namespace ShiftEngine
 
         RendererState currentState;
 
-        cTimer FPSTimer;
+        windows_high_reference_timer FPSTimer;
         double elapsedTime;
         int	FPSCounter;
         int	FPS;

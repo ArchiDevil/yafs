@@ -8,7 +8,7 @@ public:
 
     void addRef() { usings++; }
     void release() { if (--usings == 0) delete this; }
-    int getUsings()	const { return usings; }
+    int getUsings() const { return usings; }
 
 private:
     int usings;

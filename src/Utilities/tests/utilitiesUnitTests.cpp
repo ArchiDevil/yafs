@@ -12,16 +12,16 @@ namespace UtilTest
     public:
         TEST_METHOD(GetExtensionTest)
         {
-            auto test = utils::ExtractExtension(L"some/lol.jpg");
+            auto test = utils::extract_extension(L"some/lol.jpg");
             Assert::AreEqual(L"jpg", test.c_str());
 
-            test = utils::ExtractExtension(L"some/lol.arx.jpg");
+            test = utils::extract_extension(L"some/lol.arx.jpg");
             Assert::AreEqual(L"jpg", test.c_str());
 
-            test = utils::ExtractExtension(L".jpg");
+            test = utils::extract_extension(L".jpg");
             Assert::AreEqual(L"jpg", test.c_str());
 
-            test = utils::ExtractExtension(L"sjpg");
+            test = utils::extract_extension(L"sjpg");
             Assert::AreEqual(L"", test.c_str());
         }
 

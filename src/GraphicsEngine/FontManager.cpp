@@ -57,8 +57,8 @@ void ShiftEngine::FontManager::LoadFonts()
     IContextManager* pCntMng = GetContextManager();
     //TODO: добавить механизм, чтобы файл шрифта содержал имя текстуры
     PathSettings pPaths = pCntMng->GetPaths();
-    auto fontsNames = utils::filesystem::CollectFileNames(pPaths.FontsPath, L"fnt2");
-    auto fontsTextureNames = utils::filesystem::CollectFileNames(pPaths.TexturePath + L"fonts\\");
+    auto fontsNames = utils::filesystem::collect_file_names(pPaths.FontsPath, L"fnt2");
+    auto fontsTextureNames = utils::filesystem::collect_file_names(pPaths.TexturePath + L"fonts\\");
 
     if (fontsNames.size() == 0 || fontsTextureNames.size() == 0 || fontsNames.size() != fontsTextureNames.size())
         LOG_FATAL_ERROR("Unable to load textures for fonts");
@@ -70,8 +70,8 @@ void ShiftEngine::FontManager::LoadFonts()
     {
         cFont * font = new cFont;
         if (!font->Initialize(pPaths.FontsPath + *fontNamesIterator, pCntMng->LoadTexture(L"fonts\\" + *textureNamesIterator)))
-            LOG_ERROR("Unable to load font: ", utils::Narrow(*fontNamesIterator));
-        Fonts[::utils::ExtractName(*fontNamesIterator)].reset(font);
+            LOG_ERROR("Unable to load font: ", utils::narrow(*fontNamesIterator));
+        Fonts[::utils::extract_name(*fontNamesIterator)].reset(font);
         ++textureNamesIterator;
         ++fontNamesIterator;
     }
@@ -89,7 +89,7 @@ void ShiftEngine::FontManager::SetFont(const std::wstring & fontName)
     {
         pCurrentFont = nullptr;
         currentFont.clear();
-        LOG_ERROR("Unable to find font: ", utils::Narrow(fontName));
+        LOG_ERROR("Unable to find font: ", utils::narrow(fontName));
     }
 }
 

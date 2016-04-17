@@ -5,33 +5,33 @@
 
 namespace utils
 {
-    std::string Narrow(const std::wstring & str);
-    std::wstring Widen(const std::string & str);
+    std::string narrow(const std::wstring & str);
+    std::wstring widen(const std::string & str);
 
-    std::string ExtractExtension(const std::string & filename);
-    std::wstring ExtractExtension(const std::wstring & filename);
+    std::string extract_extension(const std::string & filename);
+    std::wstring extract_extension(const std::wstring & filename);
 
-    std::string ExtractName(const std::string & filename);
-    std::wstring ExtractName(const std::wstring & filename);
+    std::string extract_name(const std::string & filename);
+    std::wstring extract_name(const std::wstring & filename);
 
-    bool IsNumber(const std::string & str);
-    bool IsNumber(const std::wstring & str);
+    bool is_number(const std::string & str);
+    bool is_number(const std::wstring & str);
 
     namespace filesystem
     {
-        bool CreateDir(const std::string & directoryName);
-        bool CreateDir(const std::wstring & directoryName);
+        bool create_dir(const std::string & directoryName);
+        bool create_dir(const std::wstring & directoryName);
 
-        bool IsDirectory(const std::string & directoryName);
-        bool IsDirectory(const std::wstring & directoryName);
+        bool is_directory(const std::string & directoryName);
+        bool is_directory(const std::wstring & directoryName);
 
-        bool DeleteDir(const std::string & directoryName);
-        bool DeleteDir(const std::wstring & directoryName);
+        bool delete_dir(const std::string & directoryName);
+        bool delete_dir(const std::wstring & directoryName);
 
-        bool RemoveFile(const std::string & fileName);
-        bool RemoveFile(const std::wstring & fileName);
+        bool remove_file(const std::string & fileName);
+        bool remove_file(const std::wstring & fileName);
 
-        std::vector<std::string> CollectFileNames(const std::string & Path, const std::string & Extension = "*");
-        std::vector<std::wstring> CollectFileNames(const std::wstring & Path, const std::wstring & Extension = L"*");
+        std::vector<std::string> collect_file_names(const std::string & Path, const std::string & Extension = "*");
+        std::vector<std::wstring> collect_file_names(const std::wstring & Path, const std::wstring & Extension = L"*");
     }
 }

@@ -19,14 +19,14 @@ ShiftEngine::Renderer::Renderer(IShaderManager * _pShaderManager, IShaderGenerat
     , pShaderManager(_pShaderManager)
     , pShaderGenerator(_pShaderGenerator)
 {
-    FPSTimer.Start();
-    FPSTimer.Tick();
+    FPSTimer.start();
+    FPSTimer.tick();
 }
 
 void ShiftEngine::Renderer::DrawAll(RenderQueue & rq, double /*dt*/)
 {
     static double baseTime = 0.0f;
-    if (FPSTimer.GetRunningTime() - baseTime >= 1.0f)
+    if (FPSTimer.get_running_time() - baseTime >= 1.0f)
     {
         baseTime += 1.0f;
         FPS = FPSCounter;
