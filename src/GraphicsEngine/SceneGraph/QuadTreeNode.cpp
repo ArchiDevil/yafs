@@ -166,8 +166,8 @@ MathLib::mat4f ShiftEngine::QuadTreeNode::GetWorldMatrix() const
 int ShiftEngine::QuadTreeNode::CheckVisibility(CameraSceneNode * activeCam) const
 {
     MathLib::mat4f matWorld = GetWorldMatrix();
-    MathLib::Vector4F vecMin = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
-    MathLib::Vector4F vecMax = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
+    MathLib::vec4f vecMin = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
+    MathLib::vec4f vecMax = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
     vecMin = MathLib::vec4Transform(vecMin, matWorld);
     vecMax = MathLib::vec4Transform(vecMax, matWorld);
     MathLib::AABB newBbox({ vecMin.x, vecMin.y, vecMin.z }, { vecMax.x, vecMax.y, vecMax.z });

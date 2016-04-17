@@ -37,18 +37,14 @@ bool GameState::initState()
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     Game * pGame = LostIsland::GetGamePtr();
 
-    ::utils::filesystem::create_dir(L"saves/worlds/");
-    ::utils::filesystem::create_dir(L"saves/players/");
-    ::utils::filesystem::create_dir(L"saves/worlds/tempWorld/");
-
     //pGame->gameHud.reset(new GameHUD(guiModule));
     //LOG_INFO("HUD has been created");
 
-    ShiftEngine::CameraSceneNode * pCamera = pScene->AddCameraSceneNode();
+    ShiftEngine::CameraSceneNode * pCamera = pScene->AddCameraSceneNode(ShiftEngine::CameraViewType::Projection);
     pCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
-    pCamera->RotateByQuaternion(quaternionFromVecAngle(Vector3F(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
+    pCamera->RotateByQuaternion(quaternionFromVecAngle(vec3f(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
 
-    pScene->SetAmbientColor(Vector3F(0.1f, 0.1f, 0.15f));
+    pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
     LOG_INFO("End of game state initializing");
 
@@ -98,7 +94,7 @@ bool GameState::render(double dt)
     ////////////
 
     ShiftEngine::FontManager * pFntMgr = pCtxMgr->GetFontManager();
-    pFntMgr->SetFont(L"1");
+    pFntMgr->SetFont(L"2");
 
     pCtxMgr->SetBlendingState(ShiftEngine::BlendingState::AlphaEnabled);
 
@@ -107,7 +103,7 @@ bool GameState::render(double dt)
     pScene->DrawAll(dt);
 
     for (int i = 0; i < infoSize; i++)
-        pFntMgr->DrawTextTL(di[i].str(), 0.0f, i * 32.0f);
+        pFntMgr->DrawTextTL(di[i].str(), 5.0f, 5.0f + i * 16.0f);
 
     //guiPlatform->getRenderManagerPtr()->drawOneFrame();
 
@@ -212,7 +208,7 @@ void GameState::switchWireframe()
 #endif
 }
 
-MathLib::Ray GameState::getUnprojectedRay(const MathLib::Vector2I & clientMouseCoords) const
+MathLib::Ray GameState::getUnprojectedRay(const MathLib::vec2i & clientMouseCoords) const
 {
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
@@ -223,8 +219,8 @@ MathLib::Ray GameState::getUnprojectedRay(const MathLib::Vector2I & clientMouseC
     // do the raycasting
     mat4f projMatrix = pScene->GetActiveCamera()->GetProjectionMatrix();
     mat4f viewMatrix = pScene->GetActiveCamera()->GetViewMatrix();
-    Vector3F resultNear = getUnprojectedVector(Vector3F((float)clientMouseCoords.x, (float)clientMouseCoords.y, 0.0f), projMatrix, viewMatrix, sizes);
-    Vector3F resultFar = getUnprojectedVector(Vector3F((float)clientMouseCoords.x, (float)clientMouseCoords.y, 1.0f), projMatrix, viewMatrix, sizes);
+    vec3f resultNear = getUnprojectedVector(vec3f((float)clientMouseCoords.x, (float)clientMouseCoords.y, 0.0f), projMatrix, viewMatrix, sizes);
+    vec3f resultFar = getUnprojectedVector(vec3f((float)clientMouseCoords.x, (float)clientMouseCoords.y, 1.0f), projMatrix, viewMatrix, sizes);
     Ray unprojectedRay = Ray(resultNear, normalize(resultFar - resultNear));
 
     return unprojectedRay;

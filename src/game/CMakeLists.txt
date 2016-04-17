@@ -9,9 +9,6 @@ source_group("Header Files\\Game States" FILES ${LS})
 list(APPEND SRC ${LS})
 
 include_directories(../../3rdparty/jsoncpp/include)
-if({RENDERER} STREQUAL D3D10_RENDER)
-    include_directories($ENV{DXSDK_DIR}/include)
-endif()
 
 if(${EX_PLATFORM} EQUAL 64)
     link_directories($ENV{DXSDK_DIR}/lib/x64)

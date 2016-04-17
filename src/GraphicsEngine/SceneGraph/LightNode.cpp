@@ -3,7 +3,7 @@
 #include "../RenderQueue.h"
 #include "SceneGraph.h"
 
-ShiftEngine::LightNode::LightNode(LightNodeType _type, const MathLib::Vector3F & _color)
+ShiftEngine::LightNode::LightNode(LightNodeType _type, const MathLib::vec3f & _color)
     : ISceneNode()
     , color(_color)
     , type(_type)
@@ -20,12 +20,12 @@ void ShiftEngine::LightNode::PushToRQ(RenderQueue & rq)
         rq.AddLightNode(this);
 }
 
-void ShiftEngine::LightNode::SetColor(const MathLib::Vector3F & color)
+void ShiftEngine::LightNode::SetColor(const MathLib::vec3f & color)
 {
     this->color = color;
 }
 
-MathLib::Vector3F ShiftEngine::LightNode::GetColor() const
+MathLib::vec3f ShiftEngine::LightNode::GetColor() const
 {
     return color;
 }
@@ -45,12 +45,12 @@ void ShiftEngine::LightNode::SetRadius(float val)
     radius = val;
 }
 
-MathLib::Vector3F ShiftEngine::LightNode::GetDirection() const
+MathLib::vec3f ShiftEngine::LightNode::GetDirection() const
 {
     return direction;
 }
 
-void ShiftEngine::LightNode::SetDirection(const MathLib::Vector3F & val)
+void ShiftEngine::LightNode::SetDirection(const MathLib::vec3f & val)
 {
     direction = val;
 }

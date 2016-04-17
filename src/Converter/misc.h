@@ -18,10 +18,10 @@ struct MeshLIMHeader
 
 struct Vertex
 {
-    Vertex(const MathLib::Vector3F &Pos = {},
-           const MathLib::Vector3F &Normal = {},
-           const MathLib::Vector2F &TexCoord = {},
-           const MathLib::Vector3F &Color = {})
+    Vertex(const MathLib::vec3f &Pos = {},
+           const MathLib::vec3f &Normal = {},
+           const MathLib::vec2f &TexCoord = {},
+           const MathLib::vec3f &Color = {})
         : Pos(Pos)
         , Normal(Normal)
         , TexCoord(TexCoord)
@@ -29,8 +29,8 @@ struct Vertex
     {
     }
 
-    MathLib::Vector3F Pos;
-    MathLib::Vector3F Normal;
-    MathLib::Vector2F TexCoord;
-    MathLib::Vector3F Color;
+    MathLib::vec3f Pos;
+    MathLib::vec3f Normal;
+    MathLib::vec2f TexCoord;
+    MathLib::vec3f Color;
 };

@@ -193,10 +193,10 @@ void ShiftEngine::FontManager::DrawBatchedText()
         pCtxMgr->SetRasterizerState(RasterizerState::Normal);
 
         GraphicEngineSettings pSettings = pCtxMgr->GetEngineSettings();
-        MathLib::mat4f matOrtho = MathLib::matrixOrthoOffCenterLH<float, 4>(0.0f, (float)pSettings.screenWidth, (float)pSettings.screenHeight, 0.0f, 0.0f, 1.0f);
+        MathLib::mat4f matOrtho = MathLib::matrixOrthoOffCenterLH<float>(0.0f, (float)pSettings.screenWidth, (float)pSettings.screenHeight, 0.0f, 0.0f, 1.0f);
         textShader->SetMatrixConstantByName("matOrtho", matOrtho);
 
-        MathLib::Vector4F vec;
+        MathLib::vec4f vec;
         vec.x = 0.0f;
         vec.y = 0.0f;
         vec.z = 16000.0f;

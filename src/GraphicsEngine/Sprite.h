@@ -17,33 +17,33 @@ namespace ShiftEngine
     public:
         Sprite();
         Sprite(const std::wstring & filename,
-            const MathLib::Vector2F & texCoordLeftTop = { 0.0f, 0.0f },
-            const MathLib::Vector2F & texCoordRightBottom = { 1.0f, 1.0f });
+            const MathLib::vec2f & texCoordLeftTop = { 0.0f, 0.0f },
+            const MathLib::vec2f & texCoordRightBottom = { 1.0f, 1.0f });
         ~Sprite();
 
-        void SetPosition(const MathLib::Vector2F & pos);
+        void SetPosition(const MathLib::vec2f & pos);
         void SetRotation(float rot);
-        void SetScale(const MathLib::Vector2F & sc);
+        void SetScale(const MathLib::vec2f & sc);
         void SetTexture(ShiftEngine::ITexturePtr ptr);
         void SetTexture(const std::wstring & filename);
-        void SetMaskColor(const MathLib::Vector4F & color);
+        void SetMaskColor(const MathLib::vec4f & color);
 
         void SetSizeInPixels(int x, int y);
         void Draw();
 
-        MathLib::Vector2F GetTextureDimensions() const;
+        MathLib::vec2f GetTextureDimensions() const;
 
     private:
-        void CreateBuffers(const MathLib::Vector2F & LT, const MathLib::Vector2F & RB);
+        void CreateBuffers(const MathLib::vec2f & LT, const MathLib::vec2f & RB);
         void LoadShader();
 
         ShiftEngine::ITexturePtr texture = nullptr;
         ShiftEngine::IMeshDataPtr spriteMesh = nullptr;
 
-        MathLib::Vector4F MaskColor = { 1.0f, 1.0f, 1.0f, 1.0f };
-        MathLib::Vector2F Position = { 0.0f, 0.0f };
+        MathLib::vec4f MaskColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+        MathLib::vec2f Position = { 0.0f, 0.0f };
         float Rotation = 0.0f;
-        MathLib::Vector2F Scale = { 1.0f, 1.0f };
+        MathLib::vec2f Scale = { 1.0f, 1.0f };
 
         static ShiftEngine::IProgramPtr SpriteShader;
     };

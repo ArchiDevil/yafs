@@ -41,8 +41,8 @@ private:
     void ProcessInput(double dt);
 
     void switchWireframe();
-    MathLib::Ray getUnprojectedRay(const MathLib::Vector2I & clientMouseCoords) const;
-    void playerAction(const MathLib::Vector2I & clientMouseCoords);
+    MathLib::Ray getUnprojectedRay(const MathLib::vec2i & clientMouseCoords) const;
+    void playerAction(const MathLib::vec2i & clientMouseCoords);
 
     IniWorker *                     iniLoader = nullptr;
 

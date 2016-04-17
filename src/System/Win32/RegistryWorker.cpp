@@ -1,6 +1,8 @@
-#include "cRegWorker.h"
+#include "RegistryWorker.h"
 
-std::wstring cRegWorker::GetString(Root root, std::wstring path, std::wstring parameter)
+#include <Windows.h>
+
+std::wstring RegistryWorker::GetString(Root root, const std::wstring & path, const std::wstring & parameter)
 {
     HKEY hKey;
     wchar_t buffer[1024] = { 0 };
@@ -13,7 +15,7 @@ std::wstring cRegWorker::GetString(Root root, std::wstring path, std::wstring pa
     return out;
 }
 
-int cRegWorker::GetInteger(Root root, std::wstring path, std::wstring parameter)
+int RegistryWorker::GetInteger(Root root, const std::wstring & path, const std::wstring & parameter)
 {
     HKEY hKey;
     DWORD out = 0;

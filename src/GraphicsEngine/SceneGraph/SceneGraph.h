@@ -34,12 +34,12 @@ namespace ShiftEngine
 
         MeshNode * AddMeshNode(const std::wstring & meshFileName, const Material * mat);                        //tries to load mesh with meshLoader
         MeshNode * AddMeshNode(IMeshDataPtr dataPtr, const Material * mat);
-        CameraSceneNode * AddCameraSceneNode();
+        CameraSceneNode * AddCameraSceneNode(CameraViewType cameraType);
 
-        LightNode * AddDirectionalLightNode(const MathLib::Vector3F & direction, const MathLib::Vector3F & color = MathLib::Vector3F(1.0f, 1.0f, 1.0f));
+        LightNode * AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color = MathLib::vec3f(1.0f, 1.0f, 1.0f));
         void RemoveDirectionalLightNode(LightNode * node);
 
-        LightNode * AddPointLightNode(const MathLib::Vector3F & pos, float radius, const MathLib::Vector3F & color = MathLib::Vector3F(1.0f, 1.0f, 1.0f));
+        LightNode * AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color = MathLib::vec3f(1.0f, 1.0f, 1.0f));
         SkySceneNode * AddSkySceneNode();
 
         SkySceneNode * GetActiveSkyNode() const;
@@ -47,8 +47,8 @@ namespace ShiftEngine
         void SetActiveCamera(CameraSceneNode * camera);
         CameraSceneNode * GetActiveCamera() const;
 
-        void SetAmbientColor(const MathLib::Vector3F & color);
-        MathLib::Vector3F GetAmbientColor() const;
+        void SetAmbientColor(const MathLib::vec3f & color);
+        MathLib::vec3f GetAmbientColor() const;
 
         void MoveNodeCallback(ISceneNode * node);
 
@@ -61,7 +61,7 @@ namespace ShiftEngine
 
         SceneGraphType type = SGT_Plain;
 
-        MathLib::Vector3F ambientColor = {};
+        MathLib::vec3f ambientColor = {};
 
     };
 }

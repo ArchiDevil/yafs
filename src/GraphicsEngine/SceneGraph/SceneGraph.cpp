@@ -68,18 +68,18 @@ ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(IMeshDataPtr dataPt
     return out;
 }
 
-ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::AddCameraSceneNode()
+ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::AddCameraSceneNode(CameraViewType cameraType)
 {
     auto ContextManager = GetContextManager();
 
-    CameraSceneNode * cam = new CameraSceneNode();
+    CameraSceneNode * cam = new CameraSceneNode((float)ContextManager->GetEngineSettings().screenWidth,
+                                                (float)ContextManager->GetEngineSettings().screenHeight, 
+                                                ContextManager->GetEngineSettings().zNear, 
+                                                ContextManager->GetEngineSettings().zFar, 
+                                                60.0f, 
+                                                cameraType);
     cam->SetSceneGraph(this);
     rootNode->AddChild(cam);
-    cam->Initialize((float)ContextManager->GetEngineSettings().screenWidth,
-                    (float)ContextManager->GetEngineSettings().screenHeight,
-                    ContextManager->GetEngineSettings().zNear,
-                    ContextManager->GetEngineSettings().zFar,
-                    60.0f);
 
     if (!activeCamera)
         activeCamera = cam;
@@ -107,7 +107,7 @@ ShiftEngine::SkySceneNode * ShiftEngine::SceneGraph::AddSkySceneNode()
     return out;
 }
 
-ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddDirectionalLightNode(const MathLib::Vector3F & direction, const MathLib::Vector3F & color)
+ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color)
 {
     LightNode * out = new LightNode(LNT_Directional, color);
     out->SetDirection(direction);
@@ -117,7 +117,7 @@ ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddDirectionalLightNode(const 
     return out;
 }
 
-ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddPointLightNode(const MathLib::Vector3F & pos, float radius, const MathLib::Vector3F & color)
+ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color)
 {
     LightNode * out = new LightNode(LNT_Point, color);
     out->SetRadius(radius);
@@ -127,12 +127,12 @@ ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddPointLightNode(const MathLi
     return out;
 }
 
-void ShiftEngine::SceneGraph::SetAmbientColor(const MathLib::Vector3F & color)
+void ShiftEngine::SceneGraph::SetAmbientColor(const MathLib::vec3f & color)
 {
     ambientColor = color;
 }
 
-MathLib::Vector3F ShiftEngine::SceneGraph::GetAmbientColor() const
+MathLib::vec3f ShiftEngine::SceneGraph::GetAmbientColor() const
 {
     return ambientColor;
 }

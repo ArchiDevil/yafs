@@ -167,41 +167,41 @@ ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createSphere()
             float cosTheta[] = { cos(step * j), cos(step * (j + 1)) };
 
             //create 4 vertices patch
-            MathLib::Vector3F patch[4];
+            MathLib::vec3f patch[4];
             patch[0] = { sinTheta[1] * cosPhi[0], sinTheta[1] * sinPhi[0], cosTheta[1] };
             patch[1] = { sinTheta[1] * cosPhi[1], sinTheta[1] * sinPhi[1], cosTheta[1] };
             patch[2] = { sinTheta[0] * cosPhi[1], sinTheta[0] * sinPhi[1], cosTheta[0] };
             patch[3] = { sinTheta[0] * cosPhi[0], sinTheta[0] * sinPhi[0], cosTheta[0] };
 
-            MathLib::Vector2F texcoords[4];
+            MathLib::vec2f texcoords[4];
             texcoords[0] = { (float)i / subdivisions, (float)(j + 1) / subdivisions };
             texcoords[1] = { (float)(i + 1) / subdivisions, (float)(j + 1) / subdivisions };
             texcoords[2] = { (float)(i + 1) / subdivisions, (float)j / subdivisions };
             texcoords[3] = { (float)i / subdivisions, (float)j / subdivisions };
 
-            memcpy(vertices[i * subdivisions * 6 + j * 6].Pos, patch[0].ptr(), sizeof(MathLib::Vector3F));
-            memcpy(vertices[i * subdivisions * 6 + j * 6].Normal, patch[0].ptr(), sizeof(MathLib::Vector3F));
-            memcpy(vertices[i * subdivisions * 6 + j * 6].Texcoord, texcoords[0].ptr(), sizeof(MathLib::Vector2F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6].Pos, patch[0].ptr(), sizeof(MathLib::vec3f));
+            memcpy(vertices[i * subdivisions * 6 + j * 6].Normal, patch[0].ptr(), sizeof(MathLib::vec3f));
+            memcpy(vertices[i * subdivisions * 6 + j * 6].Texcoord, texcoords[0].ptr(), sizeof(MathLib::vec2f));
 
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 2].Pos, patch[1].ptr(), sizeof(MathLib::Vector3F));
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 2].Normal, patch[1].ptr(), sizeof(MathLib::Vector3F));
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 2].Texcoord, texcoords[1].ptr(), sizeof(MathLib::Vector2F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 2].Pos, patch[1].ptr(), sizeof(MathLib::vec3f));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 2].Normal, patch[1].ptr(), sizeof(MathLib::vec3f));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 2].Texcoord, texcoords[1].ptr(), sizeof(MathLib::vec2f));
 
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 1].Pos, patch[2].ptr(), sizeof(MathLib::Vector3F));
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 1].Normal, patch[2].ptr(), sizeof(MathLib::Vector3F));
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 1].Texcoord, texcoords[2].ptr(), sizeof(MathLib::Vector2F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 1].Pos, patch[2].ptr(), sizeof(MathLib::vec3f));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 1].Normal, patch[2].ptr(), sizeof(MathLib::vec3f));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 1].Texcoord, texcoords[2].ptr(), sizeof(MathLib::vec2f));
 
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 3].Pos, patch[0].ptr(), sizeof(MathLib::Vector3F));
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 3].Normal, patch[0].ptr(), sizeof(MathLib::Vector3F));
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 3].Texcoord, texcoords[0].ptr(), sizeof(MathLib::Vector2F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 3].Pos, patch[0].ptr(), sizeof(MathLib::vec3f));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 3].Normal, patch[0].ptr(), sizeof(MathLib::vec3f));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 3].Texcoord, texcoords[0].ptr(), sizeof(MathLib::vec2f));
 
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 5].Pos, patch[2].ptr(), sizeof(MathLib::Vector3F));
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 5].Normal, patch[2].ptr(), sizeof(MathLib::Vector3F));
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 5].Texcoord, texcoords[2].ptr(), sizeof(MathLib::Vector2F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 5].Pos, patch[2].ptr(), sizeof(MathLib::vec3f));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 5].Normal, patch[2].ptr(), sizeof(MathLib::vec3f));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 5].Texcoord, texcoords[2].ptr(), sizeof(MathLib::vec2f));
 
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 4].Pos, patch[3].ptr(), sizeof(MathLib::Vector3F));
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 4].Normal, patch[3].ptr(), sizeof(MathLib::Vector3F));
-            memcpy(vertices[i * subdivisions * 6 + j * 6 + 4].Texcoord, texcoords[3].ptr(), sizeof(MathLib::Vector2F));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 4].Pos, patch[3].ptr(), sizeof(MathLib::vec3f));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 4].Normal, patch[3].ptr(), sizeof(MathLib::vec3f));
+            memcpy(vertices[i * subdivisions * 6 + j * 6 + 4].Texcoord, texcoords[3].ptr(), sizeof(MathLib::vec2f));
         }
     }
 

@@ -62,7 +62,7 @@ int ShiftEngine::MeshNode::Render()
 MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
 {
     MathLib::mat4f matWorld = GetWorldMatrix();
-    MathLib::Vector4F points[8];
+    MathLib::vec4f points[8];
     MathLib::AABB bbox = {};
     if (Data)
         bbox = Data->GetBBox();
@@ -76,7 +76,7 @@ MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
     points[6] = { bbox.bMax.x, bbox.bMin.y, bbox.bMax.z, 1.0f };
     points[7] = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
 
-    MathLib::Vector3F min, max;
+    MathLib::vec3f min, max;
 
     for (int i = 0; i < 8; i++)
         points[i] = MathLib::vec4Transform(points[i], matWorld);

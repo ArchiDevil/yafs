@@ -4,7 +4,7 @@
 #include <sstream>
 
 #include <System/Win32/Application.h>
-#include <System/cRegWorker.h>
+#include <System/Win32/RegistryWorker.h>
 #include <System/InputEngine.h>
 
 #include <Utilities/IAppState.h>
@@ -42,7 +42,7 @@ private:
     AppStateMachine                             stateMachine;
     windows_high_reference_timer                gameTimer;         //frame timer
     IniWorker                                   settingsLoader;    //settings loader
-    cRegWorker                                  registryWorker;    //registry handler
+    RegistryWorker                              registryWorker;    //registry handler
 
     //MyGUI::Gui *                                guiModule = nullptr;
     //MyGUI::DirectX11Platform *                  guiPlatform = nullptr;

@@ -30,10 +30,10 @@ std::vector<std::string> split(const std::string &s, char delim)
 
 bool cObjConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, std::vector<uint32_t> & indices, MeshLIMHeader & header)
 {
-    std::vector<Vector3F> positions;
-    std::vector<Vector3F> normals;
+    std::vector<vec3f> positions;
+    std::vector<vec3f> normals;
     //unable to use UVW coordinates
-    std::vector<Vector2F> texCoords;
+    std::vector<vec2f> texCoords;
 
     typedef std::tuple<long, long, long> key_t;
     struct key_hash : public std::unary_function < key_t, std::size_t >
@@ -63,7 +63,7 @@ bool cObjConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
             if (elems.size() != 4)
                 return false;
 
-            Vector3F pos = Vector3F(std::stof(elems[1]), std::stof(elems[2]), std::stof(elems[3]));
+            vec3f pos = vec3f(std::stof(elems[1]), std::stof(elems[2]), std::stof(elems[3]));
             positions.push_back(pos);
         }
 
@@ -74,7 +74,7 @@ bool cObjConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
             if (elems.size() != 3)
                 return false;
 
-            Vector2F tc = Vector2F(std::stof(elems[1]), std::stof(elems[2]));
+            vec2f tc = vec2f(std::stof(elems[1]), std::stof(elems[2]));
             texCoords.push_back(tc);
         }
 
@@ -85,7 +85,7 @@ bool cObjConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
             if (elems.size() != 4)
                 return false;
 
-            Vector3F norm = Vector3F(std::stof(elems[1]), std::stof(elems[2]), std::stof(elems[3]));
+            vec3f norm = vec3f(std::stof(elems[1]), std::stof(elems[2]), std::stof(elems[3]));
             normals.push_back(norm);
         }
 

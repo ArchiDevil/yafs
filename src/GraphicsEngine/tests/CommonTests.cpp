@@ -12,8 +12,8 @@ namespace UnitTests
         void InitFrustum(CameraFrustum & frustum, const vec3<float> & pos, const vec3<float> & upDir, const vec3<float> & lookDir)
         {
             mat4f matView, matProj;
-            matView = matrixLookAtRH<float, 4>(pos, lookDir, upDir);
-            matProj = matrixPerspectiveFovRH<float, 4>(M_PIF * 60.0f / 180.0f, 800.0f / 600.0f, 1.0f, 100.0f);
+            matView = matrixLookAtRH<float>(pos, lookDir, upDir);
+            matProj = matrixPerspectiveFovRH<float>(M_PIF * 60.0f / 180.0f, 800.0f / 600.0f, 1.0f, 100.0f);
             frustum.BuildFrustum(matView, matProj);
         }
 

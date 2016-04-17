@@ -1,7 +1,7 @@
 #pragma once
 
 //MY INCLUDES
-#include <Utilities/cRefcounted.h>
+#include <Utilities/refcounted.h>
 #include <MathLib/math.h>
 
 //STL INCLUDES
@@ -32,11 +32,11 @@ namespace ShiftEngine
         void SetParent(ISceneNode * _parent);
         void RemoveParent();
 
-        MathLib::Vector3F GetPosition() const;
-        void SetPosition(const MathLib::Vector3F & val);
+        MathLib::vec3f GetPosition() const;
+        void SetPosition(const MathLib::vec3f & val);
 
-        MathLib::Vector3F GetScale() const;
-        void SetScale(const MathLib::Vector3F & val);
+        MathLib::vec3f GetScale() const;
+        void SetScale(const MathLib::vec3f & val);
         void SetScale(float val);
 
         MathLib::qaFloat GetRotation() const;
@@ -59,9 +59,9 @@ namespace ShiftEngine
         SceneGraph * pSceneGraph = nullptr;;
 
     private:
-        MathLib::Vector3F Position = { 0.0f, 0.0f, 0.0f };
-        MathLib::Vector3F Scale = { 1.0f, 1.0f, 1.0f };
-        MathLib::qaFloat Rotation = MathLib::quaternionFromVecAngle(MathLib::Vector3F(0.0f, 0.0f, 1.0f), 0.0f);
+        MathLib::vec3f Position = { 0.0f, 0.0f, 0.0f };
+        MathLib::vec3f Scale = { 1.0f, 1.0f, 1.0f };
+        MathLib::qaFloat Rotation = MathLib::quaternionFromVecAngle(MathLib::vec3f(0.0f, 0.0f, 1.0f), 0.0f);
 
         MathLib::mat4f worldMatrix;
 

@@ -116,14 +116,14 @@ void ShiftEngine::ISceneNode::CreateWorldMatrix()
     worldMatrix = scale * rotation * position;
 }
 
-MathLib::Vector3F ShiftEngine::ISceneNode::GetPosition() const
+MathLib::vec3f ShiftEngine::ISceneNode::GetPosition() const
 {
     if (parent)
         return parent->GetPosition() + Position;
     return Position;
 }
 
-void ShiftEngine::ISceneNode::SetPosition(const MathLib::Vector3F & val)
+void ShiftEngine::ISceneNode::SetPosition(const MathLib::vec3f & val)
 {
     Position = val;
     CreateWorldMatrix();
@@ -131,14 +131,14 @@ void ShiftEngine::ISceneNode::SetPosition(const MathLib::Vector3F & val)
         pSceneGraph->MoveNodeCallback(this);
 }
 
-MathLib::Vector3F ShiftEngine::ISceneNode::GetScale() const
+MathLib::vec3f ShiftEngine::ISceneNode::GetScale() const
 {
     if (parent)
         return parent->Scale + Scale;
     return Scale;
 }
 
-void ShiftEngine::ISceneNode::SetScale(const MathLib::Vector3F & val)
+void ShiftEngine::ISceneNode::SetScale(const MathLib::vec3f & val)
 {
     Scale = val;
     CreateWorldMatrix();
@@ -148,7 +148,7 @@ void ShiftEngine::ISceneNode::SetScale(const MathLib::Vector3F & val)
 
 void ShiftEngine::ISceneNode::SetScale(float val)
 {
-    SetScale(MathLib::Vector3F(val, val, val));
+    SetScale(MathLib::vec3f(val, val, val));
 }
 
 MathLib::qaFloat ShiftEngine::ISceneNode::GetRotation() const
@@ -171,11 +171,11 @@ int ShiftEngine::ISceneNode::CheckVisibility(CameraSceneNode * activeCam) const
     MathLib::mat4f matWorld = GetWorldMatrix();
     MathLib::AABB bbox = GetBBox();
 
-    MathLib::Vector4F vecMin = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
-    MathLib::Vector4F vecMax = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
+    MathLib::vec4f vecMin = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
+    MathLib::vec4f vecMax = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
     vecMin = MathLib::vec4Transform(vecMin, matWorld);
     vecMax = MathLib::vec4Transform(vecMax, matWorld);
-    MathLib::AABB newBbox(MathLib::Vector3F(vecMin.x, vecMin.y, vecMin.z), MathLib::Vector3F(vecMax.x, vecMax.y, vecMax.z));
+    MathLib::AABB newBbox(MathLib::vec3f(vecMin.x, vecMin.y, vecMin.z), MathLib::vec3f(vecMax.x, vecMax.y, vecMax.z));
 
     return activeCam->GetFrustumPtr()->CheckAABB(newBbox);
 }

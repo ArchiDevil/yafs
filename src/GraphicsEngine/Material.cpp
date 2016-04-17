@@ -116,7 +116,7 @@ void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const f
     floatParams[parameter] = param;
 }
 
-void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const MathLib::Vector2F & param)
+void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const MathLib::vec2f & param)
 {
     unsigned int var = 0;
     if (program)
@@ -124,7 +124,7 @@ void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const M
     float2Params[parameter] = param;
 }
 
-void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const MathLib::Vector3F & param)
+void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const MathLib::vec3f & param)
 {
     unsigned int var = 0;
     if (program)
@@ -132,7 +132,7 @@ void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const M
     float3Params[parameter] = param;
 }
 
-void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const MathLib::Vector4F & param)
+void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const MathLib::vec4f & param)
 {
     unsigned int var = 0;
     if (program)
@@ -148,11 +148,11 @@ void ShiftEngine::Material::SetZState(bool zState)
 //must be equal to shader struct with 4-byte pack!
 struct shaderLightRefl
 {
-    MathLib::Vector3F color = {};
+    MathLib::vec3f color = {};
     float type = 0.0f;
-    MathLib::Vector3F dir = {};
+    MathLib::vec3f dir = {};
     float radius = 0.0f;
-    MathLib::Vector3F pos = {};
+    MathLib::vec3f pos = {};
     float pack = 0.0f;
 };
 
@@ -197,17 +197,17 @@ const std::vector<ShiftEngine::engineUniforms> & ShiftEngine::Material::GetUnifo
     return knownUniforms;
 }
 
-void ShiftEngine::Material::SetDiffuseColor(const MathLib::Vector4F & diffuseColor)
+void ShiftEngine::Material::SetDiffuseColor(const MathLib::vec4f & diffuseColor)
 {
     info.diffuseColor = diffuseColor;
 }
 
-void ShiftEngine::Material::SetSpecularColor(const MathLib::Vector4F & specularColor)
+void ShiftEngine::Material::SetSpecularColor(const MathLib::vec4f & specularColor)
 {
     info.specularColor = specularColor;
 }
 
-void ShiftEngine::Material::SetEmissionColor(const MathLib::Vector4F & emissionColor)
+void ShiftEngine::Material::SetEmissionColor(const MathLib::vec4f & emissionColor)
 {
     info.emissionColor = emissionColor;
 }

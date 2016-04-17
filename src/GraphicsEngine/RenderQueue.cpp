@@ -5,7 +5,7 @@
 #include "SceneGraph/SkySceneNode.h"
 #include "SceneGraph/LightNode.h"
 
-ShiftEngine::RenderQueue::RenderQueue(const MathLib::Vector3F & _ambientColor)
+ShiftEngine::RenderQueue::RenderQueue(const MathLib::vec3f & _ambientColor)
     : ambientColor(_ambientColor)
 {
 }
@@ -57,7 +57,7 @@ const ShiftEngine::LightsVector & ShiftEngine::RenderQueue::GetLights() const
     return lights;
 }
 
-MathLib::Vector3F ShiftEngine::RenderQueue::GetAmbientColor() const
+MathLib::vec3f ShiftEngine::RenderQueue::GetAmbientColor() const
 {
     return ambientColor;
 }

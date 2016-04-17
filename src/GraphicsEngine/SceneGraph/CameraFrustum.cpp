@@ -55,7 +55,7 @@ void ShiftEngine::CameraFrustum::BuildFrustum(const MathLib::mat4f & matView, co
 
 ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckAABB(const MathLib::AABB & bbox) const
 {
-    MathLib::Vector3F vCorner[8];
+    MathLib::vec3f vCorner[8];
     int totalIn = 0;
 
     // get the corners of the box into the vCorner array
@@ -97,7 +97,7 @@ ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckAABB(
 
 ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckOOBB(const MathLib::OOBB & bbox) const
 {
-    MathLib::Vector3F vCorner[8];
+    MathLib::vec3f vCorner[8];
     int totalIn = 0;
 
     bbox.GetVertices(vCorner);
@@ -131,7 +131,7 @@ ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckOOBB(
 ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckQTreeNode(const MathLib::AABB & bbox) const
 {
     int totalIn = 0;
-    MathLib::Vector3F buffer[4];
+    MathLib::vec3f buffer[4];
     buffer[0] = { bbox.bMin.x, bbox.bMin.y, 0.0f };
     buffer[1] = { bbox.bMin.x, bbox.bMax.y, 0.0f };
     buffer[2] = { bbox.bMax.x, bbox.bMin.y, 0.0f };

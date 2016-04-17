@@ -5,21 +5,23 @@
 
 namespace MathLib
 {
-    class OOBB
-    {
-    public:
-        OOBB(Vector3F _position = Vector3F(), Vector3F _size = Vector3F(1.0f, 1.0f, 1.0f), Vector3F _angles = Vector3F());
-        void GetVertices(Vector3F vertices[8]) const;
-        AABB GetAABB() const;
 
-        bool IntersectsAABB(const AABB & bbox);
-        bool IntersectsOOBB(const OOBB & bbox);
-        bool IntersectsSphere(const Vector3F & center, float raduis);
-        bool IntersectsLineSegment(const Vector3F &mid, const Vector3F &dir, const int hl);
-        bool IntersectsTriangle(const Vector3F &pnt1, const Vector3F &pnt2, const Vector3F &pnt3);
+class OOBB
+{
+public:
+    OOBB(vec3f _position = vec3f(), vec3f _size = vec3f(1.0f, 1.0f, 1.0f), vec3f _angles = vec3f());
+    void GetVertices(vec3f vertices[8]) const;
+    AABB GetAABB() const;
 
-        Vector3F position;
-        Vector3F size;
-        matrix<float, 3> rotation;
-    };
+    bool IntersectsAABB(const AABB & bbox);
+    bool IntersectsOOBB(const OOBB & bbox);
+    bool IntersectsSphere(const vec3f & center, float raduis);
+    bool IntersectsLineSegment(const vec3f &mid, const vec3f &dir, const int hl);
+    bool IntersectsTriangle(const vec3f &pnt1, const vec3f &pnt2, const vec3f &pnt3);
+
+    vec3f position;
+    vec3f size;
+    matrix<float, 3> rotation;
+};
+
 }

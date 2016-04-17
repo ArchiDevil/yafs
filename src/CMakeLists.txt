@@ -1,8 +1,5 @@
 if(MSVC)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
-    if(${RENDERER} STREQUAL D3D10_RENDER)
-        include_directories($ENV{DXSDK_DIR}/include)
-    endif()
 else()
     add_definitions(-std=c++0x)
 endif()

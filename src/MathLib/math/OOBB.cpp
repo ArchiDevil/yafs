@@ -1,23 +1,23 @@
 #include "OOBB.h"
 
-MathLib::OOBB::OOBB(Vector3F _position, Vector3F _size, Vector3F _angles)
+MathLib::OOBB::OOBB(vec3f _position, vec3f _size, vec3f _angles)
     : position(_position)
     , size(_size)
 {
     //	rotation = MatrixPitchYawRoll();
 }
 
-void MathLib::OOBB::GetVertices(Vector3F vertices[8]) const
+void MathLib::OOBB::GetVertices(vec3f vertices[8]) const
 {
-    vertices[0] = Vector3F(position.x - size.x / 2, position.y - size.x / 2, position.z - size.x / 2);
-    vertices[1] = Vector3F(position.x + size.x / 2, position.y - size.x / 2, position.z - size.x / 2);
-    vertices[2] = Vector3F(position.x - size.x / 2, position.y + size.x / 2, position.z - size.x / 2);
-    vertices[3] = Vector3F(position.x - size.x / 2, position.y - size.x / 2, position.z + size.x / 2);
+    vertices[0] = vec3f(position.x - size.x / 2, position.y - size.x / 2, position.z - size.x / 2);
+    vertices[1] = vec3f(position.x + size.x / 2, position.y - size.x / 2, position.z - size.x / 2);
+    vertices[2] = vec3f(position.x - size.x / 2, position.y + size.x / 2, position.z - size.x / 2);
+    vertices[3] = vec3f(position.x - size.x / 2, position.y - size.x / 2, position.z + size.x / 2);
 
-    vertices[4] = Vector3F(position.x + size.x / 2, position.y + size.x / 2, position.z - size.x / 2);
-    vertices[5] = Vector3F(position.x + size.x / 2, position.y - size.x / 2, position.z + size.x / 2);
-    vertices[6] = Vector3F(position.x - size.x / 2, position.y + size.x / 2, position.z + size.x / 2);
-    vertices[7] = Vector3F(position.x + size.x / 2, position.y + size.x / 2, position.z + size.x / 2);
+    vertices[4] = vec3f(position.x + size.x / 2, position.y + size.x / 2, position.z - size.x / 2);
+    vertices[5] = vec3f(position.x + size.x / 2, position.y - size.x / 2, position.z + size.x / 2);
+    vertices[6] = vec3f(position.x - size.x / 2, position.y + size.x / 2, position.z + size.x / 2);
+    vertices[7] = vec3f(position.x + size.x / 2, position.y + size.x / 2, position.z + size.x / 2);
 
     for (int i = 0; i < 8; i++)
         vertices[i] = rotation * vertices[i];
@@ -25,8 +25,8 @@ void MathLib::OOBB::GetVertices(Vector3F vertices[8]) const
 
 MathLib::AABB MathLib::OOBB::GetAABB() const
 {
-    Vector3F min, max;
-    Vector3F points[8];
+    vec3f min, max;
+    vec3f points[8];
 
     GetVertices(points);
 
@@ -58,7 +58,7 @@ bool MathLib::OOBB::IntersectsAABB(const AABB & /*bbox*/)
 
 bool MathLib::OOBB::IntersectsOOBB(const OOBB & bbox)
 {
-    Vector3F a = this->size,
+    vec3f a = this->size,
         b = bbox.size,
         Pa = this->position,
         Pb = bbox.position;
@@ -67,10 +67,10 @@ bool MathLib::OOBB::IntersectsOOBB(const OOBB & bbox)
         B = bbox.rotation;
 
     //смещение в мировой системе координат
-    Vector3F v = Pb - Pa;
+    vec3f v = Pb - Pa;
 
     //смещение в системе координат А
-    Vector3F T = A * v;
+    vec3f T = A * v;
 
     //создаем матрицу поворота B относительно А
     const mat3f R(A * B.transpose());
@@ -164,20 +164,20 @@ bool MathLib::OOBB::IntersectsOOBB(const OOBB & bbox)
     return true;
 }
 
-bool MathLib::OOBB::IntersectsSphere(const Vector3F & /*center*/, float /*raduis*/)
+bool MathLib::OOBB::IntersectsSphere(const vec3f & /*center*/, float /*raduis*/)
 {
     throw;
 }
 
-bool MathLib::OOBB::IntersectsLineSegment(const Vector3F &mid, const Vector3F &dir, const int hl)
+bool MathLib::OOBB::IntersectsLineSegment(const vec3f &mid, const vec3f &dir, const int hl)
 {
-    const Vector3F sizes = this->size;
-    const Vector3F position = this->position;
+    const vec3f sizes = this->size;
+    const vec3f position = this->position;
 
-    Vector3F newMid = this->rotation * mid;
-    Vector3F newDir = this->rotation * dir;
+    vec3f newMid = this->rotation * mid;
+    vec3f newDir = this->rotation * dir;
 
-    const Vector3F T = position - newMid;
+    const vec3f T = position - newMid;
 
     float r;
 
@@ -205,7 +205,7 @@ bool MathLib::OOBB::IntersectsLineSegment(const Vector3F &mid, const Vector3F &d
     return true;
 }
 
-bool MathLib::OOBB::IntersectsTriangle(const Vector3F &/*pnt1*/, const Vector3F &/*pnt2*/, const Vector3F &/*pnt3*/)
+bool MathLib::OOBB::IntersectsTriangle(const vec3f &/*pnt1*/, const vec3f &/*pnt2*/, const vec3f &/*pnt3*/)
 {
     throw;
 }

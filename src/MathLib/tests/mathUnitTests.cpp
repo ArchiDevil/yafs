@@ -4,7 +4,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace MathLib;
 
-template<> static std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<MathLib::Vector3F>(const MathLib::Vector3F& t)
+template<> static std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<MathLib::vec3f>(const MathLib::vec3f& t)
 {
     std::wostringstream s; s << t.x << " " << t.y << " " << t.z << "\n"; return s.str();
 }
@@ -21,12 +21,12 @@ namespace UnitTests
     public:
         TEST_METHOD(AABBUnitTest)
         {
-            AABB aabb = AABB(Vector3F(0.0f, 0.0f, 0.0f), Vector3F(1.0f, 1.0f, 1.0f));
+            AABB aabb = AABB(vec3f(0.0f, 0.0f, 0.0f), vec3f(1.0f, 1.0f, 1.0f));
             Assert::AreEqual(aabb.GetVolume(), 1.0f);
-            Assert::AreEqual(aabb.IntersectsAABB(AABB(Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f))), true);
-            aabb.Include(AABB(Vector3F(-0.5f, -0.5f, -0.5f), Vector3F(0.5f, 0.5f, 0.5f)));
-            Assert::AreEqual(aabb.bMin, Vector3F(-0.5f, -0.5f, -0.5f));
-            Assert::AreEqual(aabb.bMax, Vector3F(1.0f, 1.0f, 1.0f));
+            Assert::AreEqual(aabb.IntersectsAABB(AABB(vec3f(-0.5f, -0.5f, -0.5f), vec3f(0.5f, 0.5f, 0.5f))), true);
+            aabb.Include(AABB(vec3f(-0.5f, -0.5f, -0.5f), vec3f(0.5f, 0.5f, 0.5f)));
+            Assert::AreEqual(aabb.bMin, vec3f(-0.5f, -0.5f, -0.5f));
+            Assert::AreEqual(aabb.bMax, vec3f(1.0f, 1.0f, 1.0f));
         }
 
         TEST_METHOD(OOBBUnitTest_NOT_IMPLEMENTED)
@@ -137,28 +137,28 @@ namespace UnitTests
         TEST_METHOD(IntersectionsTests)
         {
             //sphere-sphere intersection test
-            bool result = SphereSphereIntersect(Vector3F(1.0f, 0.0f, 0.0f), Vector3F(0.0f, 0.0f, 0.0f), 1.0f, 1.0f);
+            bool result = SphereSphereIntersect(vec3f(1.0f, 0.0f, 0.0f), vec3f(0.0f, 0.0f, 0.0f), 1.0f, 1.0f);
             Assert::AreEqual(result, true);
 
-            result = SphereSphereIntersect(Vector3F(1.0f, 2.0f, 15.0f), Vector3F(0.0f, 0.0f, 0.0f), 1.0f, 1.0f);
+            result = SphereSphereIntersect(vec3f(1.0f, 2.0f, 15.0f), vec3f(0.0f, 0.0f, 0.0f), 1.0f, 1.0f);
             Assert::AreEqual(result, false);
 
             //ray-bbox intersection test
-            AABB bbox(Vector3F(10.0f, -15.0f, -15.0f), Vector3F(20.0f, 15.0f, 15.0f));
-            Ray r(Vector3F(0.0f, 0.0f, 0.0f), Vector3F(1.0f, 0.0f, 0.0f));
+            AABB bbox(vec3f(10.0f, -15.0f, -15.0f), vec3f(20.0f, 15.0f, 15.0f));
+            Ray r(vec3f(0.0f, 0.0f, 0.0f), vec3f(1.0f, 0.0f, 0.0f));
             result = RayBoxIntersect(r, bbox, 0.0f, 100.0f);
             Assert::AreEqual(result, true);
 
-            r.Direction = Vector3F(-1.0f, 0.0f, 0.0f);
+            r.Direction = vec3f(-1.0f, 0.0f, 0.0f);
             result = RayBoxIntersect(r, bbox, 0.0f, 100.0f);
             Assert::AreEqual(result, false);
 
             //ray-sphere intersection test
-            result = RaySphereIntersect(r, Vector3F(10.0f, 0.0f, 0.0f), 1.0f);
+            result = RaySphereIntersect(r, vec3f(10.0f, 0.0f, 0.0f), 1.0f);
             Assert::AreEqual(result, false);
 
-            r.Direction = Vector3F(1.0f, 0.0f, 0.0f);
-            result = RaySphereIntersect(r, Vector3F(10.0f, 0.0f, 0.0f), 1.0f);
+            r.Direction = vec3f(1.0f, 0.0f, 0.0f);
+            result = RaySphereIntersect(r, vec3f(10.0f, 0.0f, 0.0f), 1.0f);
             Assert::AreEqual(result, true);
         }
 

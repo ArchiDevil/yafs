@@ -4,16 +4,17 @@
 
 namespace MathLib
 {
-    struct Ray
-    {
-        Ray(const Vector3F & origin = Vector3F(0.0f, 0.0f, 0.0f),
-            const Vector3F & direction = Vector3F(0.0f, 0.0f, 0.0f))
-            : Origin(origin)
-            , Direction(direction)
-        {
-        }
 
-        Vector3F Origin;
-        Vector3F Direction;
-    };
+struct Ray
+{
+    Ray(const vec3f & origin = vec3f(0.0f, 0.0f, 0.0f),
+        const vec3f & direction = vec3f(0.0f, 0.0f, 0.0f))
+        : Origin(origin)
+        , Direction(direction)
+    {}
+
+    vec3f Origin;
+    vec3f Direction;
+};
+
 }

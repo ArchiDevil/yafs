@@ -11,26 +11,31 @@ namespace ShiftEngine
 {
     static const float MAX_ANGLE = 89.5f;
 
+    enum class CameraViewType
+    {
+        Projection,
+        Orthographic
+    };
+
     class CameraSceneNode : public ISceneNode
     {
     public:
-        CameraSceneNode();
-        CameraSceneNode(MathLib::Vector3F position);
+        CameraSceneNode(float screenWidth, float screenHeight, float zNear, float zFar, float FOV, CameraViewType viewType);
+        CameraSceneNode(const MathLib::vec3f &position);
 
-        void Initialize(float _screenWidth, float _screenHeight, float _zNear, float _zFar, float _FOV);
-        void SetPosition(const MathLib::Vector3F & pos);
+        void SetPosition(const MathLib::vec3f & pos);
         void Update();
         void MoveUpDown(float units);
         void MoveLeftRight(float units);
         void MoveForwardBackward(float units);
         void RotateByQuaternion(const MathLib::qaFloat & quat);
-        void LookAt(const MathLib::Vector3F & point);
-        void SetSphericalCoords(const MathLib::Vector3F & lookPoint, float phi, float theta, float r);
+        void LookAt(const MathLib::vec3f & point);
+        void SetSphericalCoords(const MathLib::vec3f & lookPoint, float phi, float theta, float r);
 
-        MathLib::Vector3F GetLookVector() const;
-        MathLib::Vector3F GetRightVector() const;
-        MathLib::Vector3F GetPosition() const;
-        MathLib::Vector3F GetUpVector() const;
+        MathLib::vec3f GetLookVector() const;
+        MathLib::vec3f GetRightVector() const;
+        MathLib::vec3f GetPosition() const;
+        MathLib::vec3f GetUpVector() const;
 
         CameraFrustum * GetFrustumPtr();
 
@@ -64,14 +69,15 @@ namespace ShiftEngine
         float fov = 60.0f;
         float screenWidth = 800.0f;
         float screenHeight = 600.0f;
-        std::unique_ptr<CameraFrustum> frustum = nullptr;
+        CameraViewType viewType = CameraViewType::Projection;
+        CameraFrustum frustum;
 
         float viewAngle = 0.0f;
-        MathLib::Vector3F angles = { 0.0f, 0.0f, 0.0f };
-        MathLib::Vector3F upVector = { 0.0f, 0.0f, 1.0f };
-        MathLib::Vector3F lookVector = { 0.0f, 1.0f, 0.0f };
-        MathLib::Vector3F position = { 0.0f, 0.0f, 0.0f };
-        MathLib::Vector3F rightVector = { 1.0f, 0.0f, 0.0f };
+        MathLib::vec3f angles = { 0.0f, 0.0f, 0.0f };
+        MathLib::vec3f upVector = { 0.0f, 0.0f, 1.0f };
+        MathLib::vec3f lookVector = { 0.0f, 1.0f, 0.0f };
+        MathLib::vec3f position = { 0.0f, 0.0f, 0.0f };
+        MathLib::vec3f rightVector = { 1.0f, 0.0f, 0.0f };
 
     };
 }

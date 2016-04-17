@@ -41,12 +41,12 @@ bool cBlkConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
 
     unsigned int ind_index = 0;
 
-    const Vector3F FRONT{ -1.0f, 0.0f, 0.0f };
-    const Vector3F BACK{ 1.0f, 0.0f, 0.0f };
-    const Vector3F LEFT{ 0.0f, -1.0f, 0.0f };
-    const Vector3F RIGHT{ 0.0f, 1.0f, 0.0f };
-    const Vector3F DOWN{ 0.0f, 0.0f, -1.0f };
-    const Vector3F UP{ 0.0f, 0.0f, 1.0f };
+    const vec3f FRONT{ -1.0f, 0.0f, 0.0f };
+    const vec3f BACK{ 1.0f, 0.0f, 0.0f };
+    const vec3f LEFT{ 0.0f, -1.0f, 0.0f };
+    const vec3f RIGHT{ 0.0f, 1.0f, 0.0f };
+    const vec3f DOWN{ 0.0f, 0.0f, -1.0f };
+    const vec3f UP{ 0.0f, 0.0f, 1.0f };
 
     float centerX = (float)x_size / 2.0f;
     float centerY = (float)y_size / 2.0f;

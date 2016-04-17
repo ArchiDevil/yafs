@@ -19,7 +19,7 @@ namespace ShiftEngine
     class RenderQueue
     {
     public:
-        RenderQueue(const MathLib::Vector3F & ambientColor);
+        RenderQueue(const MathLib::vec3f & ambientColor);
         ~RenderQueue();
 
         void AddRenderableNode(MeshNode * node);
@@ -33,12 +33,12 @@ namespace ShiftEngine
         CameraSceneNode * GetActiveCamera() const;
         SkySceneNode * GetActiveSky() const;
 
-        MathLib::Vector3F GetAmbientColor() const;
+        MathLib::vec3f GetAmbientColor() const;
 
     private:
         RenderVector meshNodesVector;
         LightsVector lights;
-        MathLib::Vector3F ambientColor = { 0.0f, 0.0f, 0.0f };
+        MathLib::vec3f ambientColor = { 0.0f, 0.0f, 0.0f };
         CameraSceneNode * activeCamera = nullptr;
         SkySceneNode * activeSky = nullptr;
 

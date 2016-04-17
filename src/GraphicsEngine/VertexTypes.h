@@ -10,10 +10,10 @@ namespace ShiftEngine
 {
     struct SerializedLIM
     {
-        std::vector<MathLib::Vector3F> position;
-        std::vector<MathLib::Vector3F> normal;
-        std::vector<MathLib::Vector2F> texcoord;
-        std::vector<MathLib::Vector3F> colors;
+        std::vector<MathLib::vec3f> position;
+        std::vector<MathLib::vec3f> normal;
+        std::vector<MathLib::vec2f> texcoord;
+        std::vector<MathLib::vec3f> colors;
     };
 
     enum ElemType

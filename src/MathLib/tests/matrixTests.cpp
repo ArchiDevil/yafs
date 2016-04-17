@@ -4,7 +4,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace MathLib;
 
-template<> static std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<MathLib::Vector3F>(const MathLib::Vector3F& t)
+template<> static std::wstring Microsoft::VisualStudio::CppUnitTestFramework::ToString<MathLib::vec3f>(const MathLib::vec3f& t)
 {
     std::wostringstream s;
     s << t.x << " " << t.y << " " << t.z << "\n";
@@ -92,7 +92,7 @@ namespace UnitTests
             matrix<float, 3> mat3ftype;
             for (int i = 0; i < 3; i++)
                 mat3ftype[i][i] = 1.0f;
-            Vector3F vec = Vector3F(1.0f, 1.0f, 1.0f);
+            vec3f vec = vec3f(1.0f, 1.0f, 1.0f);
             auto newVec = mat3ftype * vec;
             for (int i = 0; i < 3; i++)
                 Assert::AreEqual(vec.el[i], 1.0f);

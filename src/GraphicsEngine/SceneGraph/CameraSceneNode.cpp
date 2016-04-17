@@ -2,37 +2,30 @@
 
 #include "../RenderQueue.h"
 
-ShiftEngine::CameraSceneNode::CameraSceneNode()
+#include <Utilities/logger.hpp>
+
+ShiftEngine::CameraSceneNode::CameraSceneNode(float screenWidth, float screenHeight, float zNear, float zFar, float FOV, CameraViewType viewType)
     : ISceneNode()
+    , zNear(zNear)
+    , zFar(zFar)
+    , fov(FOV)
+    , screenWidth(screenWidth)
+    , screenHeight(screenHeight)
+    , viewType(viewType)
 {
+    MathLib::vec3f LOOK_POS = lookVector + position;
+    matView = MathLib::matrixLookAtRH<float>(position, LOOK_POS, upVector);
+    RebuildProjMatrix();
 }
 
-ShiftEngine::CameraSceneNode::CameraSceneNode(MathLib::Vector3F position)
+ShiftEngine::CameraSceneNode::CameraSceneNode(const MathLib::vec3f &position)
     : ISceneNode()
     , position(position)
+{}
+
+void ShiftEngine::CameraSceneNode::SetPosition(const MathLib::vec3f & pos)
 {
-}
-
-void ShiftEngine::CameraSceneNode::Initialize(float _screenWidth, float _screenHeight, float _zNear, float _zFar, float _FOV)
-{
-    zNear = _zNear;
-    zFar = _zFar;
-    fov = _FOV;
-    screenWidth = _screenWidth;
-    screenHeight = _screenHeight;
-
-    MathLib::Vector3F LOOK_POS = lookVector + position;
-    matView = MathLib::matrixLookAtRH<float, 4>(position, LOOK_POS, upVector);
-    RebuildProjMatrix();
-
-    frustum.reset(new CameraFrustum());
-}
-
-void ShiftEngine::CameraSceneNode::SetPosition(const MathLib::Vector3F & pos)
-{
-    position.x = pos.x;
-    position.y = pos.y;
-    position.z = pos.z;
+    position = pos;
 }
 
 void ShiftEngine::CameraSceneNode::MoveUpDown(float units)
@@ -52,39 +45,38 @@ void ShiftEngine::CameraSceneNode::MoveForwardBackward(float units)
 
 void ShiftEngine::CameraSceneNode::Update()
 {
-    MathLib::Vector3F eye = lookVector + position;
-    matView = MathLib::matrixLookAtRH<float, 4>(position, eye, upVector);
-    frustum->BuildFrustum(matView, matProj);
+    MathLib::vec3f eye = lookVector + position;
+    matView = MathLib::matrixLookAtRH<float>(position, eye, upVector);
+    frustum.BuildFrustum(matView, matProj);
 }
 
-MathLib::Vector3F ShiftEngine::CameraSceneNode::GetLookVector() const
+MathLib::vec3f ShiftEngine::CameraSceneNode::GetLookVector() const
 {
     return lookVector;
 }
 
-MathLib::Vector3F ShiftEngine::CameraSceneNode::GetRightVector() const
+MathLib::vec3f ShiftEngine::CameraSceneNode::GetRightVector() const
 {
     return rightVector;
 }
 
-MathLib::Vector3F ShiftEngine::CameraSceneNode::GetPosition() const
+MathLib::vec3f ShiftEngine::CameraSceneNode::GetPosition() const
 {
     return position;
 }
 
 ShiftEngine::CameraFrustum * ShiftEngine::CameraSceneNode::GetFrustumPtr()
 {
-    return frustum.get();
+    return &frustum;
 }
 
-void ShiftEngine::CameraSceneNode::LookAt(const MathLib::Vector3F & point)
+void ShiftEngine::CameraSceneNode::LookAt(const MathLib::vec3f & point)
 {
     lookVector = MathLib::normalize(point);
 }
 
 void ShiftEngine::CameraSceneNode::PushToRQ(RenderQueue & /*rq*/)
-{
-}
+{}
 
 const MathLib::mat4f & ShiftEngine::CameraSceneNode::GetProjectionMatrix() const
 {
@@ -96,7 +88,7 @@ const MathLib::mat4f & ShiftEngine::CameraSceneNode::GetViewMatrix() const
     return matView;
 }
 
-MathLib::Vector3F ShiftEngine::CameraSceneNode::GetUpVector() const
+MathLib::vec3f ShiftEngine::CameraSceneNode::GetUpVector() const
 {
     return upVector;
 }
@@ -148,45 +140,55 @@ void ShiftEngine::CameraSceneNode::SetScreenHeight(float val)
 
 void ShiftEngine::CameraSceneNode::RebuildProjMatrix()
 {
-    matProj = MathLib::matrixPerspectiveFovRH<float, 4>(M_PIF * fov / 180.0f,       // vertical FoV
-                                                        screenWidth / screenHeight, // screen rate
-                                                        zNear,
-                                                        zFar);
+    switch (viewType)
+    {
+    case ShiftEngine::CameraViewType::Projection:
+        matProj = MathLib::matrixPerspectiveFovRH<float>(M_PIF * fov / 180.0f,       // vertical FoV
+                                                         screenWidth / screenHeight, // screen rate
+                                                         zNear,
+                                                         zFar);
+    case ShiftEngine::CameraViewType::Orthographic:
+        matProj = MathLib::matrixOrthoRH<float>(screenWidth, screenHeight, zFar, zNear);
+        break;
+    default:
+        LOG_FATAL_ERROR("Unable to recognize projection type");
+        break;
+    }
 }
 
 void ShiftEngine::CameraSceneNode::RotateByQuaternion(const MathLib::qaFloat & quat)
 {
     // transform all vectors
-    MathLib::Vector3F look(lookVector.x, lookVector.y, lookVector.z);
+    MathLib::vec3f look(lookVector.x, lookVector.y, lookVector.z);
     look = look * quat;
     lookVector = look;
 
-    MathLib::Vector3F up(upVector.x, upVector.y, upVector.z);
+    MathLib::vec3f up(upVector.x, upVector.y, upVector.z);
     up = up * quat;
     upVector = up;
 
-    MathLib::Vector3F right(rightVector.x, rightVector.y, rightVector.z);
+    MathLib::vec3f right(rightVector.x, rightVector.y, rightVector.z);
     right = right * quat;
     rightVector = right;
 
-    MathLib::Vector3F LOOK_POS = lookVector + position;
-    matView = MathLib::matrixLookAtRH<float, 4>(position, LOOK_POS, upVector);
+    MathLib::vec3f LOOK_POS = lookVector + position;
+    matView = MathLib::matrixLookAtRH<float>(position, LOOK_POS, upVector);
 }
 
-void ShiftEngine::CameraSceneNode::SetSphericalCoords(const MathLib::Vector3F & center, float phi, float theta, float r)
+void ShiftEngine::CameraSceneNode::SetSphericalCoords(const MathLib::vec3f & center, float phi, float theta, float r)
 {
     position = MathLib::GetPointOnSphere(center, r, phi, theta);
     lookVector = center - position;
     lookVector = normalize(lookVector);
     // we assume that UP vector is always direct to up
-    upVector = { 0.0f, 0.0f, 1.0f };
+    upVector = {0.0f, 0.0f, 1.0f};
     rightVector = MathLib::cross(lookVector, upVector);
     rightVector = normalize(rightVector);
     upVector = MathLib::cross(rightVector, lookVector);
     upVector = normalize(upVector);
 
-    MathLib::Vector3F at = lookVector + position;
-    matView = MathLib::matrixLookAtRH<float, 4>(position, at, upVector);
+    MathLib::vec3f at = lookVector + position;
+    matView = MathLib::matrixLookAtRH<float>(position, at, upVector);
 }
 
 MathLib::AABB ShiftEngine::CameraSceneNode::GetBBox() const

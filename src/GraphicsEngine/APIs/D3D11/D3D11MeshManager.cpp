@@ -78,34 +78,34 @@ bool ShiftEngine::D3D11MeshManager::Load(const std::wstring & filename, D3D11Mes
     UpdateVertices(vertices, indices);
 
     std::vector<uint8_t> vertexData;
-    size_t resultSize = vertices.position.size() * sizeof(MathLib::Vector3F) +
-        vertices.normal.size() * sizeof(MathLib::Vector3F) +
-        vertices.texcoord.size() * sizeof(MathLib::Vector2F) +
-        vertices.colors.size() * sizeof(MathLib::Vector3F);
+    size_t resultSize = vertices.position.size() * sizeof(MathLib::vec3f) +
+        vertices.normal.size() * sizeof(MathLib::vec3f) +
+        vertices.texcoord.size() * sizeof(MathLib::vec2f) +
+        vertices.colors.size() * sizeof(MathLib::vec3f);
 
     vertexData.resize(resultSize);
 
     uint8_t *pData = vertexData.data();
     for (size_t i = 0; i < vertices.position.size(); ++i)
     {
-        memcpy(pData, &(vertices.position[i]), sizeof(MathLib::Vector3F));
-        pData += sizeof(MathLib::Vector3F);
+        memcpy(pData, &(vertices.position[i]), sizeof(MathLib::vec3f));
+        pData += sizeof(MathLib::vec3f);
         if (vertices.normal.size() > 0)
         {
-            memcpy(pData, &(vertices.normal[i]), sizeof(MathLib::Vector3F));
-            pData += sizeof(MathLib::Vector3F);
+            memcpy(pData, &(vertices.normal[i]), sizeof(MathLib::vec3f));
+            pData += sizeof(MathLib::vec3f);
         }
 
         if (vertices.texcoord.size() > 0)
         {
-            memcpy(pData, &(vertices.texcoord[i]), sizeof(MathLib::Vector2F));
-            pData += sizeof(MathLib::Vector2F);
+            memcpy(pData, &(vertices.texcoord[i]), sizeof(MathLib::vec2f));
+            pData += sizeof(MathLib::vec2f);
         }
 
         if (vertices.colors.size() > 0)
         {
-            memcpy(pData, &(vertices.colors[i]), sizeof(MathLib::Vector3F));
-            pData += sizeof(MathLib::Vector3F);
+            memcpy(pData, &(vertices.colors[i]), sizeof(MathLib::vec3f));
+            pData += sizeof(MathLib::vec3f);
         }
     }
 
@@ -118,7 +118,7 @@ bool ShiftEngine::D3D11MeshManager::Load(const std::wstring & filename, D3D11Mes
     calculatedBBox.bMin = vertices.position[0];
     calculatedBBox.bMax = vertices.position[0];
 
-    for (const MathLib::Vector3F & pos : vertices.position)
+    for (const MathLib::vec3f & pos : vertices.position)
     {
         if (pos.x < calculatedBBox.bMin.x) calculatedBBox.bMin.x = pos.x;
         if (pos.y < calculatedBBox.bMin.y) calculatedBBox.bMin.y = pos.y;

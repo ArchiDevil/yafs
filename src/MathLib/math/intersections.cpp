@@ -68,30 +68,28 @@ bool MathLib::RayBoxIntersect(const Ray & ray, const AABB & bbox, float t0, floa
     return ((tmin < t1) && (tmax > t0));
 }
 
-
 // s1, s2 - centers of spheres to test
 // r1, r2 - radiuses of spheres
 // function returns true on intersection and false if not
 
-bool MathLib::SphereSphereIntersect(Vector3F s1, Vector3F s2, float r1, float r2)
+bool MathLib::SphereSphereIntersect(vec3f s1, vec3f s2, float r1, float r2)
 {
     return distance(s1, s2) <= r1 + r2;
 }
-
 
 // ray - ray which check to intersection
 // s1 - sphere center
 // r1 - sphere radius
 // function returns true on intersection and false if not
 
-bool MathLib::RaySphereIntersect(const Ray & r, const Vector3F & s1, float r1)
+bool MathLib::RaySphereIntersect(const Ray & r, const vec3f & s1, float r1)
 {
-    Vector3F diff = s1 - r.Origin;
+    vec3f diff = s1 - r.Origin;
 
     if (MathLib::distance(s1, r.Origin) > r1 && MathLib::dot(diff, r.Direction) < 0.0f)
         return false;
 
-    Vector3F res = MathLib::cross(diff, r.Direction);
+    vec3f res = MathLib::cross(diff, r.Direction);
     float distance = (res.length()) / (r.Direction.length());
     if (distance < r1)
         return true;
@@ -104,11 +102,11 @@ bool MathLib::RaySphereIntersect(const Ray & r, const Vector3F & s1, float r1)
 // p - intersection point
 // function returns true on intersection and false if not
 
-bool MathLib::LineTriangleIntersectionPoint(const Vector3F &t1, const Vector3F &t2, const Vector3F &t3,
-                                            const Vector3F &l1, const Vector3F &l2, Vector3F &p)
+bool MathLib::LineTriangleIntersectionPoint(const vec3f &t1, const vec3f &t2, const vec3f &t3,
+                                            const vec3f &l1, const vec3f &l2, vec3f &p)
 {
     // normal calculation
-    Vector3F n = normalize(cross(t2 - t1, t3 - t2));
+    vec3f n = normalize(cross(t2 - t1, t3 - t2));
 
     // distances to check
     float d1 = dot((l1 - t1), n) / n.length();

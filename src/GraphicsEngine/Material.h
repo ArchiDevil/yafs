@@ -17,9 +17,9 @@ namespace ShiftEngine
     //just move LightNode?
     struct LightInfo
     {
-        MathLib::Vector3F Color = {};
-        MathLib::Vector3F Position = {};
-        MathLib::Vector3F Direction = {};
+        MathLib::vec3f Color = {};
+        MathLib::vec3f Position = {};
+        MathLib::vec3f Direction = {};
         LightNodeType Type = LNT_Point;
         float Radius = 1.0f;
     };
@@ -67,9 +67,9 @@ namespace ShiftEngine
 
         void SetZState(bool zState);
 
-        void SetDiffuseColor(const MathLib::Vector4F & diffuseColor);
-        void SetSpecularColor(const MathLib::Vector4F & specularColor);
-        void SetEmissionColor(const MathLib::Vector4F & emissionColor);
+        void SetDiffuseColor(const MathLib::vec4f & diffuseColor);
+        void SetSpecularColor(const MathLib::vec4f & specularColor);
+        void SetEmissionColor(const MathLib::vec4f & emissionColor);
 
         void SetDiffuseTexture(const ITexturePtr & texture);
         void SetAlphaTexture(const ITexturePtr & texture);

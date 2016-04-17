@@ -14,20 +14,20 @@ namespace ShiftEngine
     class LightNode : public ISceneNode
     {
     public:
-        LightNode(LightNodeType type, const MathLib::Vector3F & color = { 1.0f, 1.0f, 1.0f });
+        LightNode(LightNodeType type, const MathLib::vec3f & color = { 1.0f, 1.0f, 1.0f });
         virtual ~LightNode();
 
         virtual void PushToRQ(RenderQueue & rq) override;
-        void SetColor(const MathLib::Vector3F & color);
-        MathLib::Vector3F GetColor() const;
+        void SetColor(const MathLib::vec3f & color);
+        MathLib::vec3f GetColor() const;
 
         LightNodeType GetType() const;
 
         float GetRadius() const;
         void SetRadius(float val);
 
-        MathLib::Vector3F GetDirection() const;
-        void SetDirection(const MathLib::Vector3F & val);
+        MathLib::vec3f GetDirection() const;
+        void SetDirection(const MathLib::vec3f & val);
 
         void SetActive(bool active);
         bool IsActive() const;
@@ -41,11 +41,11 @@ namespace ShiftEngine
         LightNode& operator=(LightNode && ref) = delete;
 
     private:
-        MathLib::Vector3F color = { 1.0f, 1.0f, 1.0 };
+        MathLib::vec3f color = { 1.0f, 1.0f, 1.0 };
         const LightNodeType type;
 
         //for directional light source type
-        MathLib::Vector3F direction = { 1.0f, 0.0f, 0.0f };
+        MathLib::vec3f direction = { 1.0f, 0.0f, 0.0f };
 
         //for point light source type
         float radius = 100.0f;

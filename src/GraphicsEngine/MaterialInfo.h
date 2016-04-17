@@ -69,9 +69,9 @@ namespace ShiftEngine
         bool operator<(const MaterialInfo & ref) const;
 
     public:
-        MathLib::Vector4F diffuseColor;
-        MathLib::Vector4F specularColor;
-        MathLib::Vector4F emissionColor;
+        MathLib::vec4f diffuseColor;
+        MathLib::vec4f specularColor;
+        MathLib::vec4f emissionColor;
         float opacity;
         float shininess;
 
