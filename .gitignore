@@ -1,0 +1,41 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Visual Studio files
+*.sdf
+*.opensdf
+*.suo
+
+# My own
+/build/
+/bin/
+/3rdparty/fxc/
+/3rdparty/gtest-1.7.0/
+/3rdparty/jsoncpp/
+/3rdparty/tinyxml2/
+/3rdparty/freetype2/
+/3rdparty/mygui/
+/3rdparty/DirectXTex/
+*.log

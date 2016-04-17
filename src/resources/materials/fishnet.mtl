@@ -1,0 +1,9 @@
+<materials>	
+	<material name="default">
+		<params>
+			<param name="diffuseMap" type="texture2D">
+				<texture>fishnet.png</texture>
+			</param>
+		</params>
+    </material>
+</materials>
