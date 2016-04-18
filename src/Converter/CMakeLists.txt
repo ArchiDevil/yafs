@@ -1,5 +1,4 @@
-set(SOURCES
-            cBlkConverter.cpp
+set(SOURCES cBlkConverter.cpp
             cBlkConverter.h
             cObjConverter.cpp
             cObjConverter.h

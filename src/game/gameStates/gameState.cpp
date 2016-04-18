@@ -82,11 +82,9 @@ bool GameState::render(double dt)
     di[4] << "Texture bindings: " << pRenderer->GetTextureBindings();
     di[5] << "Draw calls: " << pRenderer->GetDrawCalls();
 #else
-    const int infoSize = 2;
+    const int infoSize = 1;
     std::ostringstream di[infoSize];
     di[0] << "FPS: " << pRenderer->GetFPS();
-    di[1] << "Time of day: " << pGame->environmentMgr->GetTime().GetHours() << ":"
-        << pGame->environmentMgr->GetTime().GetMinutes();
 #endif
 
     ////////////

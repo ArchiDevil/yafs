@@ -1,9 +1,24 @@
-file(GLOB SRC *.cpp *.h *.hpp)
-
-if(WIN32)
-    file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/Win32/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/Win32/*.h)
-    list(APPEND SRC ${LS})
-endif()
+set(SRC AppStateMachine.cpp
+        AppStateMachine.h
+        BlockStreamer.cpp
+        BlockStreamer.h
+        fnv.h
+        IAppState.h
+        IManager.h
+        iniloader.cpp
+        iniloader.h
+        inputConverter.h
+        logger.hpp
+        observer.h
+        refcounted.h
+        singleton.h
+        timer.cpp
+        timer.h
+        ut.cpp
+        ut.h)
 
 add_library(Utilities STATIC ${SRC})
-add_subdirectory(tests)
+
+if(BUILD_TESTS)
+    add_subdirectory(tests)
+endif()

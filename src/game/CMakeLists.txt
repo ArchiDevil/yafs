@@ -1,10 +1,17 @@
-file(GLOB SRC *.cpp *.h)
+set(SRC Common.h
+        Game.cpp
+        Game.h
+        GoingHomeApplication.cpp
+        GoingHomeApplication.h
+        main.cpp)
 
-file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/gameStates/*.cpp)
+set(LS  gameStates/gameState.cpp
+        gameStates/MainMenuState.cpp)
 source_group("Source Files\\Game States" FILES ${LS})
 list(APPEND SRC ${LS})
 
-file(GLOB_RECURSE LS ${CMAKE_CURRENT_SOURCE_DIR}/gameStates/*.h)
+set(LS  gameStates/gameState.h
+        gameStates/MainMenuState.h)
 source_group("Header Files\\Game States" FILES ${LS})
 list(APPEND SRC ${LS})
 
@@ -16,12 +23,7 @@ else()
     link_directories($ENV{DXSDK_DIR}/lib/x86)
 endif()
 
-set(GAME_LIBS
-    GraphicsEngine
-    System
-    Utilities
-    MathLib
-)
+set(GAME_LIBS GraphicsEngine System Utilities MathLib)
 
 add_executable(Game ${SRC})
 target_link_libraries(Game ${GAME_LIBS})

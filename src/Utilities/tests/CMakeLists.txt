@@ -1,3 +1,3 @@
-file(GLOB_RECURSE SRC *.cpp *.h)
+set (SRC utilitiesUnitTests.cpp)
 AddVSTest(UtilitiesTests ${SRC})
 VSTestLinkLibraries(UtilitiesTests Utilities)
