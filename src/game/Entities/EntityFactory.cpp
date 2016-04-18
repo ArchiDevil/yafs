@@ -1,16 +1,24 @@
+#include <memory>
+
+#include "Projectile.h"
+#include "Enemy.h"
 #include "EntityFactory.h"
 #include "Player.h"
 
-Entity * EntityFactory::GetEnity(EntityType type)
+std::shared_ptr<Entity> EntityFactory::CreatePlayer()
 {
-	Entity * entity = nullptr;
-	switch (type)
-	{
-	case ET_Player:
-		entity = new Player();
-		break;
-	default: { }
-	}
+	std::shared_ptr<Entity> entity(new Player);
+	return entity;
+}
 
+std::shared_ptr<Entity> EntityFactory::CreateEnemy()
+{
+	std::shared_ptr<Entity> entity(new Enemy);
+	return entity;
+}
+
+std::shared_ptr<Entity> EntityFactory::CreateProjectile()
+{
+	std::shared_ptr<Entity> entity(new Projectile);
 	return entity;
 }

@@ -1,16 +1,14 @@
 #pragma once
 
-#include "Enity.h"
+#include "Entity.h"
 
 class EntityFactory
 {
 	EntityFactory() { }
 public:
-	enum EntityType
-	{
-		ET_Player
-	};
-
 	virtual ~EntityFactory() { }
-	static Entity * GetEnity(EntityType type);
+
+	static std::shared_ptr<Entity> CreatePlayer();
+	static std::shared_ptr<Entity> CreateEnemy();
+	static std::shared_ptr<Entity> CreateProjectile();
 };

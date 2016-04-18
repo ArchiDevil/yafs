@@ -2,9 +2,9 @@
 
 #include "Entity.h"
 
-class Player : public Entity
+class Enemy : public Entity
 {
 public:
-	virtual ~Player() { }
+	virtual ~Enemy() { }
 	std::string GetName() override;
 };
