@@ -19,7 +19,7 @@ struct Game
 
 };
 
-namespace LostIsland
+namespace GoingHome
 {
     void CreateGame();
     void TerminateGame();
