@@ -1,6 +1,8 @@
 set(SRC Common.h
+        Component.h
         Game.cpp
         Game.h
+        GameObject.h
         GoingHomeApplication.cpp
         GoingHomeApplication.h
         main.cpp)
