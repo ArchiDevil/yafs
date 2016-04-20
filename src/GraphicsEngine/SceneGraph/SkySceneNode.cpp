@@ -7,8 +7,7 @@ using namespace ShiftEngine;
 
 SkySceneNode::SkySceneNode(const Material * material, const IMeshDataPtr & meshData)
     : MeshNode(meshData, material)
-{
-}
+{}
 
 void SkySceneNode::PushToRQ(RenderQueue & rq)
 {
@@ -21,3 +20,9 @@ CameraFrustum::CullingStatus SkySceneNode::CheckVisibility(const CameraSceneNode
 {
     return CameraFrustum::CullingStatus::CS_In;
 }
+
+void ShiftEngine::SkySceneNode::SetMaterial(const ShiftEngine::Material * val)
+{}
+
+void ShiftEngine::SkySceneNode::SetDataPtr(IMeshDataPtr data)
+{}

@@ -1,39 +1,23 @@
 #include "ShiftEngine.h"
 
-#ifdef D3D10_RENDER
-#include "APIs/D3D10/D3D10ContextManager.h"
-#elif D3D11_RENDER
+#ifdef D3D11_RENDER
 #include "APIs/D3D11/D3D11ContextManager.h"
 #endif
 
 namespace ShiftEngine
 {
-    IContextManager * ContextManagerInstance;
-    SceneGraph * SceneGraphInstance;
-    Renderer * RendererInstance;
-
-    bool InitDX10Api(HWND hwnd, GraphicEngineSettings settings, PathSettings paths)
-    {
-#ifdef D3D10_RENDER
-        ContextManagerInstance = new D3D10ContextManager(hwnd);
-        if (!ContextManagerInstance->Initialize(settings, paths))
-            return false;
-        RendererInstance = new Renderer(ContextManagerInstance->GetShaderManager(), ContextManagerInstance->GetShaderGenerator());
-        SceneGraphInstance = new SceneGraph(SceneGraphType::SGT_QuadTree);
-        return true;
-#else
-        return false;
-#endif
-    }
+    std::unique_ptr<IContextManager> ContextManagerInstance;
+    std::unique_ptr<SceneGraph> SceneGraphInstance;
+    std::unique_ptr<Renderer> RendererInstance;
 
     bool InitDX11Api(HWND hwnd, GraphicEngineSettings settings, PathSettings paths)
     {
 #ifdef D3D11_RENDER
-        ContextManagerInstance = new D3D11ContextManager(hwnd);
+        ContextManagerInstance.reset(new D3D11ContextManager(hwnd));
         if (!ContextManagerInstance->Initialize(settings, paths))
             return false;
-        RendererInstance = new Renderer(ContextManagerInstance->GetShaderManager(), ContextManagerInstance->GetShaderGenerator());
-        SceneGraphInstance = new SceneGraph(SceneGraphType::SGT_QuadTree);
+        RendererInstance.reset(new Renderer(ContextManagerInstance->GetShaderManager(), ContextManagerInstance->GetShaderGenerator()));
+        SceneGraphInstance.reset(new SceneGraph(SceneGraphType::SGT_QuadTree));
         return true;
 #else
         return false;
@@ -47,9 +31,7 @@ namespace ShiftEngine
 
     bool InitEngine(const GraphicEngineSettings & settings, const PathSettings & paths, HWND hwnd)
     {
-#if defined(D3D10_RENDER)
-        return InitDX10Api(hwnd, settings, paths);
-#elif defined(D3D11_RENDER)
+#if defined(D3D11_RENDER)
         return InitDX11Api(hwnd, settings, paths);
 #elif defined(OPENGL_RENDER)
         return InitOpenGLApi(hwnd, settings, paths);
@@ -58,23 +40,23 @@ namespace ShiftEngine
 
     IContextManager * GetContextManager()
     {
-        return ContextManagerInstance;
+        return ContextManagerInstance.get();
     }
 
     SceneGraph * GetSceneGraph()
     {
-        return SceneGraphInstance;
+        return SceneGraphInstance.get();
     }
 
     Renderer * GetRenderer()
     {
-        return RendererInstance;
+        return RendererInstance.get();
     }
 
     void ShutdownEngine()
     {
-        delete SceneGraphInstance;
-        delete RendererInstance;
-        delete ContextManagerInstance;
+        SceneGraphInstance.reset(nullptr);
+        RendererInstance.reset(nullptr);
+        ContextManagerInstance.reset(nullptr);
     }
 }

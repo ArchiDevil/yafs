@@ -20,14 +20,14 @@ namespace ShiftEngine
         virtual int Render();
         virtual void PushToRQ(RenderQueue & rq);
 
-        virtual IMeshDataPtr GetDataPtr() const;
+        IMeshDataPtr GetDataPtr() const;
         virtual void SetDataPtr(IMeshDataPtr data);
 
         bool IsVisible() const;
         void SetVisibility(bool vis);
 
         ShiftEngine::Material * GetMaterialPtr();
-        void SetMaterial(const ShiftEngine::Material * val);
+        virtual void SetMaterial(const ShiftEngine::Material * val);
 
         virtual MathLib::AABB GetBBox() const override;
 

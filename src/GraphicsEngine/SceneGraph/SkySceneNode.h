@@ -15,7 +15,11 @@ namespace ShiftEngine
     public:
         SkySceneNode(const Material * material, const IMeshDataPtr & meshData);
 
-        virtual void PushToRQ(RenderQueue & rq);
-        virtual CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const;
+        void PushToRQ(RenderQueue & rq) override;
+        CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const override;
+
+        // this seems wrong
+        void SetMaterial(const ShiftEngine::Material * val) override;
+        void SetDataPtr(IMeshDataPtr data) override;
     };
 }
