@@ -15,7 +15,7 @@ namespace ShiftEngine
     {
     public:
         MeshNode(const IMeshDataPtr & _data, const Material * mat);
-        virtual ~MeshNode();
+        virtual ~MeshNode() {}
 
         virtual int Render();
         virtual void PushToRQ(RenderQueue & rq);

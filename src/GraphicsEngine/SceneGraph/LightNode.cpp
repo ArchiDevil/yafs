@@ -3,69 +3,68 @@
 #include "../RenderQueue.h"
 #include "SceneGraph.h"
 
-ShiftEngine::LightNode::LightNode(LightNodeType _type, const MathLib::vec3f & _color)
+using namespace ShiftEngine;
+using namespace MathLib;
+
+LightNode::LightNode(LightNodeType _type, const vec3f & _color)
     : ISceneNode()
     , color(_color)
     , type(_type)
 {
 }
 
-ShiftEngine::LightNode::~LightNode()
-{
-}
-
-void ShiftEngine::LightNode::PushToRQ(RenderQueue & rq)
+void LightNode::PushToRQ(RenderQueue & rq)
 {
     if (active)
         rq.AddLightNode(this);
 }
 
-void ShiftEngine::LightNode::SetColor(const MathLib::vec3f & color)
+void LightNode::SetColor(const vec3f & color)
 {
     this->color = color;
 }
 
-MathLib::vec3f ShiftEngine::LightNode::GetColor() const
+vec3f LightNode::GetColor() const
 {
     return color;
 }
 
-ShiftEngine::LightNodeType ShiftEngine::LightNode::GetType() const
+LightNodeType LightNode::GetType() const
 {
     return type;
 }
 
-float ShiftEngine::LightNode::GetRadius() const
+float LightNode::GetRadius() const
 {
     return radius;
 }
 
-void ShiftEngine::LightNode::SetRadius(float val)
+void LightNode::SetRadius(float val)
 {
     radius = val;
 }
 
-MathLib::vec3f ShiftEngine::LightNode::GetDirection() const
+vec3f LightNode::GetDirection() const
 {
     return direction;
 }
 
-void ShiftEngine::LightNode::SetDirection(const MathLib::vec3f & val)
+void LightNode::SetDirection(const vec3f & val)
 {
     direction = val;
 }
 
-void ShiftEngine::LightNode::SetActive(bool active)
+void LightNode::SetActive(bool active)
 {
     this->active = active;
 }
 
-bool ShiftEngine::LightNode::IsActive() const
+bool LightNode::IsActive() const
 {
     return active;
 }
 
-void ShiftEngine::LightNode::KillSelf()
+void LightNode::KillSelf()
 {
     if (ISceneNode::pSceneGraph)
     {
@@ -76,7 +75,7 @@ void ShiftEngine::LightNode::KillSelf()
     }
 }
 
-MathLib::AABB ShiftEngine::LightNode::GetBBox() const
+AABB LightNode::GetBBox() const
 {
-    return MathLib::AABB();
+    return {};
 }

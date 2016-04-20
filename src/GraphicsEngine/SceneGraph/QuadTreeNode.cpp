@@ -3,7 +3,9 @@
 #include "../RenderQueue.h"
 #include "CameraSceneNode.h"
 
-ShiftEngine::QuadTreeNode::QuadTreeNode(float x1, float x2, float y1, float y2)
+using namespace ShiftEngine;
+
+QuadTreeNode::QuadTreeNode(float x1, float x2, float y1, float y2)
     : ISceneNode()
     , bbox({ x1, y1, std::numeric_limits<float>::lowest() }, { x2, y2, std::numeric_limits<float>::max() })
 {
@@ -11,13 +13,13 @@ ShiftEngine::QuadTreeNode::QuadTreeNode(float x1, float x2, float y1, float y2)
         elem = nullptr;
 }
 
-ShiftEngine::QuadTreeNode::~QuadTreeNode()
+QuadTreeNode::~QuadTreeNode()
 {
     for (auto elem : subtrees)
         delete elem;
 }
 
-void ShiftEngine::QuadTreeNode::AddChild(ISceneNode * node)
+void QuadTreeNode::AddChild(ISceneNode * node)
 {
     // check that child can be added in this node
     // if not -> return false
@@ -39,7 +41,7 @@ void ShiftEngine::QuadTreeNode::AddChild(ISceneNode * node)
     }
 }
 
-void ShiftEngine::QuadTreeNode::PushFull(RenderQueue & rq)
+void QuadTreeNode::PushFull(RenderQueue & rq)
 {
     for (auto elem : GetChilds())
         elem->Draw(rq);
@@ -51,27 +53,27 @@ void ShiftEngine::QuadTreeNode::PushFull(RenderQueue & rq)
         elem->PushFull(rq);
 }
 
-void ShiftEngine::QuadTreeNode::PushToRQ(RenderQueue & rq)
+void QuadTreeNode::PushToRQ(RenderQueue & rq)
 {
     if (!subtrees[0])
         return;
 
     for (auto elem : subtrees)
     {
-        int visibilityStatus = elem->CheckVisibility(rq.GetActiveCamera());
+        CameraFrustum::CullingStatus visibilityStatus = elem->CheckVisibility(*rq.GetActiveCamera());
 
-        if (visibilityStatus == 0) //out
+        if (visibilityStatus == CameraFrustum::CullingStatus::CS_Out) //out
             continue;
-        if (visibilityStatus == 1) //intersect
+        if (visibilityStatus == CameraFrustum::CullingStatus::CS_Intersect) //intersect
             elem->Draw(rq);
-        if (visibilityStatus == 2) //in
+        if (visibilityStatus == CameraFrustum::CullingStatus::CS_In) //in
             elem->PushFull(rq);
     }
 
     //childs will be drawn by Draw method, inherited from parent
 }
 
-bool ShiftEngine::QuadTreeNode::AddNode(ISceneNode * node)
+bool QuadTreeNode::AddNode(ISceneNode * node)
 {
     // check first sizes
     auto nodebox = node->GetBBox();
@@ -158,12 +160,12 @@ bool ShiftEngine::QuadTreeNode::AddNode(ISceneNode * node)
     return true;
 }
 
-MathLib::mat4f ShiftEngine::QuadTreeNode::GetWorldMatrix() const
+MathLib::mat4f QuadTreeNode::GetWorldMatrix() const
 {
     return MathLib::matrixIdentity<float>();
 }
 
-int ShiftEngine::QuadTreeNode::CheckVisibility(CameraSceneNode * activeCam) const
+CameraFrustum::CullingStatus QuadTreeNode::CheckVisibility(const CameraSceneNode & activeCam) const
 {
     MathLib::mat4f matWorld = GetWorldMatrix();
     MathLib::vec4f vecMin = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
@@ -172,10 +174,10 @@ int ShiftEngine::QuadTreeNode::CheckVisibility(CameraSceneNode * activeCam) cons
     vecMax = MathLib::vec4Transform(vecMax, matWorld);
     MathLib::AABB newBbox({ vecMin.x, vecMin.y, vecMin.z }, { vecMax.x, vecMax.y, vecMax.z });
 
-    return activeCam->GetFrustumPtr()->CheckQTreeNode(newBbox);
+    return activeCam.GetFrustumPtr()->CheckQTreeNode(newBbox);
 }
 
-unsigned int ShiftEngine::QuadTreeNode::GetChildsCount() const
+unsigned int QuadTreeNode::GetChildsCount() const
 {
     unsigned int count = GetChilds().size();
 
@@ -188,7 +190,7 @@ unsigned int ShiftEngine::QuadTreeNode::GetChildsCount() const
     return count;
 }
 
-MathLib::AABB ShiftEngine::QuadTreeNode::GetBBox() const
+MathLib::AABB QuadTreeNode::GetBBox() const
 {
     return bbox;
 }

@@ -2,7 +2,10 @@
 
 #include "../ShiftEngine.h"
 
-ShiftEngine::MeshNode::MeshNode(const IMeshDataPtr & _data, const Material * mat)
+using namespace ShiftEngine;
+using namespace MathLib;
+
+MeshNode::MeshNode(const IMeshDataPtr & _data, const Material * mat)
     : ISceneNode()
     , isVisible(true)
     , material(*mat)
@@ -10,11 +13,7 @@ ShiftEngine::MeshNode::MeshNode(const IMeshDataPtr & _data, const Material * mat
 {
 }
 
-ShiftEngine::MeshNode::~MeshNode()
-{
-}
-
-void ShiftEngine::MeshNode::PushToRQ(RenderQueue & rq)
+void MeshNode::PushToRQ(RenderQueue & rq)
 {
     int visibility = 1;//CheckVisibility(rq.GetActiveCamera());
 
@@ -22,48 +21,48 @@ void ShiftEngine::MeshNode::PushToRQ(RenderQueue & rq)
         rq.AddRenderableNode(this);
 }
 
-bool ShiftEngine::MeshNode::IsVisible() const
+bool MeshNode::IsVisible() const
 {
     return isVisible;
 }
 
-void ShiftEngine::MeshNode::SetVisibility(bool vis)
+void MeshNode::SetVisibility(bool vis)
 {
     isVisible = vis;
 }
 
-ShiftEngine::Material * ShiftEngine::MeshNode::GetMaterialPtr()
+Material * MeshNode::GetMaterialPtr()
 {
     return &material;
 }
 
-void ShiftEngine::MeshNode::SetMaterial(const ShiftEngine::Material * val)
+void MeshNode::SetMaterial(const Material * val)
 {
     material = Material(*val);
 }
 
-ShiftEngine::IMeshDataPtr ShiftEngine::MeshNode::GetDataPtr() const
+IMeshDataPtr MeshNode::GetDataPtr() const
 {
     return Data;
 }
 
-void ShiftEngine::MeshNode::SetDataPtr(IMeshDataPtr data)
+void MeshNode::SetDataPtr(IMeshDataPtr data)
 {
     Data = data;
 }
 
-int ShiftEngine::MeshNode::Render()
+int MeshNode::Render()
 {
     if (!Data)
         return 0;
     return GetContextManager()->DrawMesh(Data);
 }
 
-MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
+AABB MeshNode::GetBBox() const
 {
-    MathLib::mat4f matWorld = GetWorldMatrix();
-    MathLib::vec4f points[8];
-    MathLib::AABB bbox = {};
+    mat4f matWorld = GetWorldMatrix();
+    vec4f points[8];
+    AABB bbox = {};
     if (Data)
         bbox = Data->GetBBox();
 
@@ -76,10 +75,10 @@ MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
     points[6] = { bbox.bMax.x, bbox.bMin.y, bbox.bMax.z, 1.0f };
     points[7] = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
 
-    MathLib::vec3f min, max;
+    vec3f min, max;
 
     for (int i = 0; i < 8; i++)
-        points[i] = MathLib::vec4Transform(points[i], matWorld);
+        points[i] = vec4Transform(points[i], matWorld);
 
     min.x = points[0].x;
     min.y = points[0].y;
@@ -104,6 +103,6 @@ MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
             max.z = points[i].z;
     }
 
-    MathLib::AABB newBbox({ min.x, min.y, min.z }, { max.x, max.y, max.z });
+    AABB newBbox({ min.x, min.y, min.z }, { max.x, max.y, max.z });
     return newBbox;
 }

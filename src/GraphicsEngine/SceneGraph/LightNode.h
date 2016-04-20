@@ -11,11 +11,10 @@ namespace ShiftEngine
         //LNT_Omni,
     };
 
-    class LightNode : public ISceneNode
+    class LightNode final : public ISceneNode
     {
     public:
         LightNode(LightNodeType type, const MathLib::vec3f & color = { 1.0f, 1.0f, 1.0f });
-        virtual ~LightNode();
 
         virtual void PushToRQ(RenderQueue & rq) override;
         void SetColor(const MathLib::vec3f & color);
@@ -34,11 +33,6 @@ namespace ShiftEngine
 
         virtual void KillSelf();
         virtual MathLib::AABB GetBBox() const override;
-
-        LightNode(const LightNode & ref) = delete;
-        LightNode(LightNode && ref) = delete;
-        LightNode& operator=(const LightNode & ref) = delete;
-        LightNode& operator=(LightNode && ref) = delete;
 
     private:
         MathLib::vec3f color = { 1.0f, 1.0f, 1.0 };

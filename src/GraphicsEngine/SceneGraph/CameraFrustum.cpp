@@ -1,5 +1,7 @@
 #include "CameraFrustum.h"
 
+using namespace ShiftEngine;
+
 enum planeEnum
 {
     nearPlane,
@@ -10,7 +12,7 @@ enum planeEnum
     bottomPlane
 };
 
-void ShiftEngine::CameraFrustum::BuildFrustum(const MathLib::mat4f & matView, const MathLib::mat4f & matProj)
+void CameraFrustum::BuildFrustum(const MathLib::mat4f & matView, const MathLib::mat4f & matProj)
 {
     memset(&planes, 0, sizeof(MathLib::plane<float>) * 6);
 
@@ -53,7 +55,7 @@ void ShiftEngine::CameraFrustum::BuildFrustum(const MathLib::mat4f & matView, co
     planes[bottomPlane] = normalize(planes[bottomPlane]);
 }
 
-ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckAABB(const MathLib::AABB & bbox) const
+CameraFrustum::CullingStatus CameraFrustum::CheckAABB(const MathLib::AABB & bbox) const
 {
     MathLib::vec3f vCorner[8];
     int totalIn = 0;
@@ -81,7 +83,7 @@ ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckAABB(
 
         // were all the points outside of plane p?
         if (inCount == 0)
-            return CS_Out;
+            return CullingStatus::CS_Out;
 
         // check if they were all on the right side of the plane
         totalIn += ptIn;
@@ -89,13 +91,13 @@ ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckAABB(
 
     // so if iTotalIn is 6, then all are inside the view
     if (totalIn == 6)
-        return CS_In;
+        return CullingStatus::CS_In;
 
     // we must be partly in then otherwise
-    return CS_Intersect;
+    return CullingStatus::CS_Intersect;
 }
 
-ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckOOBB(const MathLib::OOBB & bbox) const
+CameraFrustum::CullingStatus CameraFrustum::CheckOOBB(const MathLib::OOBB & bbox) const
 {
     MathLib::vec3f vCorner[8];
     int totalIn = 0;
@@ -117,18 +119,18 @@ ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckOOBB(
         }
 
         if (inCount == 0)
-            return CS_Out;
+            return CullingStatus::CS_Out;
 
         totalIn += ptIn;
     }
 
     if (totalIn == 6)
-        return CS_In;
+        return CullingStatus::CS_In;
 
-    return CS_Intersect;
+    return CullingStatus::CS_Intersect;
 }
 
-ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckQTreeNode(const MathLib::AABB & bbox) const
+CameraFrustum::CullingStatus CameraFrustum::CheckQTreeNode(const MathLib::AABB & bbox) const
 {
     int totalIn = 0;
     MathLib::vec3f buffer[4];
@@ -152,13 +154,13 @@ ShiftEngine::CameraFrustum::CullingStatus ShiftEngine::CameraFrustum::CheckQTree
         }
 
         if (inCount == 0)
-            return CS_Out;
+            return CullingStatus::CS_Out;
 
         totalIn += ptIn;
     }
 
     if (totalIn == 4)
-        return CS_In;
+        return CullingStatus::CS_In;
 
-    return CS_Intersect;
+    return CullingStatus::CS_Intersect;
 }

@@ -1,10 +1,10 @@
 #pragma once
 
-//MY INCLUDES
+#include "CameraFrustum.h"
+
 #include <Utilities/refcounted.h>
 #include <MathLib/math.h>
 
-//STL INCLUDES
 #include <vector>
 
 namespace ShiftEngine
@@ -20,6 +20,11 @@ namespace ShiftEngine
 
         ISceneNode();
         virtual ~ISceneNode();
+
+        ISceneNode(const ISceneNode&) = delete;
+        ISceneNode(ISceneNode&&) = delete;
+        ISceneNode& operator=(const ISceneNode&) = delete;
+        ISceneNode& operator=(ISceneNode&&) = delete;
 
         void Draw(RenderQueue & rq);
 
@@ -43,7 +48,6 @@ namespace ShiftEngine
         void SetRotation(const MathLib::qaFloat & val);
         void RotateBy(const MathLib::qaFloat & val);
 
-        SceneGraph * GetSceneGraph() const;
         void SetSceneGraph(SceneGraph * val);
 
         virtual MathLib::mat4f GetWorldMatrix() const;
@@ -52,7 +56,7 @@ namespace ShiftEngine
 
     protected:
         virtual void PushToRQ(RenderQueue & rq) = 0;
-        virtual int CheckVisibility(CameraSceneNode * activeCam) const;
+        virtual CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const;
 
         void CreateWorldMatrix();
 

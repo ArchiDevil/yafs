@@ -23,7 +23,7 @@ namespace ShiftEngine
 
         unsigned int GetChildsCount() const;
 
-        virtual int CheckVisibility(CameraSceneNode * activeCam) const override;
+        virtual CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const override;
 
         QuadTreeNode * subtrees[4];
         MathLib::AABB bbox = {};
