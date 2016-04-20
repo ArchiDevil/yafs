@@ -75,7 +75,8 @@ set(LS  SceneGraph/CameraFrustum.cpp
         SceneGraph/QuadTreeNode.cpp
         SceneGraph/SceneGraph.cpp
         SceneGraph/SkySceneNode.cpp
-        SceneGraph/SphericalCameraController.cpp)
+        SceneGraph/SphericalCameraController.cpp
+        SceneGraph/SpriteSceneNode.cpp)
 source_group("Source Files\\Scene Graph" FILES ${LS})
 list(APPEND SRC ${LS})
 
@@ -89,7 +90,8 @@ set(LS  SceneGraph/CameraFrustum.h
         SceneGraph/QuadTreeNode.h
         SceneGraph/SceneGraph.h
         SceneGraph/SkySceneNode.h
-        SceneGraph/SphericalCameraController.h)
+        SceneGraph/SphericalCameraController.h
+        SceneGraph/SpriteSceneNode.h)
 source_group("Header Files\\Scene Graph" FILES ${LS})
 list(APPEND SRC ${LS})
 
