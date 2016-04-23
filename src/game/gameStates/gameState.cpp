@@ -1,4 +1,6 @@
 #include "GameState.h"
+#include "../Entities/EntityFactory.h"
+#include "../Entities/EntityManager.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <Utilities/inputConverter.h>
@@ -25,10 +27,13 @@ GameState::GameState(IniWorker * iw/*, MyGUI::Gui * guiModule, MyGUI::DirectX11P
 
 GameState::~GameState()
 {
+    if (player != nullptr)
+        EntityManager::GetInstance().RemoveEntity(player);
 }
 
 bool GameState::initState()
 {
+    player = std::static_pointer_cast<Player>(EntityFactory::CreatePlayer(MathLib::vec2f(0.0, 0.0)));
     // to receive events for GUI
     subscribe(&InputEngine::GetInstance());
 
@@ -173,8 +178,13 @@ bool GameState::handleEvent(const InputEvent & event)
 {
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
 
-    //switch (event.type)
-    //{
+    switch (event.type)
+    {
+    case InputEventType::MouseDown:
+        MouseInfo & mouseInfo = InputEngine::GetInstance().GetMouseInfo();
+        if (player != nullptr)
+            player->Shoot(MathLib::vec2f((float)mouseInfo.absoluteX, (float)mouseInfo.absoluteY));
+        break;
     //    // there will be always DirectInput keys in first two handlers
     //case InputEventType::KeyDown:
     //    inputManager.injectKeyPress((MyGUI::KeyCode::Enum)event.key);
@@ -187,7 +197,7 @@ bool GameState::handleEvent(const InputEvent & event)
     //case InputEventType::SystemKey:
     //    inputManager.injectKeyPress((MyGUI::KeyCode::Enum)InputConverter::VirtualKeyToScanCode(event.key), event.key);
     //    break;
-    //}
+    }
 
     return true;
 }

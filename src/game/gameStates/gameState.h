@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../game.h"
+#include "../Entities/Player.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 
@@ -16,6 +17,8 @@
 #include <Utilities/iniloader.h>
 #include <Utilities/IManager.h>
 #include <Utilities/observer.h>
+
+#include <memory>
 
 class GameState final
     : public IAppState
@@ -46,6 +49,7 @@ private:
 
     IniWorker *                     iniLoader = nullptr;
 
+    std::shared_ptr<Player>           player = nullptr;
     //MyGUI::Gui *                    guiModule = nullptr;
     //MyGUI::DirectX11Platform *      guiPlatform = nullptr;
 
