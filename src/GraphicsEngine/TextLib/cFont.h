@@ -10,6 +10,9 @@
 
 #include "../ITexture.h"
 
+namespace ShiftEngine
+{
+
 struct sChar
 {
     //this code taken from tutorial about BMFont
@@ -128,7 +131,6 @@ private:
         }
     }
 
-
     ShiftEngine::ITexturePtr tp = nullptr;
     std::string filename = "";
 
@@ -136,3 +138,5 @@ private:
     sChar data[256];    //for non-unicode characters
 
 };
+
+}

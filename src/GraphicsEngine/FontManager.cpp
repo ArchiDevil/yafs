@@ -40,9 +40,9 @@ int ShiftEngine::FontManager::GetStringWidth(const std::string & string)
     if (!pCurrentFont)
         return 0;
 
-    for (auto iter = string.cbegin(); iter != string.cend(); iter++)
+    for (unsigned char symbol : string)
     {
-        auto cp = pCurrentFont->GetCharacterPtr((*iter));
+        auto cp = pCurrentFont->GetCharacterPtr(symbol);
         if (!cp->Height)
             return 0;
 
