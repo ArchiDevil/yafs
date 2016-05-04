@@ -22,63 +22,64 @@
 
 namespace ShiftEngine
 {
-    class D3D11ContextManager : public IContextManager
-    {
-        friend class Renderer;
-    public:
-        D3D11ContextManager(HWND hwnd);
-        ~D3D11ContextManager();
 
-        bool                                Initialize(GraphicEngineSettings _Settings, PathSettings _Paths) override;
-        std::wstring                        GetGPUDescription() override;
-        void                                BeginScene() override;
-        void                                EndScene() override;
-        void                                ResetPipeline() override;
-        ITexturePtr                         LoadTexture(const std::wstring & FileName) override;
-        MaterialPtr                         LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName) override;
-        IProgramPtr                         LoadShader(const std::wstring & FileName) override;
-        IMeshDataPtr                        LoadMesh(const std::wstring & FileName) override;
-        IShaderManager *                    GetShaderManager() override;
-        IShaderGenerator *                  GetShaderGenerator() override;
-        ITextureManager *                   GetTextureManager() override;
-        IMeshManager *                      GetMeshManager() override;
-        FontManager*                        GetFontManager() override;
-        void                                SetZState(bool enabled) override;
-        void                                SetBlendingState(BlendingState bs) override;
-        BlendingState                       GetBlendingState() const override;
-        void                                SetRasterizerState(RasterizerState rs) override;
-        RasterizerState                     GetRasterizerState() const override;
-        const GraphicEngineSettings &       GetEngineSettings() const override;
-        const PathSettings &                GetPaths() const override;
-        int                                 DrawMesh(IMeshDataPtr & mesh) override;
-        IVertexDeclarationPtr               GetVertexDeclaration(const VertexSemantic & semantic) override;
+class D3D11ContextManager : public IContextManager
+{
+    friend class Renderer;
+public:
+    D3D11ContextManager(HWND hwnd);
+    ~D3D11ContextManager();
 
-        ID3D11Device*                       GetDevicePtr() const;
+    bool                                Initialize(GraphicEngineSettings _Settings, PathSettings _Paths) override;
+    std::wstring                        GetGPUDescription() override;
+    void                                BeginScene() override;
+    void                                EndScene() override;
+    void                                ResetPipeline() override;
+    ITexturePtr                         LoadTexture(const std::wstring & FileName) override;
+    MaterialPtr                         LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName) override;
+    IProgramPtr                         LoadShader(const std::wstring & FileName) override;
+    IMeshDataPtr                        LoadMesh(const std::wstring & FileName) override;
+    IShaderManager *                    GetShaderManager() override;
+    IShaderGenerator *                  GetShaderGenerator() override;
+    ITextureManager *                   GetTextureManager() override;
+    IMeshManager *                      GetMeshManager() override;
+    FontManager*                        GetFontManager() override;
+    void                                SetZState(bool enabled) override;
+    void                                SetBlendingState(BlendingState bs) override;
+    BlendingState                       GetBlendingState() const override;
+    void                                SetRasterizerState(RasterizerState rs) override;
+    RasterizerState                     GetRasterizerState() const override;
+    const GraphicEngineSettings &       GetEngineSettings() const override;
+    const PathSettings &                GetPaths() const override;
+    int                                 DrawMesh(IMeshDataPtr & mesh) override;
+    IVertexDeclarationPtr               GetVertexDeclaration(const VertexSemantic & semantic) override;
 
-    private:
-        IVertexDeclarationPtr               CreateVDFromDescription(const VertexSemantic & semantic);
+    ID3D11Device*                       GetDevicePtr() const;
 
-        HWND                                windowHandle;
-        PathSettings                        enginePaths;
-        GraphicEngineSettings               engineSettings;
+private:
+    IVertexDeclarationPtr               CreateVDFromDescription(const VertexSemantic & semantic);
 
-        std::map<VertexSemantic, IVertexDeclarationPtr> declarations;
+    HWND                                windowHandle;
+    PathSettings                        enginePaths;
+    GraphicEngineSettings               engineSettings;
 
-        D3D11Context                        graphicsContext;
-        FontManager*                        fontManager = nullptr;
-        D3D11TextureManager *               textureManager = nullptr;
-        D3D11MeshManager *                  meshManager = nullptr;
-        D3D11ShaderManager *                shaderManager = nullptr;
-        D3D11ShaderGenerator *              shaderGenerator = nullptr;
-        MaterialManager *                   materialManager = nullptr;
+    std::map<VertexSemantic, IVertexDeclarationPtr> declarations;
 
-        IProgramPtr                         currentProgram;
-        RasterizerState                     currentRasterizerState = RasterizerState::Normal;
-        BlendingState                       currentBlendingState = BlendingState::None;
-        IVertexDeclaration *                currentVertexDeclaration = nullptr;
+    D3D11Context                        graphicsContext;
+    FontManager*                        fontManager = nullptr;
+    D3D11TextureManager *               textureManager = nullptr;
+    D3D11MeshManager *                  meshManager = nullptr;
+    D3D11ShaderManager *                shaderManager = nullptr;
+    D3D11ShaderGenerator *              shaderGenerator = nullptr;
+    MaterialManager *                   materialManager = nullptr;
 
-        bool                                zBufferState = true;
-        bool                                cullingEnabled = true;
-    };
+    IProgramPtr                         currentProgram;
+    RasterizerState                     currentRasterizerState = RasterizerState::Normal;
+    BlendingState                       currentBlendingState = BlendingState::None;
+    IVertexDeclaration *                currentVertexDeclaration = nullptr;
+
+    bool                                zBufferState = true;
+    bool                                cullingEnabled = true;
+};
 
 }   //end of ShiftEngine namespace

@@ -1,19 +1,27 @@
 #pragma once
 
-#include "MeshNode.h"
+#include "ISceneNode.h"
+#include "../IMeshData.h"
+#include "../ITexture.h"
 
 namespace ShiftEngine
 {
 
-class SpriteSceneNode final : public MeshNode
+class SpriteSceneNode final : public ISceneNode
 {
 public:
-    SpriteSceneNode(const IMeshDataPtr & data, const Material * material);
+    SpriteSceneNode(const ITexturePtr & texture, SceneGraph * sceneGraph);
+    MathLib::AABB GetBBox() const override;
 
-    void SetDataPtr(IMeshDataPtr data) override;
-    void SetMaterial(const Material * val) override;
+    MathLib::vec4f GetMaskColor() const;
+    void SetMaskColor(const MathLib::vec4f & color);
+    const ITexturePtr & GetTexture() const;
 
-private:
+protected:
+    void PushToRQ(RenderQueue & rq) override;
+
+    MathLib::vec4f maskColor = {1.0f, 1.0f, 1.0f, 1.0f};
+    ITexturePtr texture = nullptr;
 
 };
 

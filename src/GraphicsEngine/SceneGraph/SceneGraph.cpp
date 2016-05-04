@@ -1,10 +1,14 @@
-#include "../ShiftEngine.h"
 #include "SceneGraph.h"
+
+#include "../ShiftEngine.h"
 #include "../RenderQueue.h"
 
 #include <cassert>
+#include <array>
 
-ShiftEngine::SceneGraph::SceneGraph(SceneGraphType graphType /*= SGT_Plain*/)
+using namespace ShiftEngine;
+
+SceneGraph::SceneGraph(SceneGraphType graphType /*= SGT_Plain*/)
     : type(graphType)
 {
     skySemantic.addSemantic(ET_FLOAT, 3, ES_Position);
@@ -12,26 +16,25 @@ ShiftEngine::SceneGraph::SceneGraph(SceneGraphType graphType /*= SGT_Plain*/)
 
     switch (graphType)
     {
-    case ShiftEngine::SGT_Plain:
-        rootNode = new PlainTreeNode();
+    case SGT_Plain:
+        rootNode = new PlainTreeNode(this);
         break;
-    case ShiftEngine::SGT_QuadTree:
-        rootNode = new QuadTreeNode(-2048.0f, 2048.0f, -2048.0f, 2048.0f);
+    case SGT_QuadTree:
+        rootNode = new QuadTreeNode(-2048.0f, 2048.0f, -2048.0f, 2048.0f, this);
         break;
     default:
         assert(false);
         break;
     }
-    rootNode->SetSceneGraph(this);
 }
 
-ShiftEngine::SceneGraph::~SceneGraph()
+SceneGraph::~SceneGraph()
 {
     if (rootNode)
         rootNode->release();
 }
 
-void ShiftEngine::SceneGraph::DrawAll(double dt) const
+void SceneGraph::DrawAll(double dt) const
 {
     RenderQueue rq(ambientColor);
 
@@ -50,35 +53,46 @@ void ShiftEngine::SceneGraph::DrawAll(double dt) const
     GetRenderer()->DrawAll(rq, dt);
 }
 
-ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(const std::wstring & meshFileName, const Material * material)
+MeshSceneNode * SceneGraph::AddMeshNode(const std::wstring & meshFileName, const Material * material)
 {
     auto pCtxMgr = GetContextManager();
     IMeshDataPtr data = pCtxMgr->LoadMesh(meshFileName);
-    MeshNode * out = new MeshNode(data, material);
-    out->SetSceneGraph(this);
+    MeshSceneNode * out = new MeshSceneNode(data, material, this);
     rootNode->AddChild(out);
     return out;
 }
 
-ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const Material * mat)
+MeshSceneNode * SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const Material * mat)
 {
-    MeshNode * out = new MeshNode(dataPtr, mat);
+    MeshSceneNode * out = new MeshSceneNode(dataPtr, mat, this);
     rootNode->AddChild(out);
-    out->SetSceneGraph(this);
     return out;
 }
 
-ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::AddCameraSceneNode(CameraViewType cameraType)
+SpriteSceneNode * ShiftEngine::SceneGraph::AddSpriteNode( const std::wstring & textureName )
 {
-    auto ContextManager = GetContextManager();
+    if (!spriteMesh)
+        CreateSpriteMesh();
+    if (!spriteProgram)
+        CreateSpriteProgram();
 
-    CameraSceneNode * cam = new CameraSceneNode((float)ContextManager->GetEngineSettings().screenWidth,
-                                                (float)ContextManager->GetEngineSettings().screenHeight, 
-                                                ContextManager->GetEngineSettings().zNear, 
-                                                ContextManager->GetEngineSettings().zFar, 
-                                                60.0f, 
-                                                cameraType);
-    cam->SetSceneGraph(this);
+    ITexturePtr texture = GetContextManager()->LoadTexture(textureName);
+    SpriteSceneNode * out = new SpriteSceneNode(texture, this);
+    rootNode->AddChild(out);
+    return out;
+}
+
+CameraSceneNode * SceneGraph::AddCameraSceneNode(CameraViewType cameraType)
+{
+    auto engineSettings = GetContextManager()->GetEngineSettings();
+
+    CameraSceneNode * cam = new CameraSceneNode((float)engineSettings.screenWidth,
+                                                (float)engineSettings.screenHeight,
+                                                engineSettings.zNear,
+                                                engineSettings.zFar,
+                                                60.0f,
+                                                cameraType,
+                                                this);
     rootNode->AddChild(cam);
 
     if (!activeCamera)
@@ -87,62 +101,59 @@ ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::AddCameraSceneNode(Camer
     return cam;
 }
 
-void ShiftEngine::SceneGraph::SetActiveCamera(CameraSceneNode * camera)
+void SceneGraph::SetActiveCamera(CameraSceneNode * camera)
 {
     this->activeCamera = camera;
 }
 
-ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::GetActiveCamera() const
+CameraSceneNode * SceneGraph::GetActiveCamera() const
 {
     return activeCamera;
 }
 
-ShiftEngine::SkySceneNode * ShiftEngine::SceneGraph::AddSkySceneNode()
+SkySceneNode * SceneGraph::AddSkySceneNode()
 {
-    ShiftEngine::Material material(GetContextManager()->LoadShader(L"sky.fx"));
-    ShiftEngine::IMeshDataPtr mesh = GetContextManager()->LoadMesh(L"sky.lim");
-    SkySceneNode * out = new SkySceneNode(&material, mesh);
+    Material material(GetContextManager()->LoadShader(L"sky.fx"));
+    IMeshDataPtr mesh = GetContextManager()->LoadMesh(L"sky.lim");
+    SkySceneNode * out = new SkySceneNode(&material, mesh, this);
     activeSky = out;
-    out->SetSceneGraph(this);
     return out;
 }
 
-ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color)
+LightSceneNode * SceneGraph::AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color)
 {
-    LightNode * out = new LightNode(LNT_Directional, color);
+    LightSceneNode * out = new LightSceneNode(this, LNT_Directional, color);
     out->SetDirection(direction);
-    out->SetSceneGraph(this);
     out->addRef();
     directionalLights.push_back(out);
     return out;
 }
 
-ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color)
+LightSceneNode * SceneGraph::AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color)
 {
-    LightNode * out = new LightNode(LNT_Point, color);
+    LightSceneNode * out = new LightSceneNode(this, LNT_Point, color);
     out->SetRadius(radius);
-    out->SetPosition(pos);
-    out->SetSceneGraph(this);
+    out->SetLocalPosition(pos);
     rootNode->AddChild(out);
     return out;
 }
 
-void ShiftEngine::SceneGraph::SetAmbientColor(const MathLib::vec3f & color)
+void SceneGraph::SetAmbientColor(const MathLib::vec3f & color)
 {
     ambientColor = color;
 }
 
-MathLib::vec3f ShiftEngine::SceneGraph::GetAmbientColor() const
+MathLib::vec3f SceneGraph::GetAmbientColor() const
 {
     return ambientColor;
 }
 
-ShiftEngine::SkySceneNode * ShiftEngine::SceneGraph::GetActiveSkyNode() const
+SkySceneNode * SceneGraph::GetActiveSkyNode() const
 {
     return activeSky;
 }
 
-void ShiftEngine::SceneGraph::RemoveDirectionalLightNode(LightNode * node)
+void SceneGraph::RemoveDirectionalLightNode(LightSceneNode * node)
 {
     for (auto iter = directionalLights.begin(); iter != directionalLights.end(); ++iter)
     {
@@ -156,13 +167,13 @@ void ShiftEngine::SceneGraph::RemoveDirectionalLightNode(LightNode * node)
     }
 }
 
-void ShiftEngine::SceneGraph::MoveNodeCallback(ISceneNode * node)
+void SceneGraph::MoveNodeCallback(ISceneNode * node)
 {
     switch (type)
     {
-    case ShiftEngine::SGT_Plain:
+    case SGT_Plain:
         return;
-    case ShiftEngine::SGT_QuadTree:
+    case SGT_QuadTree:
     {
         node->addRef();
         node->RemoveParent();
@@ -173,4 +184,29 @@ void ShiftEngine::SceneGraph::MoveNodeCallback(ISceneNode * node)
     default:
         assert(false);
     }
+}
+
+void SceneGraph::CreateSpriteMesh()
+{
+    // TODO: this may take place in mesh manager or somewhere not in scene graph for future
+    // this is asset/mesh, and this is not zone of responsibility of scene graph
+    std::array<PlainSpriteVertex, 4> ver = {};
+    ver[0] = {{-0.5f, -0.5f}, {0.0f, 0.0f}};
+    ver[1] = {{0.5f, -0.5f}, {1.0f, 0.0f}};
+    ver[2] = {{-0.5f, 0.5f}, {0.0f, 1.0f}};
+    ver[3] = {{0.5f, 0.5f}, {1.0f, 1.0f}};
+
+    std::vector<uint32_t> ind = {0, 1, 2, 1, 3, 2};
+
+    IMeshManager * pMeshManager = GetContextManager()->GetMeshManager();
+    spriteMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)ver.data(),
+                                                      ver.size() * sizeof(PlainSpriteVertex),
+                                                      ind,
+                                                      &plainSpriteVertexSemantic,
+                                                      {});
+}
+
+void SceneGraph::CreateSpriteProgram()
+{
+    spriteProgram = GetContextManager()->LoadShader(L"SpriteShader.fx");
 }

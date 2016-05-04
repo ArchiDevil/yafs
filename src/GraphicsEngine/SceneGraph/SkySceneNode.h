@@ -1,23 +1,18 @@
 #pragma once
 
-#include "../Material.h"
-
-#include <MathLib/math.h>
+#include "MeshSceneNode.h"
 
 namespace ShiftEngine
 {
-    class ISceneNode;
-    class MeshNode;
-    class CameraSceneNode;
 
-    class SkySceneNode : public MeshNode
-    {
-    public:
-        SkySceneNode(const Material * material, const IMeshDataPtr & meshData);
-        ~SkySceneNode();
+class SkySceneNode final : public MeshSceneNode
+{
+public:
+    SkySceneNode(const Material * material, const IMeshDataPtr & meshData, SceneGraph * sceneGraph);
 
-        virtual void PushToRQ(RenderQueue & rq);
-        virtual int CheckVisibility(CameraSceneNode * activeCam) const;
+    virtual void PushToRQ(RenderQueue & rq);
+    virtual int CheckVisibility(CameraSceneNode * activeCam) const;
 
-    };
+};
+
 }

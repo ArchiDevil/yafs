@@ -3,21 +3,23 @@
 #include "../RenderQueue.h"
 #include "CameraSceneNode.h"
 
-ShiftEngine::QuadTreeNode::QuadTreeNode(float x1, float x2, float y1, float y2)
-    : ISceneNode()
-    , bbox({ x1, y1, std::numeric_limits<float>::lowest() }, { x2, y2, std::numeric_limits<float>::max() })
+using namespace ShiftEngine;
+
+QuadTreeNode::QuadTreeNode(float x1, float x2, float y1, float y2, SceneGraph * sceneGraph)
+    : ISceneNode(sceneGraph)
+    , bbox({x1, y1, std::numeric_limits<float>::lowest()}, {x2, y2, std::numeric_limits<float>::max()})
 {
     for (auto & elem : subtrees)
         elem = nullptr;
 }
 
-ShiftEngine::QuadTreeNode::~QuadTreeNode()
+QuadTreeNode::~QuadTreeNode()
 {
     for (auto elem : subtrees)
         delete elem;
 }
 
-void ShiftEngine::QuadTreeNode::AddChild(ISceneNode * node)
+void QuadTreeNode::AddChild(ISceneNode * node)
 {
     // check that child can be added in this node
     // if not -> return false
@@ -39,7 +41,7 @@ void ShiftEngine::QuadTreeNode::AddChild(ISceneNode * node)
     }
 }
 
-void ShiftEngine::QuadTreeNode::PushFull(RenderQueue & rq)
+void QuadTreeNode::PushFull(RenderQueue & rq)
 {
     for (auto elem : GetChilds())
         elem->Draw(rq);
@@ -51,7 +53,7 @@ void ShiftEngine::QuadTreeNode::PushFull(RenderQueue & rq)
         elem->PushFull(rq);
 }
 
-void ShiftEngine::QuadTreeNode::PushToRQ(RenderQueue & rq)
+void QuadTreeNode::PushToRQ(RenderQueue & rq)
 {
     if (!subtrees[0])
         return;
@@ -71,7 +73,7 @@ void ShiftEngine::QuadTreeNode::PushToRQ(RenderQueue & rq)
     //childs will be drawn by Draw method, inherited from parent
 }
 
-bool ShiftEngine::QuadTreeNode::AddNode(ISceneNode * node)
+bool QuadTreeNode::AddNode(ISceneNode * node)
 {
     // check first sizes
     auto nodebox = node->GetBBox();
@@ -103,13 +105,13 @@ bool ShiftEngine::QuadTreeNode::AddNode(ISceneNode * node)
             float yCenter = (y2 - y1) / 2.0f + y1;
 
             //need to calculate new size
-            subtrees[0] = new QuadTreeNode(x1, xCenter, y1, yCenter);
+            subtrees[0] = new QuadTreeNode(x1, xCenter, y1, yCenter, pSceneGraph);
             subtrees[0]->SetParent(this);
-            subtrees[1] = new QuadTreeNode(xCenter, x2, y1, yCenter);
+            subtrees[1] = new QuadTreeNode(xCenter, x2, y1, yCenter, pSceneGraph);
             subtrees[1]->SetParent(this);
-            subtrees[2] = new QuadTreeNode(x1, xCenter, yCenter, y2);
+            subtrees[2] = new QuadTreeNode(x1, xCenter, yCenter, y2, pSceneGraph);
             subtrees[2]->SetParent(this);
-            subtrees[3] = new QuadTreeNode(xCenter, x2, yCenter, y2);
+            subtrees[3] = new QuadTreeNode(xCenter, x2, yCenter, y2, pSceneGraph);
             subtrees[3]->SetParent(this);
 
             //and now, just move all childs into subnodes
@@ -158,24 +160,24 @@ bool ShiftEngine::QuadTreeNode::AddNode(ISceneNode * node)
     return true;
 }
 
-MathLib::mat4f ShiftEngine::QuadTreeNode::GetWorldMatrix() const
+MathLib::mat4f QuadTreeNode::GetWorldMatrix() const
 {
     return MathLib::matrixIdentity<float>();
 }
 
-int ShiftEngine::QuadTreeNode::CheckVisibility(CameraSceneNode * activeCam) const
+int QuadTreeNode::CheckVisibility(CameraSceneNode * activeCam) const
 {
     MathLib::mat4f matWorld = GetWorldMatrix();
-    MathLib::vec4f vecMin = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
-    MathLib::vec4f vecMax = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
+    MathLib::vec4f vecMin = {bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f};
+    MathLib::vec4f vecMax = {bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f};
     vecMin = MathLib::vec4Transform(vecMin, matWorld);
     vecMax = MathLib::vec4Transform(vecMax, matWorld);
-    MathLib::AABB newBbox({ vecMin.x, vecMin.y, vecMin.z }, { vecMax.x, vecMax.y, vecMax.z });
+    MathLib::AABB newBbox({vecMin.x, vecMin.y, vecMin.z}, {vecMax.x, vecMax.y, vecMax.z});
 
     return activeCam->GetFrustumPtr()->CheckQTreeNode(newBbox);
 }
 
-unsigned int ShiftEngine::QuadTreeNode::GetChildsCount() const
+unsigned int QuadTreeNode::GetChildsCount() const
 {
     unsigned int count = GetChilds().size();
 
@@ -188,7 +190,7 @@ unsigned int ShiftEngine::QuadTreeNode::GetChildsCount() const
     return count;
 }
 
-MathLib::AABB ShiftEngine::QuadTreeNode::GetBBox() const
+MathLib::AABB QuadTreeNode::GetBBox() const
 {
     return bbox;
 }

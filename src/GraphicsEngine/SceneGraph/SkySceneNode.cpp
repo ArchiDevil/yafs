@@ -1,25 +1,22 @@
 #include "../ShiftEngine.h"
 
 #include "SkySceneNode.h"
-#include "MeshNode.h"
+#include "MeshSceneNode.h"
 
-ShiftEngine::SkySceneNode::SkySceneNode(const Material * material, const IMeshDataPtr & meshData)
-    : MeshNode(meshData, material)
-{
-}
+using namespace ShiftEngine;
 
-ShiftEngine::SkySceneNode::~SkySceneNode()
-{
-}
+SkySceneNode::SkySceneNode(const Material * material, const IMeshDataPtr & meshData, SceneGraph * sceneGraph)
+    : MeshSceneNode(meshData, material, sceneGraph)
+{}
 
-void ShiftEngine::SkySceneNode::PushToRQ(RenderQueue & rq)
+void SkySceneNode::PushToRQ(RenderQueue & rq)
 {
     //auto pos = GetSceneGraph()->GetActiveCamera()->GetPosition();
     //this->SetPosition(Vector3F(pos.x, pos.y, pos.z));
     rq.SetSkyNode(this);
 }
 
-int ShiftEngine::SkySceneNode::CheckVisibility(CameraSceneNode * /*activeCam*/) const
+int SkySceneNode::CheckVisibility(CameraSceneNode * /*activeCam*/) const
 {
     return CameraFrustum::CS_In;
 }

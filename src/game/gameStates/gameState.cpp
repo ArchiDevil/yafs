@@ -1,9 +1,11 @@
-#include "GameState.h"
+  #include "GameState.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <Utilities/inputConverter.h>
 
 // #include "../Entities/GameObjectsManager.h"
+
+ShiftEngine::SpriteSceneNode * spriteNode = nullptr;
 
 //TEMPORARY
 const float minR = 15.0f;
@@ -40,11 +42,16 @@ bool GameState::initState()
     //pGame->gameHud.reset(new GameHUD(guiModule));
     //LOG_INFO("HUD has been created");
 
-    ShiftEngine::CameraSceneNode * pCamera = pScene->AddCameraSceneNode(ShiftEngine::CameraViewType::Projection);
-    pCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
+    ShiftEngine::CameraSceneNode * pCamera = pScene->AddCameraSceneNode(ShiftEngine::CameraViewType::Orthographic);
+    pCamera->SetLocalPosition({ 0.0f, 0.0f, 0.0f });
     pCamera->RotateByQuaternion(quaternionFromVecAngle(vec3f(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
 
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
+
+    spriteNode = pScene->AddSpriteNode(L"sprite.png");
+    spriteNode->SetLocalPosition({0.0f, 0.0f, 0.0f});
+    // temporary here, due to some issues with matrices
+    spriteNode->SetLocalScale(200.0f);
 
     LOG_INFO("End of game state initializing");
 
@@ -55,6 +62,11 @@ bool GameState::update(double dt)
 {
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     Game * pGame = LostIsland::GetGamePtr();
+
+    // for example
+    static double totalTime = 0.0;
+    totalTime += dt;
+    spriteNode->SetLocalPosition({std::cosf((float)totalTime) * 100.0f, std::sinf((float)totalTime) * 100.0f, 0.0f});
 
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);

@@ -7,39 +7,25 @@
 
 namespace ShiftEngine
 {
-    class D3D11VertexDeclaration : public IVertexDeclaration
+
+class D3D11VertexDeclaration : public IVertexDeclaration
+{
+public:
+    D3D11VertexDeclaration(CComPtr<ID3D11InputLayout> IL = nullptr, CComPtr<ID3D11DeviceContext> pDeviceContext = nullptr)
+        : IL(IL)
+        , pDeviceContext(pDeviceContext)
+    {}
+
+    void Bind() override
     {
-    public:
-        D3D11VertexDeclaration(ID3D11InputLayout * IL = nullptr, ID3D11DeviceContext * pDeviceContext = nullptr)
-            : IL(IL)
-            , pDeviceContext(pDeviceContext)
-        {
-        }
+        if (IL)
+            pDeviceContext->IASetInputLayout(this->IL);
+    }
 
-        D3D11VertexDeclaration(const D3D11VertexDeclaration & ref)
-        {
-            IL = ref.IL;
-            pDeviceContext = ref.pDeviceContext;
+    CComPtr<ID3D11InputLayout> IL = nullptr;
+    CComPtr<ID3D11DeviceContext> pDeviceContext = nullptr;
+};
 
-            if (IL) 
-                IL->AddRef();
-        }
+typedef std::shared_ptr<D3D11VertexDeclaration> D3D11VertexDeclarationPtr;
 
-        ~D3D11VertexDeclaration()
-        {
-            if (IL) 
-                IL->Release();
-        }
-
-        void Bind() override
-        {
-            if (IL)
-                pDeviceContext->IASetInputLayout(this->IL);
-        }
-
-        ID3D11InputLayout * IL = nullptr;
-        ID3D11DeviceContext * pDeviceContext = nullptr;
-    };
-
-    typedef std::shared_ptr<D3D11VertexDeclaration> D3D11VertexDeclarationPtr;
 }

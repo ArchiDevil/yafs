@@ -5,9 +5,9 @@
 
 #include <DirectXTex.h>
 
-ShiftEngine::D3D11TextureManager::D3D11TextureManager(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, const std::wstring & texturesPath)
+ShiftEngine::D3D11TextureManager::D3D11TextureManager(CComPtr<ID3D11Device> device, CComPtr<ID3D11DeviceContext> pDeviceContext, const std::wstring & texturesPath)
     : texturesPath(texturesPath)
-    , pDevice(pDevice)
+    , pDevice(device)
     , pDeviceContext(pDeviceContext)
 {
     CreateErrorTexture();
@@ -59,11 +59,11 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTexture2D(const
 }
 
 ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const std::wstring & posX,
-    const std::wstring & negX,
-    const std::wstring & posY,
-    const std::wstring & negY,
-    const std::wstring & posZ,
-    const std::wstring & negZ)
+                                                                         const std::wstring & negX,
+                                                                         const std::wstring & posY,
+                                                                         const std::wstring & negY,
+                                                                         const std::wstring & posZ,
+                                                                         const std::wstring & negZ)
 {
     std::wstring superString = negX + posX + negY + posY + negZ + posZ;
 
@@ -75,7 +75,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
         return nullptr;
     }
 
-    std::vector<std::wstring> items = { posX, negX, posY, negY, posZ, negZ };
+    std::vector<std::wstring> items = {posX, negX, posY, negY, posZ, negZ};
     ID3D11ShaderResourceView * SRW;
     const size_t elems = 6;
 
@@ -175,7 +175,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
             D3D11_MAPPED_SUBRESOURCE mappedTex2D;
             pDeviceContext->Map(srcTex[i], 0, D3D11_MAP_WRITE, 0, &mappedTex2D);
             pDeviceContext->UpdateSubresource(texArray, D3D11CalcSubresource(j, i, texElementDesc.MipLevels),
-                0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
+                                              0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
             pDeviceContext->Unmap(srcTex[i], 0);
         }
     }
@@ -310,7 +310,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(co
             D3D11_MAPPED_SUBRESOURCE mappedTex2D;
             pDeviceContext->Map(srcTex[i], 0, D3D11_MAP_WRITE, 0, &mappedTex2D);
             pDeviceContext->UpdateSubresource(texArray, D3D11CalcSubresource(j, i, texElementDesc.MipLevels),
-                0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
+                                              0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
             pDeviceContext->Unmap(srcTex[i], 0);
         }
     }

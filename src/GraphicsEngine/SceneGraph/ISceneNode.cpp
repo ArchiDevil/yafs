@@ -5,18 +5,19 @@
 
 #include <algorithm>
 
-ShiftEngine::ISceneNode::ISceneNode()
-{
-    CreateWorldMatrix();
-}
+using namespace ShiftEngine;
 
-ShiftEngine::ISceneNode::~ISceneNode()
+ISceneNode::ISceneNode(SceneGraph * sceneGraph)
+    : pSceneGraph(sceneGraph)
+{}
+
+ISceneNode::~ISceneNode()
 {
     for (auto child : children)
         child->release();
 }
 
-void ShiftEngine::ISceneNode::AddChild(ISceneNode * node)
+void ISceneNode::AddChild(ISceneNode * node)
 {
     //TODO: fix memleak here
     if (!node)
@@ -43,7 +44,7 @@ void ShiftEngine::ISceneNode::AddChild(ISceneNode * node)
     children.push_back(node);
 }
 
-void ShiftEngine::ISceneNode::RemoveChild(ISceneNode * node)
+void ISceneNode::RemoveChild(ISceneNode * node)
 {
     node->release();
     auto iter = std::find(children.begin(), children.end(), node);
@@ -55,7 +56,7 @@ void ShiftEngine::ISceneNode::RemoveChild(ISceneNode * node)
     }
 }
 
-void ShiftEngine::ISceneNode::SetParent(ISceneNode * _parent)
+void ISceneNode::SetParent(ISceneNode * _parent)
 {
     if (_parent)
         _parent->AddChild(this);    //it will set parent to node
@@ -63,30 +64,30 @@ void ShiftEngine::ISceneNode::SetParent(ISceneNode * _parent)
         parent = _parent;
 }
 
-void ShiftEngine::ISceneNode::RemoveParent()
+void ISceneNode::RemoveParent()
 {
     if (this->parent)
         parent->RemoveChild(this);
     parent = nullptr;
 }
 
-void ShiftEngine::ISceneNode::KillSelf()
+void ISceneNode::KillSelf()
 {
     if (this->parent)
         parent->RemoveChild(this);
 }
 
-ShiftEngine::ISceneNode * ShiftEngine::ISceneNode::GetParent() const
+ISceneNode * ISceneNode::GetParent() const
 {
     return parent;
 }
 
-const ShiftEngine::ISceneNode::ChildsList & ShiftEngine::ISceneNode::GetChilds() const
+const ISceneNode::ChildsList & ISceneNode::GetChilds() const
 {
     return children;
 }
 
-void ShiftEngine::ISceneNode::Draw(RenderQueue & rq)
+void ISceneNode::Draw(RenderQueue & rq)
 {
     this->PushToRQ(rq);
 
@@ -95,84 +96,105 @@ void ShiftEngine::ISceneNode::Draw(RenderQueue & rq)
             child->Draw(rq);
 }
 
-MathLib::mat4f ShiftEngine::ISceneNode::GetWorldMatrix() const
+MathLib::mat4f ISceneNode::GetWorldMatrix() const
 {
+    return worldMatrix;
+}
+
+MathLib::mat4f ISceneNode::GetLocalMatrix() const
+{
+    return localMatrix;
+}
+
+void ISceneNode::CreateMatrices()
+{
+    MathLib::matrix<float, 4> scale = MathLib::matrixScaling(Scale);
+    MathLib::matrix<float, 4> rotation = Rotation.to_matrix();
+    MathLib::matrix<float, 4> position = MathLib::matrixTranslation(Position);
+
     if (parent)
-        return worldMatrix * parent->GetWorldMatrix();
+        worldMatrix = localMatrix * parent->GetWorldMatrix();
     else
-        return worldMatrix;
+        worldMatrix = localMatrix;
+
+    localMatrix = scale * rotation * position;
 }
 
-void ShiftEngine::ISceneNode::CreateWorldMatrix()
-{
-    MathLib::matrix<float, 4> scale;
-    MathLib::matrix<float, 4> rotation;
-    MathLib::matrix<float, 4> position;
-
-    scale = MathLib::matrixScaling(Scale);
-    rotation = Rotation.to_matrix();
-    position = MathLib::matrixTranslation(Position);
-
-    worldMatrix = scale * rotation * position;
-}
-
-MathLib::vec3f ShiftEngine::ISceneNode::GetPosition() const
+MathLib::vec3f ISceneNode::GetWorldPosition() const
 {
     if (parent)
-        return parent->GetPosition() + Position;
+        return parent->GetWorldPosition() + Position;
     return Position;
 }
 
-void ShiftEngine::ISceneNode::SetPosition(const MathLib::vec3f & val)
+MathLib::vec3f ISceneNode::GetLocalPosition() const
+{
+    return Position;
+}
+
+void ISceneNode::SetLocalPosition(const MathLib::vec3f & val)
 {
     Position = val;
-    CreateWorldMatrix();
+    CreateMatrices();
+
     if (pSceneGraph)
         pSceneGraph->MoveNodeCallback(this);
 }
 
-MathLib::vec3f ShiftEngine::ISceneNode::GetScale() const
+MathLib::vec3f ISceneNode::GetWorldScale() const
 {
     if (parent)
         return parent->Scale + Scale;
     return Scale;
 }
 
-void ShiftEngine::ISceneNode::SetScale(const MathLib::vec3f & val)
+MathLib::vec3f ISceneNode::GetLocalScale() const
+{
+    return Scale;
+}
+
+void ISceneNode::SetLocalScale(const MathLib::vec3f & val)
 {
     Scale = val;
-    CreateWorldMatrix();
+    CreateMatrices();
     if (pSceneGraph)
         pSceneGraph->MoveNodeCallback(this);
 }
 
-void ShiftEngine::ISceneNode::SetScale(float val)
+void ISceneNode::SetLocalScale(float val)
 {
-    SetScale(MathLib::vec3f(val, val, val));
+    SetLocalScale(MathLib::vec3f(val, val, val));
 }
 
-MathLib::qaFloat ShiftEngine::ISceneNode::GetRotation() const
+MathLib::qaFloat ISceneNode::GetWorldRotation() const
+{
+    if (parent)
+        return Rotation * parent->GetWorldRotation();
+    return Rotation;
+}
+
+MathLib::qaFloat ISceneNode::GetLocalRotation() const
 {
     return Rotation;
 }
 
-void ShiftEngine::ISceneNode::SetRotation(const MathLib::qaFloat & val)
+void ISceneNode::SetLocalRotation(const MathLib::qaFloat & val)
 {
     Rotation = val;
 }
 
-void ShiftEngine::ISceneNode::RotateBy(const MathLib::qaFloat & val)
+void ISceneNode::RotateByLocal(const MathLib::qaFloat & val)
 {
     Rotation = Rotation * val;
 }
 
-int ShiftEngine::ISceneNode::CheckVisibility(CameraSceneNode * activeCam) const
+int ISceneNode::CheckVisibility(CameraSceneNode * activeCam) const
 {
     MathLib::mat4f matWorld = GetWorldMatrix();
     MathLib::AABB bbox = GetBBox();
 
-    MathLib::vec4f vecMin = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
-    MathLib::vec4f vecMax = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
+    MathLib::vec4f vecMin = {bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f};
+    MathLib::vec4f vecMax = {bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f};
     vecMin = MathLib::vec4Transform(vecMin, matWorld);
     vecMax = MathLib::vec4Transform(vecMax, matWorld);
     MathLib::AABB newBbox(MathLib::vec3f(vecMin.x, vecMin.y, vecMin.z), MathLib::vec3f(vecMax.x, vecMax.y, vecMax.z));
@@ -180,12 +202,7 @@ int ShiftEngine::ISceneNode::CheckVisibility(CameraSceneNode * activeCam) const
     return activeCam->GetFrustumPtr()->CheckAABB(newBbox);
 }
 
-ShiftEngine::SceneGraph * ShiftEngine::ISceneNode::GetSceneGraph() const
+SceneGraph * ISceneNode::GetSceneGraph() const
 {
     return pSceneGraph;
-}
-
-void ShiftEngine::ISceneNode::SetSceneGraph(SceneGraph * val)
-{
-    pSceneGraph = val;
 }

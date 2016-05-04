@@ -3,6 +3,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include <atlbase.h>
 
 #include "../../IProgram.h"
 
@@ -12,82 +13,82 @@
 
 namespace ShiftEngine
 {
-    struct D3D11BufferDescription
-    {
-        std::string Name = "";
-        bool isDirty = true;
-        uint32_t Size = 0;
-        uint32_t StartSlotVertex = UINT_MAX;
-        uint32_t StartSlotPixel = UINT_MAX;
-        ID3D11Buffer * cbFromShader = nullptr;
-        uint8_t * bufferData = nullptr;
-        bool vertex = false;
-        bool pixel = false;
-    };
 
-    struct D3D11VarDesc
-    {
-        std::string Name = "";
-        uint32_t Offset = 0;
-        uint32_t Size = 0;
-        uint32_t BufferIndex = 0;
-    };
+struct D3D11BufferDescription
+{
+    std::string Name = "";
+    bool isDirty = true;
+    uint32_t Size = 0;
+    uint32_t StartSlotVertex = UINT_MAX;
+    uint32_t StartSlotPixel = UINT_MAX;
+    CComPtr<ID3D11Buffer> cbFromShader = nullptr;
+    uint8_t * bufferData = nullptr;
+    bool vertex = false;
+    bool pixel = false;
+};
 
-    struct D3D11ResDesc
-    {
-        std::string Name = "";
-        uint32_t BindPointVertex = UINT_MAX;
-        uint32_t BindPointPixel = UINT_MAX;
-        ITexturePtr View = nullptr;
-        bool isDirty = true;
-        bool vertex = false;
-        bool pixel = false;
-    };
+struct D3D11VarDesc
+{
+    std::string Name = "";
+    uint32_t Offset = 0;
+    uint32_t Size = 0;
+    uint32_t BufferIndex = 0;
+};
 
-    class D3D11Program : public IProgram
-    {
-        friend class D3D11ContextManager;
-    public:
-        D3D11Program(D3D11ShaderPtr & _vertexShader, D3D11ShaderPtr & _pixelShader, ID3D11Device * _pDevice, ID3D11DeviceContext * pDeviceContext);
-        ~D3D11Program();
+struct D3D11ResDesc
+{
+    std::string Name = "";
+    uint32_t BindPointVertex = UINT_MAX;
+    uint32_t BindPointPixel = UINT_MAX;
+    ITexturePtr View = nullptr;
+    bool isDirty = true;
+    bool vertex = false;
+    bool pixel = false;
+};
 
-        virtual bool SetMatrixConstantByName(const char * nameInShader, const float * mat) override;
-        virtual bool SetScalarConstantByName(const char * nameInShader, const float * scalar) override;
-        virtual bool SetVectorConstantByName(const char * nameInShader, const float * vec) override;
-        virtual bool SetArrayConstantByName(const char * nameInShader, const void * data) override;
-        virtual bool SetTextureByName(const char * textureName, const ITexturePtr & texture) override;
+class D3D11Program : public IProgram
+{
+    friend class D3D11ContextManager;
+public:
+    D3D11Program(D3D11ShaderPtr & _vertexShader, D3D11ShaderPtr & _pixelShader, CComPtr<ID3D11Device> _pDevice, CComPtr<ID3D11DeviceContext> _pDeviceContext);
 
-        virtual void SetMatrixConstantByIndex(unsigned int index, const float * mat) override;
-        virtual void SetScalarConstantByIndex(unsigned int index, const float * mat) override;
-        virtual void SetVectorConstantByIndex(unsigned int index, const float * mat) override;
-        virtual void SetArrayConstantByIndex(unsigned int index, const void * data) override;
-        virtual bool SetTextureByIndex(unsigned int index, const ITexturePtr & texture) override;
+    virtual bool SetMatrixConstantByName(const char * nameInShader, const float * mat) override;
+    virtual bool SetScalarConstantByName(const char * nameInShader, const float * scalar) override;
+    virtual bool SetVectorConstantByName(const char * nameInShader, const float * vec) override;
+    virtual bool SetArrayConstantByName(const char * nameInShader, const void * data) override;
+    virtual bool SetTextureByName(const char * textureName, const ITexturePtr & texture) override;
 
-        virtual bool GetVariableIndex(const char * name, unsigned int * index) override;
-        virtual bool GetResourceIndex(const char * name, unsigned int * index) override;
+    virtual void SetMatrixConstantByIndex(unsigned int index, const float * mat) override;
+    virtual void SetScalarConstantByIndex(unsigned int index, const float * mat) override;
+    virtual void SetVectorConstantByIndex(unsigned int index, const float * mat) override;
+    virtual void SetArrayConstantByIndex(unsigned int index, const void * data) override;
+    virtual bool SetTextureByIndex(unsigned int index, const ITexturePtr & texture) override;
 
-        virtual void Apply(bool setShader) override;
+    virtual bool GetVariableIndex(const char * name, unsigned int * index) override;
+    virtual bool GetResourceIndex(const char * name, unsigned int * index) override;
 
-    private:
-        void ParseInfo();
+    virtual void Apply(bool setShader) override;
 
-        void SetUniformByIndex(unsigned int index, const void * data);
+private:
+    void ParseInfo();
 
-        //mapped buffers
-        std::vector<D3D11BufferDescription> constantBuffers;
-        std::vector<D3D11VarDesc> variables;
+    void SetUniformByIndex(unsigned int index, const void * data);
 
-        //samplers only
-        std::vector<D3D11ResDesc> resources;
+    //mapped buffers
+    std::vector<D3D11BufferDescription> constantBuffers;
+    std::vector<D3D11VarDesc> variables;
 
-        //shaders to bound
-        D3D11ShaderPtr vertexShader = nullptr;
-        D3D11ShaderPtr pixelShader = nullptr;
+    //samplers only
+    std::vector<D3D11ResDesc> resources;
 
-        ID3D11Device * pDevice = nullptr;
-        ID3D11DeviceContext * pDeviceContext = nullptr;
-    };
+    //shaders to bound
+    D3D11ShaderPtr vertexShader = nullptr;
+    D3D11ShaderPtr pixelShader = nullptr;
 
-    typedef std::shared_ptr<D3D11Program> D3D11ProgramPtr;
+    CComPtr<ID3D11Device> pDevice = nullptr;
+    CComPtr<ID3D11DeviceContext> pDeviceContext = nullptr;
+};
+
+typedef std::shared_ptr<D3D11Program> D3D11ProgramPtr;
 
 }   //end of namespace ShiftEngine

@@ -1,20 +1,20 @@
-#include "MeshNode.h"
+#include "MeshSceneNode.h"
 
 #include "../ShiftEngine.h"
 
-ShiftEngine::MeshNode::MeshNode(const IMeshDataPtr & _data, const Material * mat)
-    : ISceneNode()
+using namespace ShiftEngine;
+
+MeshSceneNode::MeshSceneNode(const IMeshDataPtr & _data, const Material * mat, SceneGraph * sceneGraph)
+    : ISceneNode(sceneGraph)
     , isVisible(true)
     , material(*mat)
     , Data(_data)
-{
-}
+{}
 
-ShiftEngine::MeshNode::~MeshNode()
-{
-}
+MeshSceneNode::~MeshSceneNode()
+{}
 
-void ShiftEngine::MeshNode::PushToRQ(RenderQueue & rq)
+void MeshSceneNode::PushToRQ(RenderQueue & rq)
 {
     int visibility = 1;//CheckVisibility(rq.GetActiveCamera());
 
@@ -22,44 +22,44 @@ void ShiftEngine::MeshNode::PushToRQ(RenderQueue & rq)
         rq.AddRenderableNode(this);
 }
 
-bool ShiftEngine::MeshNode::IsVisible() const
+bool MeshSceneNode::IsVisible() const
 {
     return isVisible;
 }
 
-void ShiftEngine::MeshNode::SetVisibility(bool vis)
+void MeshSceneNode::SetVisibility(bool vis)
 {
     isVisible = vis;
 }
 
-ShiftEngine::Material * ShiftEngine::MeshNode::GetMaterialPtr()
+Material * MeshSceneNode::GetMaterialPtr()
 {
     return &material;
 }
 
-void ShiftEngine::MeshNode::SetMaterial(const ShiftEngine::Material * val)
+void MeshSceneNode::SetMaterial(const Material * val)
 {
     material = Material(*val);
 }
 
-ShiftEngine::IMeshDataPtr ShiftEngine::MeshNode::GetDataPtr() const
+IMeshDataPtr MeshSceneNode::GetDataPtr() const
 {
     return Data;
 }
 
-void ShiftEngine::MeshNode::SetDataPtr(IMeshDataPtr data)
+void MeshSceneNode::SetDataPtr(IMeshDataPtr data)
 {
     Data = data;
 }
 
-int ShiftEngine::MeshNode::Render()
+int MeshSceneNode::Render()
 {
     if (!Data)
         return 0;
     return GetContextManager()->DrawMesh(Data);
 }
 
-MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
+MathLib::AABB MeshSceneNode::GetBBox() const
 {
     MathLib::mat4f matWorld = GetWorldMatrix();
     MathLib::vec4f points[8];
@@ -67,14 +67,14 @@ MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
     if (Data)
         bbox = Data->GetBBox();
 
-    points[0] = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
-    points[1] = { bbox.bMin.x, bbox.bMin.y, bbox.bMax.z, 1.0f };
-    points[2] = { bbox.bMin.x, bbox.bMax.y, bbox.bMin.z, 1.0f };
-    points[3] = { bbox.bMax.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
-    points[4] = { bbox.bMax.x, bbox.bMax.y, bbox.bMin.z, 1.0f };
-    points[5] = { bbox.bMin.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
-    points[6] = { bbox.bMax.x, bbox.bMin.y, bbox.bMax.z, 1.0f };
-    points[7] = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
+    points[0] = {bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f};
+    points[1] = {bbox.bMin.x, bbox.bMin.y, bbox.bMax.z, 1.0f};
+    points[2] = {bbox.bMin.x, bbox.bMax.y, bbox.bMin.z, 1.0f};
+    points[3] = {bbox.bMax.x, bbox.bMin.y, bbox.bMin.z, 1.0f};
+    points[4] = {bbox.bMax.x, bbox.bMax.y, bbox.bMin.z, 1.0f};
+    points[5] = {bbox.bMin.x, bbox.bMax.y, bbox.bMax.z, 1.0f};
+    points[6] = {bbox.bMax.x, bbox.bMin.y, bbox.bMax.z, 1.0f};
+    points[7] = {bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f};
 
     MathLib::vec3f min, max;
 
@@ -104,6 +104,5 @@ MathLib::AABB ShiftEngine::MeshNode::GetBBox() const
             max.z = points[i].z;
     }
 
-    MathLib::AABB newBbox({ min.x, min.y, min.z }, { max.x, max.y, max.z });
-    return newBbox;
+    return {{min.x, min.y, min.z}, {max.x, max.y, max.z}};
 }

@@ -1,63 +1,79 @@
 #include "RenderQueue.h"
 
-#include "SceneGraph/MeshNode.h"
+#include "SceneGraph/MeshSceneNode.h"
 #include "SceneGraph/CameraSceneNode.h"
 #include "SceneGraph/SkySceneNode.h"
-#include "SceneGraph/LightNode.h"
+#include "SceneGraph/LightSceneNode.h"
 
-ShiftEngine::RenderQueue::RenderQueue(const MathLib::vec3f & _ambientColor)
+using namespace ShiftEngine;
+
+RenderQueue::RenderQueue(const MathLib::vec3f & _ambientColor)
     : ambientColor(_ambientColor)
-{
-}
+{}
 
-ShiftEngine::RenderQueue::~RenderQueue()
-{
-}
+RenderQueue::~RenderQueue()
+{}
 
-void ShiftEngine::RenderQueue::AddRenderableNode(MeshNode * node)
+void RenderQueue::AddRenderableNode(MeshSceneNode * node)
 {
     if (!node)
         return;
 
-    meshNodesVector.push_back(node);
+    meshes.push_back(node);
 }
 
-ShiftEngine::RenderVector & ShiftEngine::RenderQueue::GetRenderableNodes()
+RenderVector & RenderQueue::GetRenderableNodes()
 {
-    return meshNodesVector;
+    return meshes;
 }
 
-void ShiftEngine::RenderQueue::SetCameraNode(CameraSceneNode * node)
+SpritesVector & RenderQueue::GetSpriteNodes()
+{
+    return sprites;
+}
+
+void RenderQueue::SetCameraNode(CameraSceneNode * node)
 {
     activeCamera = node;
 }
 
-ShiftEngine::CameraSceneNode * ShiftEngine::RenderQueue::GetActiveCamera() const
+CameraSceneNode * RenderQueue::GetActiveCamera() const
 {
     return activeCamera;
 }
 
-void ShiftEngine::RenderQueue::SetSkyNode(SkySceneNode * node)
+void RenderQueue::SetSkyNode(SkySceneNode * node)
 {
     activeSky = node;
 }
 
-ShiftEngine::SkySceneNode * ShiftEngine::RenderQueue::GetActiveSky() const
+SkySceneNode * RenderQueue::GetActiveSky() const
 {
     return activeSky;
 }
 
-void ShiftEngine::RenderQueue::AddLightNode(LightNode * node)
+void RenderQueue::AddLightNode(LightSceneNode * node)
 {
+    if (!node)
+        return;
+
     lights.push_back(node);
 }
 
-const ShiftEngine::LightsVector & ShiftEngine::RenderQueue::GetLights() const
+void RenderQueue::AddSpriteNode(SpriteSceneNode * node)
+{
+    if (!node)
+        return;
+
+    sprites.push_back(node);
+}
+
+const LightsVector & RenderQueue::GetLights() const
 {
     return lights;
 }
 
-MathLib::vec3f ShiftEngine::RenderQueue::GetAmbientColor() const
+MathLib::vec3f RenderQueue::GetAmbientColor() const
 {
     return ambientColor;
 }

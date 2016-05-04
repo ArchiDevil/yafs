@@ -13,13 +13,9 @@
     uint32_t flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 #endif
 
-ShiftEngine::D3D11ShaderManager::D3D11ShaderManager(ID3D11Device * _pDevice)
+ShiftEngine::D3D11ShaderManager::D3D11ShaderManager(CComPtr<ID3D11Device> _pDevice)
     : pDevice(_pDevice)
     , shaderGenerator(new D3D11ShaderGenerator())
-{
-}
-
-ShiftEngine::D3D11ShaderManager::~D3D11ShaderManager()
 {
 }
 

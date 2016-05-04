@@ -4,64 +4,75 @@
 #include "PlainTreeNode.h"
 #include "QuadTreeNode.h"
 #include "CameraSceneNode.h"
-#include "MeshNode.h"
+#include "MeshSceneNode.h"
 #include "SkySceneNode.h"
+#include "SpriteSceneNode.h"
+
+#include <string>
+#include <vector>
 
 namespace ShiftEngine
 {
-    enum SceneGraphType
-    {
-        SGT_Plain,
-        SGT_QuadTree,
-        //SGT_OctTree
-    };
 
-    class ISceneNode;
-    class PlainTreeNode;
-    class QuadTreeNode;
-    class MeshNode;
-    class CameraSceneNode;
-    class SkySceneNode;
-    class LightNode;
+enum SceneGraphType
+{
+    SGT_Plain,
+    SGT_QuadTree,
+    //SGT_OctTree
+};
 
-    class SceneGraph
-    {
-    public:
-        SceneGraph(SceneGraphType graphType = SGT_Plain);
-        ~SceneGraph();
+enum class CameraViewType;
 
-        void DrawAll(double dt) const;
+class ISceneNode;
+class PlainTreeNode;
+class QuadTreeNode;
+class MeshSceneNode;
+class CameraSceneNode;
+class SkySceneNode;
+class LightSceneNode;
+class SpriteSceneNode;
 
-        MeshNode * AddMeshNode(const std::wstring & meshFileName, const Material * mat);                        //tries to load mesh with meshLoader
-        MeshNode * AddMeshNode(IMeshDataPtr dataPtr, const Material * mat);
-        CameraSceneNode * AddCameraSceneNode(CameraViewType cameraType);
+class SceneGraph final
+{
+public:
+    SceneGraph(SceneGraphType graphType = SGT_Plain);
+    ~SceneGraph();
 
-        LightNode * AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color = MathLib::vec3f(1.0f, 1.0f, 1.0f));
-        void RemoveDirectionalLightNode(LightNode * node);
+    MeshSceneNode * AddMeshNode(const std::wstring & meshFileName, const Material * mat); //tries to load mesh with meshLoader
+    MeshSceneNode * AddMeshNode(IMeshDataPtr dataPtr, const Material * mat);
+    SpriteSceneNode * AddSpriteNode(const std::wstring & textureName);
 
-        LightNode * AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color = MathLib::vec3f(1.0f, 1.0f, 1.0f));
-        SkySceneNode * AddSkySceneNode();
+    LightSceneNode * AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color = {1.0f, 1.0f, 1.0f});
+    void RemoveDirectionalLightNode(LightSceneNode * node);
+    LightSceneNode * AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color = {1.0f, 1.0f, 1.0f});
+    void SetAmbientColor(const MathLib::vec3f & color);
+    MathLib::vec3f GetAmbientColor() const;
 
-        SkySceneNode * GetActiveSkyNode() const;
+    SkySceneNode * AddSkySceneNode();
+    SkySceneNode * GetActiveSkyNode() const;
 
-        void SetActiveCamera(CameraSceneNode * camera);
-        CameraSceneNode * GetActiveCamera() const;
+    CameraSceneNode * AddCameraSceneNode(CameraViewType cameraType);
+    void SetActiveCamera(CameraSceneNode * camera);
+    CameraSceneNode * GetActiveCamera() const;
 
-        void SetAmbientColor(const MathLib::vec3f & color);
-        MathLib::vec3f GetAmbientColor() const;
+    void DrawAll(double dt) const;
+    void MoveNodeCallback(ISceneNode * node);
 
-        void MoveNodeCallback(ISceneNode * node);
+private:
+    void CreateSpriteMesh();
+    void CreateSpriteProgram();
 
-    protected:
-        ISceneNode * rootNode = nullptr;
-        CameraSceneNode * activeCamera = nullptr;
-        SkySceneNode * activeSky = nullptr;
-        VertexSemantic skySemantic;
-        std::vector<LightNode*> directionalLights;
+    ISceneNode *                rootNode = nullptr;
+    CameraSceneNode *           activeCamera = nullptr;
+    SkySceneNode *              activeSky = nullptr;
+    VertexSemantic              skySemantic;
+    std::vector<LightSceneNode*>     directionalLights;
+    SceneGraphType              type = SGT_Plain;
+    MathLib::vec3f              ambientColor = {};
 
-        SceneGraphType type = SGT_Plain;
+    IProgramPtr                 spriteProgram = nullptr;
+    IMeshDataPtr                spriteMesh = nullptr;
 
-        MathLib::vec3f ambientColor = {};
+};
 
-    };
 }

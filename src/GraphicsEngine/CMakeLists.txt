@@ -39,11 +39,11 @@ if(${RENDERER} STREQUAL D3D11_RENDER)
                     dinput8.lib
                     dxgi.lib)
     
-    set(LS  APIs/D3D11/D3D11ContextManager.cpp
+    set(LS  APIs/D3D11/D3D11Context.cpp
+            APIs/D3D11/D3D11ContextManager.cpp
             APIs/D3D11/D3D11Mesh.cpp
             APIs/D3D11/D3D11MeshManager.cpp
             APIs/D3D11/D3D11Program.cpp
-            APIs/D3D11/D3D11RenderTarget.cpp
             APIs/D3D11/D3D11ShaderGenerator.cpp
             APIs/D3D11/D3D11ShaderManager.cpp
             APIs/D3D11/D3D11Texture.cpp
@@ -53,6 +53,7 @@ if(${RENDERER} STREQUAL D3D11_RENDER)
     
     set(LS  APIs/D3D11/D3D11Context.h
             APIs/D3D11/D3D11ContextManager.h
+            APIs/D3D11/D3D11DepthStencil.h
             APIs/D3D11/D3D11Mesh.h
             APIs/D3D11/D3D11MeshManager.h
             APIs/D3D11/D3D11Program.h
@@ -70,8 +71,8 @@ endif()
 set(LS  SceneGraph/CameraFrustum.cpp
         SceneGraph/CameraSceneNode.cpp
         SceneGraph/ISceneNode.cpp
-        SceneGraph/LightNode.cpp
-        SceneGraph/MeshNode.cpp
+        SceneGraph/LightSceneNode.cpp
+        SceneGraph/MeshSceneNode.cpp
         SceneGraph/QuadTreeNode.cpp
         SceneGraph/SceneGraph.cpp
         SceneGraph/SkySceneNode.cpp
@@ -84,8 +85,8 @@ set(LS  SceneGraph/CameraFrustum.h
         SceneGraph/CameraSceneNode.h
         SceneGraph/ICameraController.h
         SceneGraph/ISceneNode.h
-        SceneGraph/LightNode.h
-        SceneGraph/MeshNode.h
+        SceneGraph/LightSceneNode.h
+        SceneGraph/MeshSceneNode.h
         SceneGraph/PlainTreeNode.h
         SceneGraph/QuadTreeNode.h
         SceneGraph/SceneGraph.h
