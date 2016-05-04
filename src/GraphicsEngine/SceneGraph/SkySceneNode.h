@@ -11,7 +11,7 @@ public:
     SkySceneNode(const Material * material, const IMeshDataPtr & meshData, SceneGraph * sceneGraph);
 
     virtual void PushToRQ(RenderQueue & rq);
-    virtual int CheckVisibility(CameraSceneNode * activeCam) const;
+    virtual CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const override;
 
 };
 

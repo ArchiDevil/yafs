@@ -6,10 +6,13 @@
 #include <algorithm>
 
 using namespace ShiftEngine;
+using namespace MathLib;
 
 ISceneNode::ISceneNode(SceneGraph * sceneGraph)
     : pSceneGraph(sceneGraph)
-{}
+{
+    CreateMatrices();
+}
 
 ISceneNode::~ISceneNode()
 {
@@ -34,7 +37,7 @@ void ISceneNode::AddChild(ISceneNode * node)
     //find empty place
     for (auto & elem : children)
     {
-        if (elem == nullptr)
+        if (!elem)
         {
             elem = node;
             return;
@@ -145,6 +148,7 @@ MathLib::vec3f ISceneNode::GetWorldScale() const
 {
     if (parent)
         return parent->Scale + Scale;
+
     return Scale;
 }
 
@@ -188,7 +192,7 @@ void ISceneNode::RotateByLocal(const MathLib::qaFloat & val)
     Rotation = Rotation * val;
 }
 
-int ISceneNode::CheckVisibility(CameraSceneNode * activeCam) const
+CameraFrustum::CullingStatus ISceneNode::CheckVisibility(const CameraSceneNode & activeCam) const
 {
     MathLib::mat4f matWorld = GetWorldMatrix();
     MathLib::AABB bbox = GetBBox();
@@ -199,7 +203,7 @@ int ISceneNode::CheckVisibility(CameraSceneNode * activeCam) const
     vecMax = MathLib::vec4Transform(vecMax, matWorld);
     MathLib::AABB newBbox(MathLib::vec3f(vecMin.x, vecMin.y, vecMin.z), MathLib::vec3f(vecMax.x, vecMax.y, vecMax.z));
 
-    return activeCam->GetFrustumPtr()->CheckAABB(newBbox);
+    return activeCam.GetFrustumPtr()->CheckAABB(newBbox);
 }
 
 SceneGraph * ISceneNode::GetSceneGraph() const

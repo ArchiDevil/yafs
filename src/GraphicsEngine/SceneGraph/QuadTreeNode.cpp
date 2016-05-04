@@ -60,13 +60,13 @@ void QuadTreeNode::PushToRQ(RenderQueue & rq)
 
     for (auto elem : subtrees)
     {
-        int visibilityStatus = elem->CheckVisibility(rq.GetActiveCamera());
+        CameraFrustum::CullingStatus visibilityStatus = elem->CheckVisibility(*rq.GetActiveCamera());
 
-        if (visibilityStatus == 0) //out
+        if (visibilityStatus == CameraFrustum::CullingStatus::CS_Out) //out
             continue;
-        if (visibilityStatus == 1) //intersect
+        if (visibilityStatus == CameraFrustum::CullingStatus::CS_Intersect) //intersect
             elem->Draw(rq);
-        if (visibilityStatus == 2) //in
+        if (visibilityStatus == CameraFrustum::CullingStatus::CS_In) //in
             elem->PushFull(rq);
     }
 
@@ -165,7 +165,7 @@ MathLib::mat4f QuadTreeNode::GetWorldMatrix() const
     return MathLib::matrixIdentity<float>();
 }
 
-int QuadTreeNode::CheckVisibility(CameraSceneNode * activeCam) const
+CameraFrustum::CullingStatus QuadTreeNode::CheckVisibility(const CameraSceneNode & activeCam) const
 {
     MathLib::mat4f matWorld = GetWorldMatrix();
     MathLib::vec4f vecMin = {bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f};
@@ -174,7 +174,7 @@ int QuadTreeNode::CheckVisibility(CameraSceneNode * activeCam) const
     vecMax = MathLib::vec4Transform(vecMax, matWorld);
     MathLib::AABB newBbox({vecMin.x, vecMin.y, vecMin.z}, {vecMax.x, vecMax.y, vecMax.z});
 
-    return activeCam->GetFrustumPtr()->CheckQTreeNode(newBbox);
+    return activeCam.GetFrustumPtr()->CheckQTreeNode(newBbox);
 }
 
 unsigned int QuadTreeNode::GetChildsCount() const

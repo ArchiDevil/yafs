@@ -6,18 +6,18 @@ namespace ShiftEngine
 {
 
 class CameraFrustum
-{
-public:
-    enum CullingStatus
     {
-        CS_Out,
-        CS_Intersect,
-        CS_In
-    };
+    public:
+        enum class CullingStatus
+        {
+            CS_Out,
+            CS_Intersect,
+            CS_In
+        };
 
-    CameraFrustum() = default;
-    ~CameraFrustum() = default;
-    CameraFrustum(const CameraFrustum &) = default;
+        CameraFrustum() = default;
+        CameraFrustum(const CameraFrustum &) = default;
+        ~CameraFrustum() = default;
 
     void BuildFrustum(const MathLib::mat4f & matView, const MathLib::mat4f & matProj);
 

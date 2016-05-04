@@ -38,6 +38,7 @@ public:
     MathLib::vec3f GetUpVector() const;
 
     CameraFrustum * GetFrustumPtr();
+    const CameraFrustum * GetFrustumPtr() const;
 
     virtual void PushToRQ(RenderQueue & rq) override;
 

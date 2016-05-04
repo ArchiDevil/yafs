@@ -3,15 +3,13 @@
 #include "../ShiftEngine.h"
 
 using namespace ShiftEngine;
+using namespace MathLib;
 
 MeshSceneNode::MeshSceneNode(const IMeshDataPtr & _data, const Material * mat, SceneGraph * sceneGraph)
     : ISceneNode(sceneGraph)
     , isVisible(true)
     , material(*mat)
     , Data(_data)
-{}
-
-MeshSceneNode::~MeshSceneNode()
 {}
 
 void MeshSceneNode::PushToRQ(RenderQueue & rq)
@@ -61,9 +59,9 @@ int MeshSceneNode::Render()
 
 MathLib::AABB MeshSceneNode::GetBBox() const
 {
-    MathLib::mat4f matWorld = GetWorldMatrix();
-    MathLib::vec4f points[8];
-    MathLib::AABB bbox = {};
+    mat4f matWorld = GetWorldMatrix();
+    vec4f points[8];
+    AABB bbox = {};
     if (Data)
         bbox = Data->GetBBox();
 
@@ -76,10 +74,10 @@ MathLib::AABB MeshSceneNode::GetBBox() const
     points[6] = {bbox.bMax.x, bbox.bMin.y, bbox.bMax.z, 1.0f};
     points[7] = {bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f};
 
-    MathLib::vec3f min, max;
+    vec3f min, max;
 
     for (int i = 0; i < 8; i++)
-        points[i] = MathLib::vec4Transform(points[i], matWorld);
+        points[i] = vec4Transform(points[i], matWorld);
 
     min.x = points[0].x;
     min.y = points[0].y;

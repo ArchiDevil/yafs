@@ -1,10 +1,10 @@
 #pragma once
 
-//MY INCLUDES
+#include "CameraFrustum.h"
+
 #include <Utilities/refcounted.h>
 #include <MathLib/math.h>
 
-//STL INCLUDES
 #include <vector>
 
 namespace ShiftEngine
@@ -59,7 +59,7 @@ public:
 
 protected:
     virtual void PushToRQ(RenderQueue & rq) = 0;
-    virtual int CheckVisibility(CameraSceneNode * activeCam) const;
+    virtual CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const;
     void CreateMatrices();
 
     SceneGraph * const      pSceneGraph = nullptr;

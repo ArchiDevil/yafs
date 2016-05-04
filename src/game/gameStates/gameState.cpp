@@ -34,10 +34,9 @@ bool GameState::initState()
     // to receive events for GUI
     subscribe(&InputEngine::GetInstance());
 
-    LostIsland::CreateGame();
+    GoingHome::CreateGame();
 
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
-    Game * pGame = LostIsland::GetGamePtr();
 
     //pGame->gameHud.reset(new GameHUD(guiModule));
     //LOG_INFO("HUD has been created");
@@ -61,7 +60,6 @@ bool GameState::initState()
 bool GameState::update(double dt)
 {
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
-    Game * pGame = LostIsland::GetGamePtr();
 
     // for example
     static double totalTime = 0.0;
@@ -81,7 +79,6 @@ bool GameState::render(double dt)
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
     ShiftEngine::Renderer * pRenderer = ShiftEngine::GetRenderer();
-    Game * pGame = LostIsland::GetGamePtr();
 
 #if defined (DEBUG) || (_DEBUG)
     const int infoSize = 6;
@@ -139,7 +136,6 @@ void GameState::ProcessInput(double dt)
     InputEngine & inputEngine = InputEngine::GetInstance();
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
     ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
-    Game * pGame = LostIsland::GetGamePtr();
     inputEngine.GetKeys();
     auto mouseInfo = inputEngine.GetMouseInfo();
 

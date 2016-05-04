@@ -16,7 +16,7 @@ class MeshSceneNode : public ISceneNode
 {
 public:
     MeshSceneNode(const IMeshDataPtr & _data, const Material * mat, SceneGraph * sceneGraph);
-    virtual ~MeshSceneNode();
+    virtual ~MeshSceneNode() = default;
 
     virtual int Render();
     virtual void PushToRQ(RenderQueue & rq);

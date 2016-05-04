@@ -16,7 +16,7 @@ void SkySceneNode::PushToRQ(RenderQueue & rq)
     rq.SetSkyNode(this);
 }
 
-int SkySceneNode::CheckVisibility(CameraSceneNode * /*activeCam*/) const
+CameraFrustum::CullingStatus SkySceneNode::CheckVisibility(const CameraSceneNode & activeCam) const
 {
-    return CameraFrustum::CS_In;
+    return CameraFrustum::CullingStatus::CS_In;
 }

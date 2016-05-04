@@ -68,6 +68,11 @@ CameraFrustum * CameraSceneNode::GetFrustumPtr()
     return &frustum;
 }
 
+const CameraFrustum * CameraSceneNode::GetFrustumPtr() const
+{
+    return &frustum;
+}
+
 void CameraSceneNode::LookAt(const vec3f & point)
 {
     lookVector = normalize(point);
