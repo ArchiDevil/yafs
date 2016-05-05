@@ -2,6 +2,7 @@
 
 #include <D3D11.h>
 #include <D3Dcompiler.h>
+#include <atlbase.h>
 #include <memory>
 
 #include <Utilities/logger.hpp>
@@ -10,6 +11,7 @@ struct ID3D11ShaderReflection;
 
 namespace ShiftEngine
 {
+
 enum class D3D11ShaderType
 {
     ST_Vertex,
@@ -25,19 +27,11 @@ class D3D11Shader
     friend class D3D11Program;
 
 public:
-    D3D11Shader(ID3D11DeviceChild * _shader, D3D11ShaderType _type, ID3D11ShaderReflection * _refl)
+    D3D11Shader(CComPtr<ID3D11DeviceChild> _shader, D3D11ShaderType _type, CComPtr<ID3D11ShaderReflection> _reflection)
         : shader(_shader)
         , type(_type)
-        , reflection(_refl)
+        , reflection(_reflection)
     {}
-
-    ~D3D11Shader()
-    {
-        if (shader)
-            shader->Release();
-        if (reflection)
-            reflection->Release();
-    }
 
     void BindShader(ID3D11DeviceContext * dev)
     {
@@ -82,9 +76,9 @@ public:
     }
 
 private:
-    ID3D11DeviceChild * shader;
+    CComPtr<ID3D11DeviceChild> shader = nullptr;
     D3D11ShaderType type;
-    ID3D11ShaderReflection * reflection; //reflection of this shader
+    CComPtr<ID3D11ShaderReflection> reflection = nullptr;
 };
 
 typedef std::shared_ptr<D3D11Shader> D3D11ShaderPtr;

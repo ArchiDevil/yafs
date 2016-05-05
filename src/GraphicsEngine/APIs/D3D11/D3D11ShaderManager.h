@@ -3,6 +3,8 @@
 #include <string>
 #include <unordered_map>
 
+#include <atlbase.h>
+
 #include "../../IShaderManager.h"
 #include "D3D11ShaderGenerator.h"
 #include "D3D11Program.h"
@@ -12,11 +14,11 @@
 
 namespace ShiftEngine
 {
+
 class D3D11ShaderManager : public IShaderManager
 {
 public:
-    D3D11ShaderManager(ID3D11Device * _pDevice);
-    ~D3D11ShaderManager();
+    D3D11ShaderManager(CComPtr<ID3D11Device> _pDevice);
 
     virtual IProgramPtr CreateProgramFromFile(const std::wstring & fileName) override;
     virtual IProgramPtr CreateProgramFromSource(const std::string & source) override;
@@ -27,7 +29,7 @@ private:
     D3D11ShaderPtr CompilePSFromSource(const std::string & source);
     D3D11ShaderPtr CompileShaderFromSource(const std::string & source, D3D11ShaderType shaderType);
 
-    ID3D11Device * pDevice = nullptr;
+    CComPtr<ID3D11Device> pDevice = nullptr;
     std::unique_ptr<D3D11ShaderGenerator> shaderGenerator = nullptr;
 
     std::map<std::pair<MaterialInfo, VertexSemantic>, IProgramPtr> materialPrograms;

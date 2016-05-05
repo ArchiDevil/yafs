@@ -4,10 +4,11 @@
 
 namespace ShiftEngine
 {
+
 class QuadTreeNode : public ISceneNode
 {
 public:
-    QuadTreeNode(float x1, float x2, float y1, float y2);
+    QuadTreeNode(float x1, float x2, float y1, float y2, SceneGraph * sceneGraph);
     ~QuadTreeNode();
 
     virtual void AddChild(ISceneNode * node) override;
@@ -23,9 +24,10 @@ private:
 
     unsigned int GetChildsCount() const;
 
-    virtual CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const override;
+    CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const override;
 
     QuadTreeNode * subtrees[4];
     MathLib::AABB bbox = {};
 };
+
 }

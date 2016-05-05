@@ -5,17 +5,14 @@
 
 using namespace ShiftEngine;
 
-D3D11Program::D3D11Program(D3D11ShaderPtr & vertexShader, D3D11ShaderPtr & pixelShader, ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext)
-    : vertexShader(vertexShader)
-    , pixelShader(pixelShader)
-    , pDevice(pDevice)
-    , pDeviceContext(pDeviceContext)
+D3D11Program::D3D11Program(D3D11ShaderPtr & _vertexShader, D3D11ShaderPtr & _pixelShader, CComPtr<ID3D11Device> _pDevice, CComPtr<ID3D11DeviceContext> _pDeviceContext)
+    : vertexShader(_vertexShader)
+    , pixelShader(_pixelShader)
+    , pDevice(_pDevice)
+    , pDeviceContext(_pDeviceContext)
 {
     ParseInfo();
 }
-
-D3D11Program::~D3D11Program()
-{}
 
 void D3D11Program::ParseInfo()
 {
@@ -24,7 +21,7 @@ void D3D11Program::ParseInfo()
     vertexShader->reflection->GetDesc(&desc);
     for (uint32_t i = 0; i < desc.ConstantBuffers; i++)
     {
-        ID3D11ShaderReflectionConstantBuffer * cb;
+        ID3D11ShaderReflectionConstantBuffer * cb = nullptr;
         cb = vertexShader->reflection->GetConstantBufferByIndex(i);
         D3D11_SHADER_BUFFER_DESC buffDesc;
         cb->GetDesc(&buffDesc);
@@ -53,7 +50,8 @@ void D3D11Program::ParseInfo()
         pBuffDesc->Name = buffDesc.Name;
         pBuffDesc->Size = buffDesc.Size;
         pBuffDesc->StartSlotVertex = i;
-        if (pBuffDesc->bufferData == nullptr) pBuffDesc->bufferData = new uint8_t[buffDesc.Size];
+        if (pBuffDesc->bufferData == nullptr)
+            pBuffDesc->bufferData = new uint8_t[buffDesc.Size];
         pBuffDesc->vertex = true;
 
         for (uint32_t j = 0; j < buffDesc.Variables; j++)
@@ -111,7 +109,7 @@ void D3D11Program::ParseInfo()
     pixelShader->reflection->GetDesc(&desc);
     for (uint32_t i = 0; i < desc.ConstantBuffers; i++)
     {
-        ID3D11ShaderReflectionConstantBuffer * cb;
+        ID3D11ShaderReflectionConstantBuffer * cb = nullptr;
         cb = pixelShader->reflection->GetConstantBufferByIndex(i);
         D3D11_SHADER_BUFFER_DESC buffDesc;
         cb->GetDesc(&buffDesc);
@@ -140,7 +138,8 @@ void D3D11Program::ParseInfo()
         pBuffDesc->Name = buffDesc.Name;
         pBuffDesc->Size = buffDesc.Size;
         pBuffDesc->StartSlotPixel = i;
-        if (pBuffDesc->bufferData == nullptr) pBuffDesc->bufferData = new uint8_t[buffDesc.Size];
+        if (pBuffDesc->bufferData == nullptr)
+            pBuffDesc->bufferData = new uint8_t[buffDesc.Size];
         pBuffDesc->pixel = true;
 
         for (uint32_t j = 0; j < buffDesc.Variables; j++)
@@ -285,9 +284,9 @@ void D3D11Program::Apply(bool shaderChanged)
 
             elem.isDirty = false;
             if (elem.vertex && shaderChanged)
-                pDeviceContext->VSSetConstantBuffers(elem.StartSlotVertex, 1, &elem.cbFromShader);
+                pDeviceContext->VSSetConstantBuffers(elem.StartSlotVertex, 1, &elem.cbFromShader.p);
             if (elem.pixel && shaderChanged)
-                pDeviceContext->PSSetConstantBuffers(elem.StartSlotPixel, 1, &elem.cbFromShader);
+                pDeviceContext->PSSetConstantBuffers(elem.StartSlotPixel, 1, &elem.cbFromShader.p);
         }
     }
 

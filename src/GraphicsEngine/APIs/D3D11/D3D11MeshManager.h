@@ -1,6 +1,7 @@
 #pragma once
 
 #include <D3D11.h>
+#include <atlbase.h>
 
 #include <string>
 #include <map>
@@ -11,10 +12,11 @@
 
 namespace ShiftEngine
 {
+
 class D3D11MeshManager : public IMeshManager
 {
 public:
-    D3D11MeshManager(ID3D11Device * _device);
+    D3D11MeshManager(CComPtr<ID3D11Device> _device);
     IMeshDataPtr LoadMesh(const std::wstring & fileName) override;
     IMeshDataPtr CreateMeshFromVertices(const uint8_t * verticesData,
                                         size_t verticesDataSize,
@@ -31,6 +33,7 @@ private:
     std::wstring errorName;
     std::map<std::wstring, D3D11MeshDataPtr> meshesData;
     std::set<VertexSemantic> semantics;
-    ID3D11Device * pDevice;
+    CComPtr<ID3D11Device> pDevice;
 };
+
 }

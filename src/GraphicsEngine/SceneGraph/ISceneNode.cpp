@@ -8,9 +8,10 @@
 using namespace ShiftEngine;
 using namespace MathLib;
 
-ISceneNode::ISceneNode()
+ISceneNode::ISceneNode(SceneGraph * sceneGraph)
+    : pSceneGraph(sceneGraph)
 {
-    CreateWorldMatrix();
+    CreateMatrices();
 }
 
 ISceneNode::~ISceneNode()
@@ -100,94 +101,112 @@ void ISceneNode::Draw(RenderQueue & rq)
 
 mat4f ISceneNode::GetWorldMatrix() const
 {
+    return worldMatrix;
+}
+
+mat4f ISceneNode::GetLocalMatrix() const
+{
+    return localMatrix;
+}
+
+void ISceneNode::CreateMatrices()
+{
+    matrix<float, 4> _scale = matrixScaling(scale);
+    matrix<float, 4> _rotation = rotation.to_matrix();
+    matrix<float, 4> _position = matrixTranslation(position);
+
     if (parent)
-        return worldMatrix * parent->GetWorldMatrix();
+        worldMatrix = localMatrix * parent->GetWorldMatrix();
     else
-        return worldMatrix;
+        worldMatrix = localMatrix;
+
+    localMatrix = _scale * _rotation * _position;
 }
 
-void ISceneNode::CreateWorldMatrix()
-{
-    matrix<float, 4> scale;
-    matrix<float, 4> rotation;
-    matrix<float, 4> position;
-
-    scale = matrixScaling(Scale);
-    rotation = Rotation.to_matrix();
-    position = matrixTranslation(Position);
-
-    worldMatrix = scale * rotation * position;
-}
-
-vec3f ISceneNode::GetPosition() const
+vec3f ISceneNode::GetWorldPosition() const
 {
     if (parent)
-        return parent->GetPosition() + Position;
-
-    return Position;
+        return parent->GetWorldPosition() + position;
+    return position;
 }
 
-void ISceneNode::SetPosition(const vec3f & val)
+vec3f ISceneNode::GetLocalPosition() const
 {
-    Position = val;
-    CreateWorldMatrix();
+    return position;
+}
+
+void ISceneNode::SetLocalPosition(const vec3f & val)
+{
+    position = val;
+    CreateMatrices();
 
     if (pSceneGraph)
         pSceneGraph->MoveNodeCallback(this);
 }
 
-vec3f ISceneNode::GetScale() const
+vec3f ISceneNode::GetWorldScale() const
 {
     if (parent)
-        return parent->Scale + Scale;
+        return {parent->scale.x * scale.x, parent->scale.y * scale.y, parent->scale.z * scale.z};
 
-    return Scale;
+    return scale;
 }
 
-void ISceneNode::SetScale(const vec3f & val)
+vec3f ISceneNode::GetLocalScale() const
 {
-    Scale = val;
-    CreateWorldMatrix();
+    return scale;
+}
 
+void ISceneNode::SetLocalScale(const vec3f & val)
+{
+    scale = val;
+    CreateMatrices();
     if (pSceneGraph)
         pSceneGraph->MoveNodeCallback(this);
 }
 
-void ISceneNode::SetScale(float val)
+void ISceneNode::SetLocalScale(float val)
 {
-    SetScale({val, val, val});
+    SetLocalScale({val, val, val});
 }
 
-qaFloat ISceneNode::GetRotation() const
+qaFloat ISceneNode::GetWorldRotation() const
 {
-    return Rotation;
+    if (parent)
+        return rotation * parent->GetWorldRotation();
+    return rotation;
 }
 
-void ISceneNode::SetRotation(const qaFloat & val)
+qaFloat ISceneNode::GetLocalRotation() const
 {
-    Rotation = val;
+    return rotation;
 }
 
-void ISceneNode::RotateBy(const qaFloat & val)
+void ISceneNode::SetLocalRotation(const qaFloat & val)
 {
-    Rotation = Rotation * val;
+    rotation = val;
 }
 
-CameraFrustum::CullingStatus ShiftEngine::ISceneNode::CheckVisibility(const CameraSceneNode & activeCam) const
+void ISceneNode::RotateByLocalQuaternion(const qaFloat & val)
+{
+    rotation = rotation * val;
+}
+
+CameraFrustum::CullingStatus ISceneNode::CheckVisibility(const CameraSceneNode & activeCam) const
 {
     mat4f matWorld = GetWorldMatrix();
     AABB bbox = GetBBox();
 
-    vec4f vecMin = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
-    vec4f vecMax = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
+    vec4f vecMin = {bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f};
+    vec4f vecMax = {bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f};
     vecMin = vec4Transform(vecMin, matWorld);
     vecMax = vec4Transform(vecMax, matWorld);
-    AABB newBbox({vecMin.x, vecMin.y, vecMin.z}, {vecMax.x, vecMax.y, vecMax.z});
+    AABB newBbox(vec3f(vecMin.x, vecMin.y, vecMin.z), vec3f(vecMax.x, vecMax.y, vecMax.z));
 
-    return activeCam.GetFrustumPtr()->CheckAABB(newBbox);
+    return activeCam.GetFrustum().CheckAABB(newBbox);
 }
 
-void ISceneNode::SetSceneGraph(SceneGraph * val)
+SceneGraph * ISceneNode::GetSceneGraph() const
 {
-    pSceneGraph = val;
+    return pSceneGraph;
 }

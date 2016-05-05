@@ -7,8 +7,7 @@ namespace ShiftEngine
 class IMeshManager
 {
 public:
-    virtual ~IMeshManager()
-    {}
+    virtual ~IMeshManager() {}
     virtual IMeshDataPtr LoadMesh(const std::wstring & fileName) = 0;
     virtual IMeshDataPtr CreateMeshFromVertices(const uint8_t * verticesData,
                                                 size_t verticesDataSize,

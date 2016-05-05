@@ -7,8 +7,8 @@
 using namespace ShiftEngine;
 using namespace MathLib;
 
-CameraSceneNode::CameraSceneNode(float screenWidth, float screenHeight, float zNear, float zFar, float FOV, CameraViewType viewType)
-    : ISceneNode()
+CameraSceneNode::CameraSceneNode(float screenWidth, float screenHeight, float zNear, float zFar, float FOV, CameraViewType viewType, SceneGraph * sceneGraph)
+    : ISceneNode(sceneGraph)
     , zNear(zNear)
     , zFar(zFar)
     , fov(FOV)
@@ -17,16 +17,11 @@ CameraSceneNode::CameraSceneNode(float screenWidth, float screenHeight, float zN
     , viewType(viewType)
 {
     vec3f LOOK_POS = lookVector + position;
-    matView = matrixLookAtRH<float>(position, LOOK_POS, upVector);
+    matView = matrixLookAtLH<float>(position, LOOK_POS, upVector);
     RebuildProjMatrix();
 }
 
-CameraSceneNode::CameraSceneNode(const vec3f &position)
-    : ISceneNode()
-    , position(position)
-{}
-
-void CameraSceneNode::SetPosition(const vec3f & pos)
+void CameraSceneNode::SetLocalPosition(const vec3f & pos)
 {
     position = pos;
 }
@@ -49,33 +44,23 @@ void CameraSceneNode::MoveForwardBackward(float units)
 void CameraSceneNode::Update()
 {
     vec3f eye = lookVector + position;
-    matView = matrixLookAtRH<float>(position, eye, upVector);
+    matView = matrixLookAtLH<float>(position, eye, upVector);
     frustum.BuildFrustum(matView, matProj);
 }
 
-vec3f CameraSceneNode::GetLookVector() const
+const MathLib::vec3f & ShiftEngine::CameraSceneNode::GetLookVector() const
 {
     return lookVector;
 }
 
-vec3f CameraSceneNode::GetRightVector() const
+const MathLib::vec3f & ShiftEngine::CameraSceneNode::GetRightVector() const
 {
     return rightVector;
 }
 
-vec3f CameraSceneNode::GetPosition() const
+const CameraFrustum & CameraSceneNode::GetFrustum() const
 {
-    return position;
-}
-
-CameraFrustum * CameraSceneNode::GetFrustumPtr()
-{
-    return &frustum;
-}
-
-const CameraFrustum * CameraSceneNode::GetFrustumPtr() const
-{
-    return &frustum;
+    return frustum;
 }
 
 void CameraSceneNode::LookAt(const vec3f & point)
@@ -96,7 +81,7 @@ const mat4f & CameraSceneNode::GetViewMatrix() const
     return matView;
 }
 
-vec3f CameraSceneNode::GetUpVector() const
+const MathLib::vec3f & ShiftEngine::CameraSceneNode::GetUpVector() const
 {
     return upVector;
 }
@@ -150,13 +135,13 @@ void CameraSceneNode::RebuildProjMatrix()
 {
     switch (viewType)
     {
-    case CameraViewType::Projection:
-        matProj = matrixPerspectiveFovRH<float>(M_PIF * fov / 180.0f,       // vertical FoV
+    case CameraViewType::Perspective:
+        matProj = matrixPerspectiveFovLH<float>(M_PIF * fov / 180.0f,       // vertical FoV
                                                 screenWidth / screenHeight, // screen rate
                                                 zNear,
                                                 zFar);
     case CameraViewType::Orthographic:
-        matProj = matrixOrthoRH<float>(screenWidth, screenHeight, zFar, zNear);
+        matProj = matrixOrthoLH<float>(screenWidth, screenHeight, zFar, zNear);
         break;
     default:
         LOG_FATAL_ERROR("Unable to recognize projection type");
@@ -164,23 +149,23 @@ void CameraSceneNode::RebuildProjMatrix()
     }
 }
 
-void CameraSceneNode::RotateByQuaternion(const qaFloat & quat)
+void CameraSceneNode::RotateByLocalQuaternion(const qaFloat & quat)
 {
     // transform all vectors
-    vec3f look(lookVector.x, lookVector.y, lookVector.z);
+    vec3f look = {lookVector.x, lookVector.y, lookVector.z};
     look = look * quat;
     lookVector = look;
 
-    vec3f up(upVector.x, upVector.y, upVector.z);
+    vec3f up = {upVector.x, upVector.y, upVector.z};
     up = up * quat;
     upVector = up;
 
-    vec3f right(rightVector.x, rightVector.y, rightVector.z);
+    vec3f right = {rightVector.x, rightVector.y, rightVector.z};
     right = right * quat;
     rightVector = right;
 
     vec3f LOOK_POS = lookVector + position;
-    matView = matrixLookAtRH<float>(position, LOOK_POS, upVector);
+    matView = matrixLookAtLH<float>(position, LOOK_POS, upVector);
 }
 
 void CameraSceneNode::SetSphericalCoords(const vec3f & center, float phi, float theta, float r)
@@ -196,7 +181,7 @@ void CameraSceneNode::SetSphericalCoords(const vec3f & center, float phi, float 
     upVector = normalize(upVector);
 
     vec3f at = lookVector + position;
-    matView = matrixLookAtRH<float>(position, at, upVector);
+    matView = matrixLookAtLH<float>(position, at, upVector);
 }
 
 AABB CameraSceneNode::GetBBox() const

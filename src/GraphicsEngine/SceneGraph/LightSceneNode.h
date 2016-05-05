@@ -4,6 +4,7 @@
 
 namespace ShiftEngine
 {
+
 enum LightNodeType
 {
     LNT_Point,
@@ -14,7 +15,7 @@ enum LightNodeType
 class LightSceneNode final : public ISceneNode
 {
 public:
-    LightSceneNode(LightNodeType type, const MathLib::vec3f & color = {1.0f, 1.0f, 1.0f});
+    LightSceneNode(SceneGraph * sceneGraph, LightNodeType type, const MathLib::vec3f & color = {1.0f, 1.0f, 1.0f});
 
     virtual void PushToRQ(RenderQueue & rq) override;
     void SetColor(const MathLib::vec3f & color);
@@ -34,6 +35,11 @@ public:
     virtual void KillSelf();
     virtual MathLib::AABB GetBBox() const override;
 
+    LightSceneNode(const LightSceneNode & ref) = delete;
+    LightSceneNode(LightSceneNode && ref) = delete;
+    LightSceneNode& operator=(const LightSceneNode & ref) = delete;
+    LightSceneNode& operator=(LightSceneNode && ref) = delete;
+
 private:
     MathLib::vec3f color = {1.0f, 1.0f, 1.0};
     const LightNodeType type;
@@ -46,4 +52,5 @@ private:
 
     bool active = true;
 };
+
 }

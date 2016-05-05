@@ -31,16 +31,19 @@ D3D11ContextManager::D3D11ContextManager(HWND hwnd)
     //plainSpriteVertexSemantic.addVertexSemantic(ET_FLOAT, 1, ES_Color);
 }
 
-D3D11ContextManager::~D3D11ContextManager()
-{
-}
+ShiftEngine::D3D11ContextManager::~D3D11ContextManager()
+{}
 
 bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettings _Paths)
 {
     engineSettings = _Settings;
     enginePaths = _Paths;
 
-    if (enginePaths.FontsPath.empty() || enginePaths.MaterialsPath.empty() || enginePaths.MeshPath.empty() || enginePaths.ShaderPath.empty() || enginePaths.TexturePath.empty())
+    if (enginePaths.FontsPath.empty() ||
+        enginePaths.MaterialsPath.empty() ||
+        enginePaths.MeshPath.empty() ||
+        enginePaths.ShaderPath.empty() ||
+        enginePaths.TexturePath.empty())
         LOG_ERROR("Some settings paths are not filled");
 
     DXGI_SWAP_CHAIN_DESC desc;
@@ -77,20 +80,19 @@ bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettin
 
     D3D_FEATURE_LEVEL featureLevel;
 
-    HRESULT hr = D3D11CreateDeviceAndSwapChain(
-        NULL,
-        D3D_DRIVER_TYPE_HARDWARE,
-        NULL,
-        Flags,
-        featureLevels,
-        3,
-        D3D11_SDK_VERSION,
-        &desc,
-        &graphicsContext.SwapChain,
-        &graphicsContext.Device,
-        &featureLevel,
-        &graphicsContext.DeviceContext
-        );
+    HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL,
+                                               D3D_DRIVER_TYPE_HARDWARE,
+                                               NULL,
+                                               Flags,
+                                               featureLevels,
+                                               3,
+                                               D3D11_SDK_VERSION,
+                                               &desc,
+                                               &graphicsContext.SwapChain,
+                                               &graphicsContext.Device,
+                                               &featureLevel,
+                                               &graphicsContext.DeviceContext
+    );
 
     if (FAILED(hr))
         LOG_FATAL_ERROR("Unable to create D3D11 device: ", std::hex, hr, std::dec);
@@ -103,7 +105,7 @@ bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettin
     ID3D11Texture2D * tempTex = nullptr;
 
     graphicsContext.SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&tempTex));
-    graphicsContext.Device->CreateRenderTargetView(tempTex, 0, &graphicsContext.DefaultRT->rt);
+    graphicsContext.Device->CreateRenderTargetView(tempTex, 0, &graphicsContext.DefaultRT->view);
     tempTex->Release();
 
     /////////////////////////////////////
@@ -123,9 +125,13 @@ bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettin
     depthStencilDesc.CPUAccessFlags = 0;                                //доступ процессора
     depthStencilDesc.MiscFlags = 0;                                     //прочие флаги
 
-    graphicsContext.Device->CreateTexture2D(&depthStencilDesc, 0, &graphicsContext.DepthStencilBuffer);
-    graphicsContext.Device->CreateDepthStencilView(graphicsContext.DepthStencilBuffer, 0, &graphicsContext.DepthStencilView);
-    graphicsContext.DeviceContext->OMSetRenderTargets(1, &graphicsContext.DefaultRT->rt, graphicsContext.DepthStencilView); //установка рендер-таргетов
+    if (FAILED(graphicsContext.Device->CreateTexture2D(&depthStencilDesc, 0, &graphicsContext.DefaultDS->texture)))
+        LOG_FATAL_ERROR("Unable to create default depth buffer");
+
+    if (FAILED(graphicsContext.Device->CreateDepthStencilView(graphicsContext.DefaultDS->texture, 0, &graphicsContext.DefaultDS->view)))
+        LOG_FATAL_ERROR("Unable to create default depth buffer");
+
+    graphicsContext.DeviceContext->OMSetRenderTargets(1, &graphicsContext.DefaultRT->view.p, graphicsContext.DefaultDS->view);
 
     D3D11_VIEWPORT vp;
     vp.TopLeftX = 0;
@@ -143,7 +149,7 @@ bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettin
     zBufferState = true;
     graphicsContext.DeviceContext->OMSetDepthStencilState(graphicsContext.dsStateZOn, 1);
     graphicsContext.DeviceContext->RSSetState(graphicsContext.rsNormal);
-    const float BlendFactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    const float BlendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsNormal, BlendFactor, 0xffffffff);
 
     shaderManager = new D3D11ShaderManager(graphicsContext.Device);
@@ -208,9 +214,7 @@ std::wstring D3D11ContextManager::GetGPUDescription()
 
 void D3D11ContextManager::BeginScene()
 {
-    float clearColors[] = { 208.0f / 255.0f, 238.0f / 255.0f, 248.0f / 255.0f, 1.0f };
-    graphicsContext.DeviceContext->ClearRenderTargetView(graphicsContext.DefaultRT->rt, clearColors);
-    graphicsContext.DeviceContext->ClearDepthStencilView(graphicsContext.DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    graphicsContext.ClearDefaultRenderTarget();
 }
 
 void D3D11ContextManager::EndScene()
@@ -322,7 +326,7 @@ IShaderGenerator * D3D11ContextManager::GetShaderGenerator()
 
 void D3D11ContextManager::SetBlendingState(BlendingState bs)
 {
-    const float BlendFactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    const float BlendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
     switch (bs)
     {
@@ -436,7 +440,7 @@ IVertexDeclarationPtr D3D11ContextManager::CreateVDFromDescription(const VertexS
         outIL = nullptr;
     }
 
-    D3D11_INPUT_ELEMENT_DESC * ilDesc = new D3D11_INPUT_ELEMENT_DESC[repr.size()];
+    std::vector<D3D11_INPUT_ELEMENT_DESC> ilDescription(repr.size());
     unsigned int align = 0;
 
     for (size_t i = 0; i < repr.size(); i++)
@@ -445,57 +449,53 @@ IVertexDeclarationPtr D3D11ContextManager::CreateVDFromDescription(const VertexS
         switch (repr[i].semantic)
         {
         case ES_Position:
-            ilDesc[i].SemanticName = "POSITION";
+            ilDescription[i].SemanticName = "POSITION";
             break;
         case ES_Normal:
-            ilDesc[i].SemanticName = "NORMAL";
+            ilDescription[i].SemanticName = "NORMAL";
             break;
         case ES_Texcoord:
-            ilDesc[i].SemanticName = "TEXCOORD";
+            ilDescription[i].SemanticName = "TEXCOORD";
             break;
         case ES_Color:
-            ilDesc[i].SemanticName = "COLOR";
+            ilDescription[i].SemanticName = "COLOR";
             break;
         case ES_Binormal:
-            ilDesc[i].SemanticName = "BINORMAL";
+            ilDescription[i].SemanticName = "BINORMAL";
             break;
         case ES_Tangent:
-            ilDesc[i].SemanticName = "TANGENT";
+            ilDescription[i].SemanticName = "TANGENT";
             break;
         case ES_Custom:
         default:
-            delete[] ilDesc;
-            ilDesc = nullptr;
             throw;
         }
         //TEMP
 
-        ilDesc[i].AlignedByteOffset = align;
+        ilDescription[i].AlignedByteOffset = align;
         if (repr[i].count == 1)
-            ilDesc[i].Format = DXGI_FORMAT_R32_FLOAT;
+            ilDescription[i].Format = DXGI_FORMAT_R32_FLOAT;
         if (repr[i].count == 2)
-            ilDesc[i].Format = DXGI_FORMAT_R32G32_FLOAT;
+            ilDescription[i].Format = DXGI_FORMAT_R32G32_FLOAT;
         if (repr[i].count == 3)
-            ilDesc[i].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+            ilDescription[i].Format = DXGI_FORMAT_R32G32B32_FLOAT;
         if (repr[i].count == 4)
-            ilDesc[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-        ilDesc[i].InputSlot = 0;
-        ilDesc[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-        ilDesc[i].InstanceDataStepRate = 0;
-        ilDesc[i].SemanticIndex = 0;
+            ilDescription[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+        ilDescription[i].InputSlot = 0;
+        ilDescription[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+        ilDescription[i].InstanceDataStepRate = 0;
+        ilDescription[i].SemanticIndex = 0;
         align += repr[i].count * 4;
     }
 
-    if (FAILED(pDevice->CreateInputLayout(ilDesc, repr.size(), compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), &outIL)))
+    if (FAILED(pDevice->CreateInputLayout(ilDescription.data(), repr.size(), compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), &outIL)))
     {
-        delete[] ilDesc;
         compiledShader->Release();
         outIL = nullptr;
         LOG_FATAL_ERROR("Unable to create input layout");
         return nullptr;
     }
 
-    delete[] ilDesc;
     compiledShader->Release();
 
     //HACK: slow but I'm lazy to rework

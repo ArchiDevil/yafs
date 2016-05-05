@@ -1,37 +1,36 @@
 #pragma once
 
-#include <vector>
-#include <unordered_map>
+#include <Utilities/timer.h>
+#include <Utilities/IManager.h>
 
 #include "VertexTypes.h"
 #include "RenderQueue.h"
 #include "IShaderManager.h"
-#include "IShaderGenerator.h"
 
-#ifdef D3D10_RENDER
-#   include "APIs/D3D10/D3D10ContextManager.h"
-#elif D3D11_RENDER
+#ifdef D3D11_RENDER
 #   include "APIs/D3D11/D3D11ContextManager.h"
 #elif OPENGL_RENDER
 #   include "APIs/OGL33/OpenGLContextManager.h"
 #endif
 
-#include <Utilities/timer.h>
+#include <vector>
+#include <unordered_map>
 
 namespace ShiftEngine
 {
-class Renderer
+
+class Renderer : public IManager
 {
     struct RendererState
     {
         void Reset()
         {
-            DrawCalls = 0;
-            PolygonsCount = 0;
-            ShaderChanges = 0;
-            TextureBindings = 0;
-            UniformsBindings = 0;
-            MatricesBindings = 0;
+            drawCalls = 0;
+            polygonsCount = 0;
+            shaderChanges = 0;
+            textureBindings = 0;
+            uniformsBindings = 0;
+            matricesBindings = 0;
             shaderChanged = true;
             materialChanged = true;
             currentProgram = nullptr;
@@ -39,15 +38,15 @@ class Renderer
             texturesCache.clear();
         }
 
-        unsigned int DrawCalls = 0;
-        unsigned int PolygonsCount = 0;
-        unsigned int ShaderChanges = 0;
-        unsigned int TextureBindings = 0;
-        unsigned int UniformsBindings = 0;
-        unsigned int MatricesBindings = 0;
+        size_t drawCalls = 0;
+        size_t polygonsCount = 0;
+        size_t shaderChanges = 0;
+        size_t textureBindings = 0;
+        size_t uniformsBindings = 0;
+        size_t matricesBindings = 0;
 
         bool shaderChanged = true;
-        bool materialChanged = true; // was false in default constructor
+        bool materialChanged = true;
 
         std::unordered_map<engineTextures, ITexturePtr> texturesCache;
 
@@ -55,19 +54,19 @@ class Renderer
     };
 
 public:
-    Renderer(IShaderManager * _pShaderManager, IShaderGenerator * _pShaderGenerator);
+    Renderer(IShaderManager * _pShaderManager);
 
     void DrawAll(RenderQueue & rq, double dt);
 
-    unsigned int GetDrawCalls() const;
-    unsigned int GetDrawnPolygonsCount() const;
-    unsigned int GetTextureBindings() const;
-    unsigned int GetUniformsBindings() const;
-    unsigned int GetMatricesBindings() const;
+    size_t GetDrawCalls() const;
+    size_t GetDrawnPolygonsCount() const;
+    size_t GetTextureBindings() const;
+    size_t GetUniformsBindings() const;
+    size_t GetMatricesBindings() const;
 
     double GetElapsedTime() const;
-    int GetFPS() const;
-    double GetMSPF() const;
+    size_t GetFPS() const;
+    double GetFrameDuration() const;
     unsigned int GetShaderChanges() const;
 
 private:
@@ -79,17 +78,23 @@ private:
     void bindCustomUniforms(MeshSceneNode * currentNode, const RenderQueue & list);
 
     void drawSky(RenderQueue &rq);
+    void drawSprites(SpritesVector & sprites, CameraSceneNode & currentCamera);
     void bindLights(const LightsVector & lv, unsigned int startIndex, unsigned int count, Material * matPtr);
 
-    RendererState currentState;
+    void loadSpritesPrerequisites();
 
-    windows_high_reference_timer FPSTimer;
-    double elapsedTime;
-    int	FPSCounter;
-    int	FPS;
-    double millisecondsPerFrame;
+    RendererState                   currentState;
 
-    IShaderManager * pShaderManager;
-    IShaderGenerator * pShaderGenerator;
+    // this is not the main purpose of the renderer - to calculate FPS
+    windows_high_reference_timer    FPSTimer;
+    double                          elapsedTime = 0.0;
+    size_t                          FPSCounter = 0;
+    size_t                          FPS = 0;
+    double                          millisecondsPerFrame = 0.0;
+
+    IShaderManager *                pShaderManager = nullptr;
+    IProgramPtr                     spriteProgram = nullptr;
+    IMeshDataPtr                    spriteMesh = nullptr;
 };
+
 }

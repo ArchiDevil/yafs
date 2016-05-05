@@ -12,61 +12,14 @@ D3D11MeshData::D3D11MeshData(ID3D11Buffer * _VB /*= nullptr*/, ID3D11Buffer * _I
     , pDeviceContext(pDeviceContext)
 {}
 
-D3D11MeshData::D3D11MeshData(const D3D11MeshData & ref)
-    : pDevice(ref.pDevice)
-    , pDeviceContext(ref.pDeviceContext)
-{
-    indicesCount = ref.indicesCount;
-    vertexSize = ref.vertexSize;
-    verticesCount = ref.verticesCount;
-    vertexDeclaration = ref.vertexDeclaration;
-    vertexSemantic = ref.vertexSemantic;
-
-    IndexBuffer = ref.IndexBuffer;
-    if (IndexBuffer)
-        IndexBuffer->AddRef();
-
-    VertexBuffer = ref.VertexBuffer;
-    if (VertexBuffer)
-        VertexBuffer->AddRef();
-}
-
-D3D11MeshData& D3D11MeshData::operator = (const D3D11MeshData & ref)
-{
-    indicesCount = ref.indicesCount;
-    vertexSize = ref.vertexSize;
-    verticesCount = ref.verticesCount;
-
-    IndexBuffer = ref.IndexBuffer;
-    if (IndexBuffer)
-        IndexBuffer->AddRef();
-
-    VertexBuffer = ref.VertexBuffer;
-    if (VertexBuffer)
-        VertexBuffer->AddRef();
-
-    vertexDeclaration = ref.vertexDeclaration;
-    vertexSemantic = ref.vertexSemantic;
-
-    pDevice = ref.pDevice;
-    pDeviceContext = ref.pDeviceContext;
-
-    return *this;
-}
-
-D3D11MeshData::~D3D11MeshData()
-{
-    Clear();
-}
-
-bool D3D11MeshData::CreateBuffers(bool dynamic,
-                                  const uint8_t * vData,
-                                  size_t vDataSize,
-                                  const uint32_t * iData,
-                                  size_t iDataSize,
-                                  const VertexSemantic * semantic,
-                                  const IVertexDeclarationPtr & declaration,
-                                  const MathLib::AABB & _bbox)
+bool D3D11MeshData::CreateBuffers(bool dynamic, 
+                                               const uint8_t * vData, 
+                                               size_t vDataSize, 
+                                               const uint32_t * iData, 
+                                               size_t iDataSize, 
+                                               const VertexSemantic * semantic, 
+                                               const IVertexDeclarationPtr & declaration, 
+                                               const MathLib::AABB & _bbox)
 {
     assert(pDevice);
     assert(pDeviceContext);
@@ -141,17 +94,8 @@ bool D3D11MeshData::CreateBuffers(bool dynamic,
 
 void D3D11MeshData::Clear()
 {
-    if (VertexBuffer)
-    {
-        VertexBuffer->Release();
-        VertexBuffer = nullptr;
-    }
-
-    if (IndexBuffer)
-    {
-        IndexBuffer->Release();
-        IndexBuffer = nullptr;
-    }
+    VertexBuffer.Release();
+    IndexBuffer.Release();
 }
 
 size_t D3D11MeshData::Draw()
@@ -164,7 +108,7 @@ size_t D3D11MeshData::Draw()
 
     unsigned int stride = vertexSize;
     unsigned int offset = 0;
-    pDeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer, &stride, &offset);
+    pDeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer.p, &stride, &offset);
     if (indicesCount > 0)
     {
         pDeviceContext->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);

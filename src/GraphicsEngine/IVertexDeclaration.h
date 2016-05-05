@@ -7,8 +7,7 @@ namespace ShiftEngine
 class IVertexDeclaration
 {
 public:
-    virtual ~IVertexDeclaration()
-    {}
+    virtual ~IVertexDeclaration() {}
     virtual void Bind() = 0;
 };
 

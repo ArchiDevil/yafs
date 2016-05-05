@@ -22,6 +22,7 @@
 
 namespace ShiftEngine
 {
+
 class D3D11ContextManager : public IContextManager
 {
     friend class Renderer;

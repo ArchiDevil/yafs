@@ -6,8 +6,8 @@
 using namespace ShiftEngine;
 using namespace MathLib;
 
-LightSceneNode::LightSceneNode(LightNodeType _type, const vec3f & _color)
-    : ISceneNode()
+LightSceneNode::LightSceneNode(SceneGraph * sceneGraph, LightNodeType _type, const vec3f & _color)
+    : ISceneNode(sceneGraph)
     , color(_color)
     , type(_type)
 {

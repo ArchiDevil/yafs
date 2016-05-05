@@ -1,35 +1,37 @@
 #include "D3D11Context.h"
 
-D3D11Context::D3D11Context()
-    : DefaultRT(new D3D11RenderTarget(nullptr, nullptr))
-{}
+using namespace ShiftEngine;
 
 D3D11Context::~D3D11Context()
 {
     if (DeviceContext)
         DeviceContext->ClearState();
-    if (bsNormal)
-        bsNormal->Release();
-    if (bsAlpha)
-        bsAlpha->Release();
-    if (bsAdditive)
-        bsAdditive->Release();
-    if (dsStateZOn)
-        dsStateZOn->Release();
-    if (dsStateZOff)
-        dsStateZOff->Release();
-    if (rsNormal)
-        rsNormal->Release();
-    if (rsWireframe)
-        rsWireframe->Release();
-    if (DepthStencilView)
-        DepthStencilView->Release();
-    if (DepthStencilBuffer)
-        DepthStencilBuffer->Release();
+
+    // make sure here that objects are released in appropriate order
+    // to avoid crashes and asserts in DX runtime
+    bsAlpha.Release();
+    bsAdditive.Release();
+    bsNormal.Release();
+
+    rsNormal.Release();
+    rsWireframe.Release();
+    rsNoCulling.Release();
+
+    dsStateZOn.Release();
+    dsStateZOff.Release();
+
+    DefaultDS.reset(nullptr);
     DefaultRT.reset(nullptr);
-    DeviceContext->Release();
-    SwapChain->Release();
-    Device->Release();
+    DeviceContext.Release();
+    SwapChain.Release();
+    Device.Release();
+}
+
+void D3D11Context::ClearDefaultRenderTarget()
+{
+    static float clearColors[] = {0.0f, 0.0f, 0.0f, 1.0f};
+    DeviceContext->ClearRenderTargetView(DefaultRT->view, clearColors);
+    DeviceContext->ClearDepthStencilView(DefaultDS->view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 HRESULT D3D11Context::CreateStates()

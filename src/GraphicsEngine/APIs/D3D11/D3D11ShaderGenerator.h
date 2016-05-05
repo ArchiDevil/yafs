@@ -7,6 +7,7 @@
 
 namespace ShiftEngine
 {
+
 class D3D11ShaderGenerator : public IShaderGenerator
 {
 public:
@@ -24,4 +25,5 @@ private:
     void CreateUniforms(std::ostringstream & stream, const MaterialInfo & info);
     void CreateSamplers(std::ostringstream & stream, const MaterialInfo & info);
 };
+
 }

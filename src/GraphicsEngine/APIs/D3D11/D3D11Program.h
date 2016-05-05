@@ -3,6 +3,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include <atlbase.h>
 
 #include "../../IProgram.h"
 
@@ -12,6 +13,7 @@
 
 namespace ShiftEngine
 {
+
 struct D3D11BufferDescription
 {
     std::string Name = "";
@@ -19,7 +21,7 @@ struct D3D11BufferDescription
     uint32_t Size = 0;
     uint32_t StartSlotVertex = UINT_MAX;
     uint32_t StartSlotPixel = UINT_MAX;
-    ID3D11Buffer * cbFromShader = nullptr;
+    CComPtr<ID3D11Buffer> cbFromShader = nullptr;
     uint8_t * bufferData = nullptr;
     bool vertex = false;
     bool pixel = false;
@@ -48,8 +50,7 @@ class D3D11Program : public IProgram
 {
     friend class D3D11ContextManager;
 public:
-    D3D11Program(D3D11ShaderPtr & _vertexShader, D3D11ShaderPtr & _pixelShader, ID3D11Device * _pDevice, ID3D11DeviceContext * pDeviceContext);
-    ~D3D11Program();
+    D3D11Program(D3D11ShaderPtr & _vertexShader, D3D11ShaderPtr & _pixelShader, CComPtr<ID3D11Device> _pDevice, CComPtr<ID3D11DeviceContext> _pDeviceContext);
 
     virtual bool SetMatrixConstantByName(const char * nameInShader, const float * mat) override;
     virtual bool SetScalarConstantByName(const char * nameInShader, const float * scalar) override;
@@ -84,8 +85,8 @@ private:
     D3D11ShaderPtr vertexShader = nullptr;
     D3D11ShaderPtr pixelShader = nullptr;
 
-    ID3D11Device * pDevice = nullptr;
-    ID3D11DeviceContext * pDeviceContext = nullptr;
+    CComPtr<ID3D11Device> pDevice = nullptr;
+    CComPtr<ID3D11DeviceContext> pDeviceContext = nullptr;
 };
 
 typedef std::shared_ptr<D3D11Program> D3D11ProgramPtr;

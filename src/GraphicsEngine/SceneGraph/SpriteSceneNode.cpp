@@ -1,69 +1,24 @@
-#include "MeshSceneNode.h"
+#include "SpriteSceneNode.h"
 
-#include "../ShiftEngine.h"
+#include "../RenderQueue.h"
 
 using namespace ShiftEngine;
-using namespace MathLib;
 
-MeshSceneNode::MeshSceneNode(const IMeshDataPtr & _data, const Material * mat, SceneGraph * sceneGraph)
+SpriteSceneNode::SpriteSceneNode(const ITexturePtr & texture, SceneGraph * sceneGraph)
     : ISceneNode(sceneGraph)
-    , isVisible(true)
-    , material(*mat)
-    , Data(_data)
+    , texture(texture)
 {}
 
-void MeshSceneNode::PushToRQ(RenderQueue & rq)
+void ShiftEngine::SpriteSceneNode::PushToRQ(RenderQueue & rq)
 {
-    int visibility = 1;//CheckVisibility(rq.GetActiveCamera());
-
-    if (IsVisible() && visibility)
-        rq.AddRenderableNode(this);
+    rq.AddSpriteNode(this);
 }
 
-bool MeshSceneNode::IsVisible() const
+MathLib::AABB ShiftEngine::SpriteSceneNode::GetBBox() const
 {
-    return isVisible;
-}
-
-void MeshSceneNode::SetVisibility(bool vis)
-{
-    isVisible = vis;
-}
-
-Material * MeshSceneNode::GetMaterialPtr()
-{
-    return &material;
-}
-
-void MeshSceneNode::SetMaterial(const Material * val)
-{
-    material = Material(*val);
-}
-
-IMeshDataPtr MeshSceneNode::GetDataPtr() const
-{
-    return Data;
-}
-
-void MeshSceneNode::SetDataPtr(IMeshDataPtr data)
-{
-    Data = data;
-}
-
-int MeshSceneNode::Render()
-{
-    if (!Data)
-        return 0;
-    return GetContextManager()->DrawMesh(Data);
-}
-
-AABB MeshSceneNode::GetBBox() const
-{
-    mat4f matWorld = GetWorldMatrix();
-    vec4f points[8];
-    AABB bbox = {};
-    if (Data)
-        bbox = Data->GetBBox();
+    MathLib::mat4f matWorld = GetWorldMatrix();
+    MathLib::vec4f points[8];
+    MathLib::AABB bbox = {{}, {}};
 
     points[0] = {bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f};
     points[1] = {bbox.bMin.x, bbox.bMin.y, bbox.bMax.z, 1.0f};
@@ -74,10 +29,10 @@ AABB MeshSceneNode::GetBBox() const
     points[6] = {bbox.bMax.x, bbox.bMin.y, bbox.bMax.z, 1.0f};
     points[7] = {bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f};
 
-    vec3f min, max;
+    MathLib::vec3f min, max;
 
     for (int i = 0; i < 8; i++)
-        points[i] = vec4Transform(points[i], matWorld);
+        points[i] = MathLib::vec4Transform(points[i], matWorld);
 
     min.x = points[0].x;
     min.y = points[0].y;
@@ -103,4 +58,19 @@ AABB MeshSceneNode::GetBBox() const
     }
 
     return {{min.x, min.y, min.z}, {max.x, max.y, max.z}};
+}
+
+MathLib::vec4f ShiftEngine::SpriteSceneNode::GetMaskColor() const
+{
+    return maskColor;
+}
+
+const ITexturePtr & ShiftEngine::SpriteSceneNode::GetTexture() const
+{
+    return texture;
+}
+
+void ShiftEngine::SpriteSceneNode::SetMaskColor(const MathLib::vec4f & color)
+{
+    maskColor = color;
 }

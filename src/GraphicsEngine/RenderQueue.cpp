@@ -9,24 +9,27 @@ using namespace ShiftEngine;
 
 RenderQueue::RenderQueue(const MathLib::vec3f & _ambientColor)
     : ambientColor(_ambientColor)
-{
-}
+{}
 
 RenderQueue::~RenderQueue()
-{
-}
+{}
 
 void RenderQueue::AddRenderableNode(MeshSceneNode * node)
 {
     if (!node)
         return;
 
-    meshNodesVector.push_back(node);
+    meshes.push_back(node);
 }
 
 RenderVector & RenderQueue::GetRenderableNodes()
 {
-    return meshNodesVector;
+    return meshes;
+}
+
+SpritesVector & RenderQueue::GetSpriteNodes()
+{
+    return sprites;
 }
 
 void RenderQueue::SetCameraNode(CameraSceneNode * node)
@@ -51,7 +54,18 @@ SkySceneNode * RenderQueue::GetActiveSky() const
 
 void RenderQueue::AddLightNode(LightSceneNode * node)
 {
+    if (!node)
+        return;
+
     lights.push_back(node);
+}
+
+void RenderQueue::AddSpriteNode(SpriteSceneNode * node)
+{
+    if (!node)
+        return;
+
+    sprites.push_back(node);
 }
 
 const LightsVector & RenderQueue::GetLights() const

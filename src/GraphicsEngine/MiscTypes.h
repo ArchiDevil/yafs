@@ -40,7 +40,8 @@ struct MeshLIMHeader
         , hasColors(hasColors)
         , verticesCount(verticesCount)
         , indicesCount(indicesCount)
-    {}
+    {
+    }
 
     unsigned int VERSION;
     bool hasNormals;
@@ -71,7 +72,8 @@ struct GraphicEngineSettings
         , zNear(0.1f)
         , zFar(200.0f)
         , anisotropyLevel(0)
-    {}
+    {
+    }
 
     int screenWidth;
     int screenHeight;

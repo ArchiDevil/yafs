@@ -28,8 +28,7 @@ enum class RasterizerState
 class IContextManager
 {
 public:
-    virtual ~IContextManager()
-    {}
+    virtual ~IContextManager() {}
 
     virtual bool                            Initialize(GraphicEngineSettings settings, PathSettings paths) = 0;
     virtual std::wstring                    GetGPUDescription() = 0;

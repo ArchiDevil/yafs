@@ -5,14 +5,7 @@
 
 // #include "../Entities/GameObjectsManager.h"
 
-//TEMPORARY
-const float minR = 15.0f;
-const float maxR = 60.0f;
-float phi = 0.0f;
-float theta = -35.0f;
-float r = 20.0f;
-size_t mousePath = 0;
-//END OF TEMPORARY
+ShiftEngine::SpriteSceneNode * spriteNode = nullptr;
 
 using namespace MathLib;
 
@@ -20,12 +13,10 @@ GameState::GameState(IniWorker * iw/*, MyGUI::Gui * guiModule, MyGUI::DirectX11P
     : iniLoader(iw)
     //, guiModule(guiModule)
     //, guiPlatform(guiPlatform)
-{
-}
+{}
 
 GameState::~GameState()
-{
-}
+{}
 
 bool GameState::initState()
 {
@@ -39,11 +30,17 @@ bool GameState::initState()
     //pGame->gameHud.reset(new GameHUD(guiModule));
     //LOG_INFO("HUD has been created");
 
-    ShiftEngine::CameraSceneNode * pCamera = pScene->AddCameraSceneNode(ShiftEngine::CameraViewType::Projection);
-    pCamera->SetPosition({ 0.0f, 0.0f, 0.0f });
-    pCamera->RotateByQuaternion(quaternionFromVecAngle(vec3f(1.0f, 0.0f, 0.0f), degrad(-60.0f)));
+    ShiftEngine::CameraSceneNode * pCamera = pScene->AddCameraSceneNode(ShiftEngine::CameraViewType::Orthographic);
+    pCamera->SetLocalPosition({0.0f, 0.0f, 0.0f});
+    pCamera->SetScreenWidth(1024.0f / 600.0f * 4.0f);
+    pCamera->SetScreenHeight(600.0f / 600.0f * 4.0f);
 
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
+
+    spriteNode = pScene->AddSpriteNode(L"sprite.png");
+    spriteNode->SetLocalPosition({0.0f, 0.0f, -1.0f});
+    // temporary here, due to some issues with matrices
+    spriteNode->SetLocalScale(1.0f);
 
     LOG_INFO("End of game state initializing");
 
@@ -54,10 +51,17 @@ bool GameState::update(double dt)
 {
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 
+    // for example
+    static double totalTime = 0.0;
+    totalTime += dt;
+    // pScene->GetActiveCamera()->SetLocalPosition({(float)totalTime, 0.0f, 0.0f});
+    
+    // doesn't work somehow :(
+    // pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle<float>({0.0f, 1.0f, 0.0f}, totalTime / 1000.0f));
+    spriteNode->SetLocalPosition({std::cosf((float)totalTime), std::sinf((float)totalTime), 1.0f});
+
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);
-
-    // pCamera->SetSphericalCoords(playerPosition, phi, theta, r);
 
     return true;
 }
@@ -108,16 +112,13 @@ bool GameState::render(double dt)
 }
 
 void GameState::onKill()
-{
-}
+{}
 
 void GameState::onSuspend()
-{
-}
+{}
 
 void GameState::onResume()
-{
-}
+{}
 
 void GameState::ProcessInput(double dt)
 {
@@ -150,19 +151,6 @@ void GameState::ProcessInput(double dt)
 
     //if (guiInjected)
     //    return;
-
-    //if (inputEngine.IsMouseMoved() && inputEngine.IsMouseDown(RButton))
-    //{
-    //    theta -= (float)mouseInfo.deltaY * (float)dt * 10.0f;
-    //    phi += (float)mouseInfo.deltaX * (float)dt * 10.0f;
-    //    if (theta <= -35.0f)
-    //        theta = -35.0f;
-    //    if (theta >= -5.0f)
-    //        theta = -5.0f;
-    //}
-
-    r -= (float)mouseInfo.deltaZ * (float)dt;
-    r = clamp(r, minR, maxR);
 }
 
 bool GameState::handleEvent(const InputEvent & event)

@@ -25,10 +25,12 @@ public:
         : width(width)
         , height(height)
         , type(type)
-    {}
+    {
+    }
 
     virtual ~ITexture()
-    {}
+    {
+    }
 
     int GetHeight() const
     {

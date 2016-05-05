@@ -9,8 +9,7 @@ namespace ShiftEngine
 class IProgram
 {
 public:
-    virtual ~IProgram()
-    {}
+    virtual ~IProgram() {}
 
     virtual bool SetMatrixConstantByName(const char * nameInShader, const float * mat) = 0;
     virtual bool SetScalarConstantByName(const char * nameInShader, const float * scalar) = 0;

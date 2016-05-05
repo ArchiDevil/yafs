@@ -1,25 +1,22 @@
 #include "Renderer.h"
 
-#include <sstream>
-#include <cassert>
+#include <Utilities/logger.hpp>
+#include <Utilities/ut.h>
 
 #include "ShiftEngine.h"
 
 #include "SceneGraph/CameraSceneNode.h"
 #include "SceneGraph/LightSceneNode.h"
 
-#include <Utilities/logger.hpp>
-#include <Utilities/ut.h>
+#include <sstream>
+#include <cassert>
+#include <array>
 
 using namespace ShiftEngine;
+using namespace MathLib;
 
-Renderer::Renderer(IShaderManager * _pShaderManager, IShaderGenerator * _pShaderGenerator)
-    : FPS(0)
-    , FPSCounter(0)
-    , elapsedTime(0)
-    , millisecondsPerFrame(0)
-    , pShaderManager(_pShaderManager)
-    , pShaderGenerator(_pShaderGenerator)
+Renderer::Renderer(IShaderManager * _pShaderManager)
+    : pShaderManager(_pShaderManager)
 {
     FPSTimer.start();
     FPSTimer.tick();
@@ -36,9 +33,9 @@ void Renderer::DrawAll(RenderQueue & rq, double /*dt*/)
         FPSCounter = 0;
     }
 
-    //	PreProcess();
+    //  PreProcess();
     Process(rq);
-    //	PostProcess();
+    //  PostProcess();
 
     FPSCounter++;
 }
@@ -48,10 +45,10 @@ void Renderer::drawSky(RenderQueue &rq)
     SkySceneNode * skyNode = rq.GetActiveSky();
     if (skyNode)
     {
-        currentState.ShaderChanges++;
-        auto pos = rq.GetActiveCamera()->GetPosition();
-        skyNode->SetPosition(MathLib::vec3f(pos.x, pos.y, pos.z));
-        skyNode->SetScale(MathLib::vec3f(10.0f, 10.0f, 10.0f));
+        currentState.shaderChanges++;
+        auto pos = rq.GetActiveCamera()->GetWorldPosition();
+        skyNode->SetLocalPosition(MathLib::vec3f(pos.x, pos.y, pos.z));
+        skyNode->SetLocalScale(MathLib::vec3f(10.0f, 10.0f, 10.0f));
         GetContextManager()->SetZState(false);
 
         Material * mat = skyNode->GetMaterialPtr();
@@ -61,8 +58,8 @@ void Renderer::drawSky(RenderQueue &rq)
         bindCustomUniforms(skyNode, rq);
 
         currentState.currentProgram->Apply(true);
-        currentState.PolygonsCount += skyNode->Render();
-        currentState.DrawCalls++;
+        currentState.polygonsCount += skyNode->Render();
+        currentState.drawCalls++;
     }
 }
 
@@ -78,7 +75,7 @@ bool sortFunctor(MeshSceneNode * left, MeshSceneNode * right)
 
 void Renderer::Process(RenderQueue &rq)
 {
-    this->currentState.Reset();
+    currentState.Reset();
 
     //sky first
     drawSky(rq);
@@ -92,12 +89,12 @@ void Renderer::Process(RenderQueue &rq)
     {
         MeshSceneNode * currentNode = (*iter);
         if (!currentNode->GetDataPtr())
-            continue;;
+            continue;
 
         //bind material
         Material * mat = currentNode->GetMaterialPtr();
 
-        if (mat->program == nullptr)
+        if (!mat->program)
         {
             //PANIC COMPILE SHADER!!!
             mat->program = pShaderManager->CreateProgramFromMaterialFlags(mat->info, *currentNode->GetDataPtr()->GetVertexSemantic());
@@ -108,7 +105,7 @@ void Renderer::Process(RenderQueue &rq)
         {
             currentState.currentProgram = mat->program;
             currentState.shaderChanged = true;
-            currentState.ShaderChanges++;
+            currentState.shaderChanges++;
         }
 
         //check already set textures
@@ -122,7 +119,7 @@ void Renderer::Process(RenderQueue &rq)
                     LOG_ERROR("Unable to set texture for material");
                 }
                 currentState.texturesCache[(engineTextures)i] = mat->builtinTextures[i].second;
-                currentState.TextureBindings++;
+                currentState.textureBindings++;
             }
         }
 
@@ -130,11 +127,13 @@ void Renderer::Process(RenderQueue &rq)
         bindCustomUniforms(currentNode, rq);
 
         currentState.currentProgram->Apply(currentState.shaderChanged);
-        currentState.PolygonsCount += currentNode->Render();
-        currentState.DrawCalls++;
+        currentState.polygonsCount += currentNode->Render();
+        currentState.drawCalls++;
 
         currentState.shaderChanged = false;
     }
+
+    drawSprites(rq.GetSpriteNodes(), *rq.GetActiveCamera());
 }
 
 void Renderer::PreProcess()
@@ -152,84 +151,85 @@ void Renderer::bindEngineUniforms(MeshSceneNode * currentNode, const RenderQueue
     if (!currentNode || !currentNode->GetMaterialPtr() || !currentNode->GetMaterialPtr()->program)
         return;
 
-    const auto & uniforms = currentNode->GetMaterialPtr()->GetUniforms();
+    Material * curMaterial = currentNode->GetMaterialPtr();
+    const MaterialInfo * curMaterialInfo = curMaterial->GetMaterialInfo();
+    IProgramPtr & program = curMaterial->program;
+
+    const auto & uniforms = curMaterial->GetUniforms();
     size_t uniformsNum = uniforms.size();
     for (size_t i = 0; i != uniformsNum; ++i)
     {
         auto uniformId = uniforms[i];
-        auto uniformIndex = currentNode->GetMaterialPtr()->GetUniformIndex(uniformId);
-
-        Material * curMaterial = currentNode->GetMaterialPtr();
-        IProgramPtr & program = curMaterial->program;
+        auto uniformIndex = curMaterial->GetUniformIndex(uniformId);
 
         switch (uniformId)
         {
         case SV_MatWorld:
-            currentState.MatricesBindings++;
+            currentState.matricesBindings++;
             program->SetMatrixConstantByIndex(uniformIndex, currentNode->GetWorldMatrix());
             break;
         case SV_MatView:
             if (currentState.shaderChanged)
             {
-                currentState.MatricesBindings++;
+                currentState.matricesBindings++;
                 program->SetMatrixConstantByIndex(uniformIndex, list.GetActiveCamera()->GetViewMatrix());
             }
             break;
         case SV_MatProj:
             if (currentState.shaderChanged)
             {
-                currentState.MatricesBindings++;
+                currentState.matricesBindings++;
                 program->SetMatrixConstantByIndex(uniformIndex, list.GetActiveCamera()->GetProjectionMatrix());
             }
             break;
         case SV_EyePos:
             if (currentState.shaderChanged)
             {
-                currentState.UniformsBindings++;
-                program->SetVectorConstantByIndex(uniformIndex, list.GetActiveCamera()->GetPosition().ptr());
+                currentState.uniformsBindings++;
+                program->SetVectorConstantByIndex(uniformIndex, list.GetActiveCamera()->GetWorldPosition().ptr());
             }
             break;
         case SV_AmbientColor:
             if (currentState.shaderChanged)
             {
-                currentState.UniformsBindings++;
+                currentState.uniformsBindings++;
                 program->SetVectorConstantByIndex(uniformIndex, list.GetAmbientColor().ptr());
             }
             break;
         case SV_LightsArray:
             if (currentState.shaderChanged)
             {
-                currentState.UniformsBindings++;
+                currentState.uniformsBindings++;
                 bindLights(list.GetLights(), 0, list.GetLights().size(), curMaterial);
             }
             break;
         case SV_LightsCount:
             if (currentState.shaderChanged)
             {
-                currentState.UniformsBindings++;
+                currentState.uniformsBindings++;
                 float lightsCount = (float)list.GetLights().size();
                 program->SetScalarConstantByIndex(uniformIndex, &lightsCount);
             }
             break;
         case SV_DiffuseColor:
-            currentState.UniformsBindings++;
-            program->SetVectorConstantByIndex(uniformIndex, curMaterial->GetMaterialInfo()->diffuseColor.ptr());
+            currentState.uniformsBindings++;
+            program->SetVectorConstantByIndex(uniformIndex, curMaterialInfo->diffuseColor.ptr());
             break;
         case SV_SpecularColor:
-            currentState.UniformsBindings++;
-            program->SetVectorConstantByIndex(uniformIndex, curMaterial->GetMaterialInfo()->specularColor.ptr());
+            currentState.uniformsBindings++;
+            program->SetVectorConstantByIndex(uniformIndex, curMaterialInfo->specularColor.ptr());
             break;
         case SV_EmissionColor:
-            currentState.UniformsBindings++;
-            program->SetVectorConstantByIndex(uniformIndex, curMaterial->GetMaterialInfo()->emissionColor.ptr());
+            currentState.uniformsBindings++;
+            program->SetVectorConstantByIndex(uniformIndex, curMaterialInfo->emissionColor.ptr());
             break;
         case SV_Transparency:
-            currentState.UniformsBindings++;
-            program->SetScalarConstantByIndex(uniformIndex, &curMaterial->GetMaterialInfo()->opacity);
+            currentState.uniformsBindings++;
+            program->SetScalarConstantByIndex(uniformIndex, &curMaterialInfo->opacity);
             break;
         case SV_Shininess:
-            currentState.UniformsBindings++;
-            program->SetScalarConstantByIndex(uniformIndex, &curMaterial->GetMaterialInfo()->shininess);
+            currentState.uniformsBindings++;
+            program->SetScalarConstantByIndex(uniformIndex, &curMaterialInfo->shininess);
             break;
         default:
             assert(false);
@@ -250,7 +250,7 @@ void Renderer::bindCustomUniforms(MeshSceneNode * currentNode, const RenderQueue
         for (auto & elem : mat->floatParams)
         {
             mat->program->SetScalarConstantByName(elem.first.c_str(), &elem.second);
-            currentState.UniformsBindings++;
+            currentState.uniformsBindings++;
         }
     }
 
@@ -259,7 +259,7 @@ void Renderer::bindCustomUniforms(MeshSceneNode * currentNode, const RenderQueue
         for (auto & elem : mat->float2Params)
         {
             mat->program->SetVectorConstantByName(elem.first.c_str(), elem.second.ptr());
-            currentState.UniformsBindings++;
+            currentState.uniformsBindings++;
         }
     }
 
@@ -268,7 +268,7 @@ void Renderer::bindCustomUniforms(MeshSceneNode * currentNode, const RenderQueue
         for (auto & elem : mat->float3Params)
         {
             mat->program->SetVectorConstantByName(elem.first.c_str(), elem.second.ptr());
-            currentState.UniformsBindings++;
+            currentState.uniformsBindings++;
         }
     }
 
@@ -277,7 +277,7 @@ void Renderer::bindCustomUniforms(MeshSceneNode * currentNode, const RenderQueue
         for (auto & elem : mat->float4Params)
         {
             mat->program->SetVectorConstantByName(elem.first.c_str(), elem.second.ptr());
-            currentState.UniformsBindings++;
+            currentState.uniformsBindings++;
         }
     }
 }
@@ -296,30 +296,30 @@ void Renderer::bindLights(const LightsVector & lv, unsigned int startIndex, unsi
             temp.Type = lv[i]->GetType();
             temp.Color = lv[i]->GetColor();
             temp.Direction = lv[i]->GetDirection();
-            temp.Position = lv[i]->GetPosition();
+            temp.Position = lv[i]->GetWorldPosition();
             temp.Radius = lv[i]->GetRadius();
             li.push_back(temp);
         }
 
-        currentState.UniformsBindings += 4 + 1 + 1;
+        currentState.uniformsBindings += 4 + 1 + 1;
 
         matPtr->BindLights(li);
     }
 }
 
-unsigned int Renderer::GetTextureBindings() const
+size_t Renderer::GetTextureBindings() const
 {
-    return currentState.TextureBindings;
+    return currentState.textureBindings;
 }
 
-unsigned int Renderer::GetUniformsBindings() const
+size_t Renderer::GetUniformsBindings() const
 {
-    return currentState.UniformsBindings;
+    return currentState.uniformsBindings;
 }
 
-unsigned int Renderer::GetMatricesBindings() const
+size_t Renderer::GetMatricesBindings() const
 {
-    return currentState.MatricesBindings;
+    return currentState.matricesBindings;
 }
 
 double Renderer::GetElapsedTime() const
@@ -327,27 +327,91 @@ double Renderer::GetElapsedTime() const
     return elapsedTime;
 }
 
-int Renderer::GetFPS() const
+size_t Renderer::GetFPS() const
 {
     return FPS;
 }
 
-double Renderer::GetMSPF() const
+void Renderer::drawSprites(SpritesVector & sprites, CameraSceneNode & currentCamera)
+{
+    if (!spriteProgram || !spriteMesh)
+        loadSpritesPrerequisites();
+
+    GetContextManager()->SetZState(true);
+    GetContextManager()->SetRasterizerState(RasterizerState::NoCulling);
+    currentState.shaderChanges++;
+    currentState.currentProgram = spriteProgram;
+    for (SpriteSceneNode * sprite : sprites)
+    {
+        const ITexturePtr & texture = sprite->GetTexture();
+
+        if (!texture)
+            return;
+
+        const vec3f & position = sprite->GetWorldPosition();
+        const vec3f & scale = sprite->GetWorldScale();
+        const qaFloat rotation = sprite->GetWorldRotation();
+        const vec4f & maskColor = sprite->GetMaskColor();
+
+        mat4f matResult, matScale, matPos, matRot;
+        matPos = matrixTranslation(position.x, position.y, 0.0f);
+        matScale = matrixScaling(scale.x, scale.y, 0.0f);
+        matRot = rotation.to_matrix();
+        matResult = currentCamera.GetViewMatrix() * currentCamera.GetProjectionMatrix();
+        matResult = (matScale * matRot * matPos) * matResult;
+
+        spriteProgram->SetMatrixConstantByName("matRes", (float*)matResult);
+        currentState.matricesBindings++;
+        spriteProgram->SetTextureByName("Texture", texture);
+        currentState.textureBindings++;
+        spriteProgram->SetVectorConstantByName("MaskColor", maskColor.ptr());
+        currentState.uniformsBindings++;
+        spriteProgram->Apply(true);
+        currentState.polygonsCount += GetContextManager()->DrawMesh(spriteMesh);
+        currentState.drawCalls++;
+    }
+}
+
+void Renderer::loadSpritesPrerequisites()
+{
+    if(!spriteMesh)
+        spriteProgram = GetContextManager()->LoadShader(L"SpriteShader.fx");
+
+    if (!spriteMesh)
+    {
+        std::array<PlainSpriteVertex, 4> ver = {};
+        ver[0] = {{-0.5f, -0.5f}, {0.0f, 0.0f}};
+        ver[1] = {{0.5f, -0.5f}, {1.0f, 0.0f}};
+        ver[2] = {{-0.5f, 0.5f}, {0.0f, 1.0f}};
+        ver[3] = {{0.5f, 0.5f}, {1.0f, 1.0f}};
+
+        std::vector<uint32_t> ind = {0, 1, 2, 1, 3, 2};
+
+        IMeshManager * pMeshManager = GetContextManager()->GetMeshManager();
+        spriteMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)ver.data(),
+                                                          ver.size() * sizeof(PlainSpriteVertex),
+                                                          ind,
+                                                          &plainSpriteVertexSemantic,
+                                                          {});
+    }
+}
+
+double Renderer::GetFrameDuration() const
 {
     return millisecondsPerFrame;
 }
 
-unsigned int Renderer::GetDrawCalls() const
+size_t Renderer::GetDrawCalls() const
 {
-    return currentState.DrawCalls;
+    return currentState.drawCalls;
 }
 
-unsigned int Renderer::GetDrawnPolygonsCount() const
+size_t Renderer::GetDrawnPolygonsCount() const
 {
-    return currentState.PolygonsCount;
+    return currentState.polygonsCount;
 }
 
 unsigned int Renderer::GetShaderChanges() const
 {
-    return currentState.ShaderChanges;
+    return currentState.shaderChanges;
 }

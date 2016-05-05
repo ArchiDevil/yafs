@@ -5,9 +5,9 @@
 
 using namespace ShiftEngine;
 
-QuadTreeNode::QuadTreeNode(float x1, float x2, float y1, float y2)
-    : ISceneNode()
-    , bbox({ x1, y1, std::numeric_limits<float>::lowest() }, { x2, y2, std::numeric_limits<float>::max() })
+QuadTreeNode::QuadTreeNode(float x1, float x2, float y1, float y2, SceneGraph * sceneGraph)
+    : ISceneNode(sceneGraph)
+    , bbox({x1, y1, std::numeric_limits<float>::lowest()}, {x2, y2, std::numeric_limits<float>::max()})
 {
     for (auto & elem : subtrees)
         elem = nullptr;
@@ -105,13 +105,13 @@ bool QuadTreeNode::AddNode(ISceneNode * node)
             float yCenter = (y2 - y1) / 2.0f + y1;
 
             //need to calculate new size
-            subtrees[0] = new QuadTreeNode(x1, xCenter, y1, yCenter);
+            subtrees[0] = new QuadTreeNode(x1, xCenter, y1, yCenter, pSceneGraph);
             subtrees[0]->SetParent(this);
-            subtrees[1] = new QuadTreeNode(xCenter, x2, y1, yCenter);
+            subtrees[1] = new QuadTreeNode(xCenter, x2, y1, yCenter, pSceneGraph);
             subtrees[1]->SetParent(this);
-            subtrees[2] = new QuadTreeNode(x1, xCenter, yCenter, y2);
+            subtrees[2] = new QuadTreeNode(x1, xCenter, yCenter, y2, pSceneGraph);
             subtrees[2]->SetParent(this);
-            subtrees[3] = new QuadTreeNode(xCenter, x2, yCenter, y2);
+            subtrees[3] = new QuadTreeNode(xCenter, x2, yCenter, y2, pSceneGraph);
             subtrees[3]->SetParent(this);
 
             //and now, just move all childs into subnodes
@@ -168,13 +168,13 @@ MathLib::mat4f QuadTreeNode::GetWorldMatrix() const
 CameraFrustum::CullingStatus QuadTreeNode::CheckVisibility(const CameraSceneNode & activeCam) const
 {
     MathLib::mat4f matWorld = GetWorldMatrix();
-    MathLib::vec4f vecMin = { bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f };
-    MathLib::vec4f vecMax = { bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f };
+    MathLib::vec4f vecMin = {bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f};
+    MathLib::vec4f vecMax = {bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f};
     vecMin = MathLib::vec4Transform(vecMin, matWorld);
     vecMax = MathLib::vec4Transform(vecMax, matWorld);
-    MathLib::AABB newBbox({ vecMin.x, vecMin.y, vecMin.z }, { vecMax.x, vecMax.y, vecMax.z });
+    MathLib::AABB newBbox({vecMin.x, vecMin.y, vecMin.z}, {vecMax.x, vecMax.y, vecMax.z});
 
-    return activeCam.GetFrustumPtr()->CheckQTreeNode(newBbox);
+    return activeCam.GetFrustum().CheckQTreeNode(newBbox);
 }
 
 unsigned int QuadTreeNode::GetChildsCount() const

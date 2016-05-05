@@ -15,7 +15,7 @@ VertexInfo::VertexInfo()
     , semantic(ES_Custom)
 {}
 
-VertexInfo::VertexInfo(ElemType _type, unsigned _count, ElemSemantic _sem, const std::string & /*name*/ /*= ""*/)
+VertexInfo::VertexInfo(ElemType _type, unsigned _count, ElemSemantic _sem, const std::string & /*name = ""*/)
     : type(_type)
     , count(_count)
     , semantic(_sem)

@@ -8,20 +8,20 @@
 
 namespace ShiftEngine
 {
+
 class ISceneNode;
 class CameraSceneNode;
 
 class MeshSceneNode : public ISceneNode
 {
 public:
-    MeshSceneNode(const IMeshDataPtr & _data, const Material * mat);
-    virtual ~MeshSceneNode()
-    {}
+    MeshSceneNode(const IMeshDataPtr & _data, const Material * mat, SceneGraph * sceneGraph);
+    virtual ~MeshSceneNode() = default;
 
     virtual int Render();
     virtual void PushToRQ(RenderQueue & rq);
 
-    IMeshDataPtr GetDataPtr() const;
+    virtual IMeshDataPtr GetDataPtr() const;
     virtual void SetDataPtr(IMeshDataPtr data);
 
     bool IsVisible() const;
@@ -38,4 +38,5 @@ private:
     bool isVisible = true;
 
 };
+
 }

@@ -7,5 +7,4 @@ class SphericalCameraController : public ICameraController
 public:
     SphericalCameraController();
     ~SphericalCameraController();
-
 };

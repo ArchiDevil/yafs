@@ -12,9 +12,12 @@ class MeshSceneNode;
 class CameraSceneNode;
 class SkySceneNode;
 class LightSceneNode;
+class SpriteSceneNode;
 
-typedef std::vector<MeshSceneNode*> RenderVector;
-typedef std::vector<LightSceneNode*> LightsVector;
+// remove this shit with huge amount of allocations
+using RenderVector = std::vector<MeshSceneNode*>;
+using LightsVector = std::vector<LightSceneNode*>;
+using SpritesVector = std::vector<SpriteSceneNode*>;
 
 class RenderQueue
 {
@@ -26,8 +29,10 @@ public:
     void SetCameraNode(CameraSceneNode * node);
     void SetSkyNode(SkySceneNode * node);
     void AddLightNode(LightSceneNode * node);
+    void AddSpriteNode(SpriteSceneNode * node);
 
     RenderVector & GetRenderableNodes();
+    SpritesVector & GetSpriteNodes();
     const LightsVector & GetLights() const;
 
     CameraSceneNode * GetActiveCamera() const;
@@ -36,9 +41,11 @@ public:
     MathLib::vec3f GetAmbientColor() const;
 
 private:
-    RenderVector meshNodesVector;
+    RenderVector meshes;
     LightsVector lights;
-    MathLib::vec3f ambientColor = {0.0f, 0.0f, 0.0f};
+    SpritesVector sprites;
+
+    MathLib::vec3f ambientColor = { 0.0f, 0.0f, 0.0f };
     CameraSceneNode * activeCamera = nullptr;
     SkySceneNode * activeSky = nullptr;
 
