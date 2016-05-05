@@ -16,7 +16,7 @@ bool InitDX11Api(HWND hwnd, GraphicEngineSettings settings, PathSettings paths)
     ContextManagerInstance.reset(new D3D11ContextManager(hwnd));
     if (!ContextManagerInstance->Initialize(settings, paths))
         return false;
-    RendererInstance.reset(new Renderer(ContextManagerInstance->GetShaderManager(), ContextManagerInstance->GetShaderGenerator()));
+    RendererInstance.reset(new Renderer(ContextManagerInstance->GetShaderManager()));
     SceneGraphInstance.reset(new SceneGraph(SceneGraphType::SGT_QuadTree));
     return true;
 }
