@@ -111,33 +111,33 @@ MathLib::mat4f ISceneNode::GetLocalMatrix() const
 
 void ISceneNode::CreateMatrices()
 {
-    MathLib::matrix<float, 4> scale = MathLib::matrixScaling(Scale);
-    MathLib::matrix<float, 4> rotation = Rotation.to_matrix();
-    MathLib::matrix<float, 4> position = MathLib::matrixTranslation(Position);
+    MathLib::matrix<float, 4> _scale = MathLib::matrixScaling(scale);
+    MathLib::matrix<float, 4> _rotation = rotation.to_matrix();
+    MathLib::matrix<float, 4> _position = MathLib::matrixTranslation(position);
 
     if (parent)
         worldMatrix = localMatrix * parent->GetWorldMatrix();
     else
         worldMatrix = localMatrix;
 
-    localMatrix = scale * rotation * position;
+    localMatrix = _scale * _rotation * _position;
 }
 
 MathLib::vec3f ISceneNode::GetWorldPosition() const
 {
     if (parent)
-        return parent->GetWorldPosition() + Position;
-    return Position;
+        return parent->GetWorldPosition() + position;
+    return position;
 }
 
 MathLib::vec3f ISceneNode::GetLocalPosition() const
 {
-    return Position;
+    return position;
 }
 
 void ISceneNode::SetLocalPosition(const MathLib::vec3f & val)
 {
-    Position = val;
+    position = val;
     CreateMatrices();
 
     if (pSceneGraph)
@@ -147,19 +147,19 @@ void ISceneNode::SetLocalPosition(const MathLib::vec3f & val)
 MathLib::vec3f ISceneNode::GetWorldScale() const
 {
     if (parent)
-        return parent->Scale + Scale;
+        return {parent->scale.x * scale.x, parent->scale.y * scale.y, parent->scale.z * scale.z};
 
-    return Scale;
+    return scale;
 }
 
 MathLib::vec3f ISceneNode::GetLocalScale() const
 {
-    return Scale;
+    return scale;
 }
 
 void ISceneNode::SetLocalScale(const MathLib::vec3f & val)
 {
-    Scale = val;
+    scale = val;
     CreateMatrices();
     if (pSceneGraph)
         pSceneGraph->MoveNodeCallback(this);
@@ -167,29 +167,29 @@ void ISceneNode::SetLocalScale(const MathLib::vec3f & val)
 
 void ISceneNode::SetLocalScale(float val)
 {
-    SetLocalScale(MathLib::vec3f(val, val, val));
+    SetLocalScale({val, val, val});
 }
 
 MathLib::qaFloat ISceneNode::GetWorldRotation() const
 {
     if (parent)
-        return Rotation * parent->GetWorldRotation();
-    return Rotation;
+        return rotation * parent->GetWorldRotation();
+    return rotation;
 }
 
 MathLib::qaFloat ISceneNode::GetLocalRotation() const
 {
-    return Rotation;
+    return rotation;
 }
 
 void ISceneNode::SetLocalRotation(const MathLib::qaFloat & val)
 {
-    Rotation = val;
+    rotation = val;
 }
 
-void ISceneNode::RotateByLocal(const MathLib::qaFloat & val)
+void ISceneNode::RotateByLocalQuaternion(const MathLib::qaFloat & val)
 {
-    Rotation = Rotation * val;
+    rotation = rotation * val;
 }
 
 CameraFrustum::CullingStatus ISceneNode::CheckVisibility(const CameraSceneNode & activeCam) const
@@ -203,7 +203,7 @@ CameraFrustum::CullingStatus ISceneNode::CheckVisibility(const CameraSceneNode &
     vecMax = MathLib::vec4Transform(vecMax, matWorld);
     MathLib::AABB newBbox(MathLib::vec3f(vecMin.x, vecMin.y, vecMin.z), MathLib::vec3f(vecMax.x, vecMax.y, vecMax.z));
 
-    return activeCam.GetFrustumPtr()->CheckAABB(newBbox);
+    return activeCam.GetFrustum().CheckAABB(newBbox);
 }
 
 SceneGraph * ISceneNode::GetSceneGraph() const

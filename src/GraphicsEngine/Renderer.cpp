@@ -334,7 +334,47 @@ size_t ShiftEngine::Renderer::GetFPS() const
 
 void ShiftEngine::Renderer::drawSprites(SpritesVector & sprites, CameraSceneNode & currentCamera)
 {
-    if (!spriteProgram)
+    if (!spriteProgram || !spriteMesh)
+        loadSpritesPrerequisites();
+
+    GetContextManager()->SetZState(true);
+    GetContextManager()->SetRasterizerState(RasterizerState::NoCulling);
+    currentState.shaderChanges++;
+    currentState.currentProgram = spriteProgram;
+    for (SpriteSceneNode * sprite : sprites)
+    {
+        const ITexturePtr & texture = sprite->GetTexture();
+
+        if (!texture)
+            return;
+
+        const vec3f & position = sprite->GetWorldPosition();
+        const vec3f & scale = sprite->GetWorldScale();
+        const qaFloat rotation = sprite->GetWorldRotation();
+        const vec4f & maskColor = sprite->GetMaskColor();
+
+        mat4f matResult, matScale, matPos, matRot;
+        matPos = matrixTranslation(position.x, position.y, 0.0f);
+        matScale = matrixScaling(scale.x, scale.y, 0.0f);
+        matRot = rotation.to_matrix();
+        matResult = currentCamera.GetViewMatrix() * currentCamera.GetProjectionMatrix();
+        matResult = (matScale * matRot * matPos) * matResult;
+
+        spriteProgram->SetMatrixConstantByName("matRes", (float*)matResult);
+        currentState.matricesBindings++;
+        spriteProgram->SetTextureByName("Texture", texture);
+        currentState.textureBindings++;
+        spriteProgram->SetVectorConstantByName("MaskColor", maskColor.ptr());
+        currentState.uniformsBindings++;
+        spriteProgram->Apply(true);
+        currentState.polygonsCount += GetContextManager()->DrawMesh(spriteMesh);
+        currentState.drawCalls++;
+    }
+}
+
+void ShiftEngine::Renderer::loadSpritesPrerequisites()
+{
+    if(!spriteMesh)
         spriteProgram = GetContextManager()->LoadShader(L"SpriteShader.fx");
 
     if (!spriteMesh)
@@ -353,40 +393,6 @@ void ShiftEngine::Renderer::drawSprites(SpritesVector & sprites, CameraSceneNode
                                                           ind,
                                                           &plainSpriteVertexSemantic,
                                                           {});
-    }
-
-    GetContextManager()->SetZState(true);
-    GetContextManager()->SetRasterizerState(RasterizerState::NoCulling);
-    currentState.shaderChanges++;
-    currentState.currentProgram = spriteProgram;
-    for (auto & sprite : sprites)
-    {
-        auto & texture = sprite->GetTexture();
-
-        if (!texture)
-            return;
-
-        const vec3f & position = sprite->GetWorldPosition();
-        const vec3f & scale = sprite->GetWorldScale();
-        const qaFloat rotation = sprite->GetWorldRotation();
-        const vec4f & maskColor = sprite->GetMaskColor();
-
-        mat4f matResult, matScale, matPos, matRot;
-        matPos = matrixTranslation(position.x, position.y, 0.0f);
-        matScale = matrixScaling(scale.x, scale.y, 0.0f);
-        matRot = rotation.to_matrix();
-        matResult = currentCamera.GetProjectionMatrix();
-        matResult = (matScale * matRot * matPos) * matResult;
-
-        spriteProgram->SetMatrixConstantByName("matRes", (float*)matResult);
-        currentState.matricesBindings++;
-        spriteProgram->SetTextureByName("Texture", texture);
-        currentState.textureBindings++;
-        spriteProgram->SetVectorConstantByName("MaskColor", maskColor.ptr());
-        currentState.uniformsBindings++;
-        spriteProgram->Apply(true);
-        currentState.polygonsCount += GetContextManager()->DrawMesh(spriteMesh);
-        currentState.drawCalls++;
     }
 }
 

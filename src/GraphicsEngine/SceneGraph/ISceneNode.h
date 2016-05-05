@@ -40,17 +40,17 @@ public:
 
     MathLib::vec3f GetWorldPosition() const;
     MathLib::vec3f GetLocalPosition() const;
-    void SetLocalPosition(const MathLib::vec3f & val);
+    virtual void SetLocalPosition(const MathLib::vec3f & val);
 
     MathLib::vec3f GetWorldScale() const;
     MathLib::vec3f GetLocalScale() const;
-    void SetLocalScale(const MathLib::vec3f & val);
-    void SetLocalScale(float val);
+    virtual void SetLocalScale(const MathLib::vec3f & val);
+    virtual void SetLocalScale(float val);
 
     MathLib::qaFloat GetWorldRotation() const;
     MathLib::qaFloat GetLocalRotation() const;
-    void SetLocalRotation(const MathLib::qaFloat & val);
-    void RotateByLocal(const MathLib::qaFloat & val);
+    virtual void SetLocalRotation(const MathLib::qaFloat & val);
+    virtual void RotateByLocalQuaternion(const MathLib::qaFloat & val);
 
     SceneGraph * GetSceneGraph() const;
     virtual MathLib::mat4f GetWorldMatrix() const;
@@ -66,9 +66,9 @@ protected:
     ISceneNode *            parent = nullptr;
     ChildsList              children;    //semi-automatic shared ptrs
 
-    MathLib::vec3f          Position = {0.0f, 0.0f, 0.0f};
-    MathLib::vec3f          Scale = {1.0f, 1.0f, 1.0f};
-    MathLib::qaFloat        Rotation = MathLib::quaternionFromVecAngle(MathLib::vec3f(0.0f, 0.0f, 1.0f), 0.0f);
+    MathLib::vec3f          position = {0.0f, 0.0f, 0.0f};
+    MathLib::vec3f          scale = {1.0f, 1.0f, 1.0f};
+    MathLib::qaFloat        rotation = MathLib::quaternionFromVecAngle(MathLib::vec3f(0.0f, 1.0f, 0.0f), 0.0f);
 
     MathLib::mat4f          localMatrix = {};
     MathLib::mat4f          worldMatrix = {};

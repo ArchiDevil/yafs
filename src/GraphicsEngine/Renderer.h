@@ -81,6 +81,8 @@ private:
     void drawSprites(SpritesVector & sprites, CameraSceneNode & currentCamera);
     void bindLights(const LightsVector & lv, unsigned int startIndex, unsigned int count, Material * matPtr);
 
+    void loadSpritesPrerequisites();
+
     RendererState                   currentState;
 
     // this is not the main purpose of the renderer - to calculate FPS
