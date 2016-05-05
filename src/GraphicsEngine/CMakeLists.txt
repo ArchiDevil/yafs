@@ -39,7 +39,8 @@ if(${RENDERER} STREQUAL D3D11_RENDER)
                     dinput8.lib
                     dxgi.lib)
     
-    set(LS  APIs/D3D11/D3D11ContextManager.cpp
+    set(LS  APIs/D3D11/D3D11Context.cpp
+            APIs/D3D11/D3D11ContextManager.cpp
             APIs/D3D11/D3D11Mesh.cpp
             APIs/D3D11/D3D11MeshManager.cpp
             APIs/D3D11/D3D11Program.cpp
