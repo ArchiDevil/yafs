@@ -6,54 +6,52 @@
 
 namespace ShiftEngine
 {
-    class IProgram;
+class IProgram;
 
-    enum class BindingPoint
+enum class BindingPoint
+{
+    Vertex,
+    Pixel,
+    Geometry,
+    Hull,
+    Domain,
+    Compute
+};
+
+class ITexture
+{
+public:
+    ITexture(size_t width, size_t height, TextureType type = TextureType::Texture2D)
+        : width(width)
+        , height(height)
+        , type(type)
+    {}
+
+    virtual ~ITexture()
+    {}
+
+    int GetHeight() const
     {
-        Vertex,
-        Pixel,
-        Geometry,
-        Hull,
-        Domain,
-        Compute
-    };
+        return height;
+    }
 
-    class ITexture
+    int GetWidth() const
     {
-    public:
-        ITexture(size_t width, size_t height, TextureType type = TextureType::Texture2D)
-            : width(width)
-            , height(height)
-            , type(type)
-        {
-        }
+        return width;
+    }
 
-        virtual ~ITexture()
-        {
-        }
+    TextureType GetType() const
+    {
+        return type;
+    }
 
-        int GetHeight() const
-        {
-            return height;
-        }
+    virtual void Bind(unsigned int index, BindingPoint point) = 0;
 
-        int GetWidth() const
-        {
-            return width;
-        }
+private:
+    int width;
+    int height;
+    TextureType type;
+};
 
-        TextureType GetType() const
-        {
-            return type;
-        }
-
-        virtual void Bind(unsigned int index, BindingPoint point) = 0;
-
-    private:
-        int width;
-        int height;
-        TextureType type;
-    };
-
-    typedef std::shared_ptr<ITexture> ITexturePtr;
+typedef std::shared_ptr<ITexture> ITexturePtr;
 }

@@ -8,33 +8,34 @@
 
 namespace ShiftEngine
 {
-    class ISceneNode;
-    class CameraSceneNode;
+class ISceneNode;
+class CameraSceneNode;
 
-    class MeshSceneNode : public ISceneNode
-    {
-    public:
-        MeshSceneNode(const IMeshDataPtr & _data, const Material * mat);
-        virtual ~MeshSceneNode() {}
+class MeshSceneNode : public ISceneNode
+{
+public:
+    MeshSceneNode(const IMeshDataPtr & _data, const Material * mat);
+    virtual ~MeshSceneNode()
+    {}
 
-        virtual int Render();
-        virtual void PushToRQ(RenderQueue & rq);
+    virtual int Render();
+    virtual void PushToRQ(RenderQueue & rq);
 
-        IMeshDataPtr GetDataPtr() const;
-        virtual void SetDataPtr(IMeshDataPtr data);
+    IMeshDataPtr GetDataPtr() const;
+    virtual void SetDataPtr(IMeshDataPtr data);
 
-        bool IsVisible() const;
-        void SetVisibility(bool vis);
+    bool IsVisible() const;
+    void SetVisibility(bool vis);
 
-        ShiftEngine::Material * GetMaterialPtr();
-        virtual void SetMaterial(const ShiftEngine::Material * val);
+    ShiftEngine::Material * GetMaterialPtr();
+    virtual void SetMaterial(const ShiftEngine::Material * val);
 
-        virtual MathLib::AABB GetBBox() const override;
+    virtual MathLib::AABB GetBBox() const override;
 
-    private:
-        Material material;
-        IMeshDataPtr Data = nullptr;
-        bool isVisible = true;
+private:
+    Material material;
+    IMeshDataPtr Data = nullptr;
+    bool isVisible = true;
 
-    };
+};
 }

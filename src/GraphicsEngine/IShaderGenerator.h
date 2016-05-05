@@ -7,10 +7,11 @@
 
 namespace ShiftEngine
 {
-    class IShaderGenerator
-    {
-    public:
-        virtual ~IShaderGenerator() {}
-        virtual std::string CreateShaderCode(const VertexSemantic & verticesInfo, const MaterialInfo & flags) = 0;
-    };
+class IShaderGenerator
+{
+public:
+    virtual ~IShaderGenerator()
+    {}
+    virtual std::string CreateShaderCode(const VertexSemantic & verticesInfo, const MaterialInfo & flags) = 0;
+};
 }

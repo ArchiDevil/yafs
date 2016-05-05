@@ -20,76 +20,76 @@
 
 namespace ShiftEngine
 {
-    class Renderer
+class Renderer
+{
+    struct RendererState
     {
-        struct RendererState
+        void Reset()
         {
-            void Reset()
-            {
-                DrawCalls = 0;
-                PolygonsCount = 0;
-                ShaderChanges = 0;
-                TextureBindings = 0;
-                UniformsBindings = 0;
-                MatricesBindings = 0;
-                shaderChanged = true;
-                materialChanged = true;
-                currentProgram = nullptr;
+            DrawCalls = 0;
+            PolygonsCount = 0;
+            ShaderChanges = 0;
+            TextureBindings = 0;
+            UniformsBindings = 0;
+            MatricesBindings = 0;
+            shaderChanged = true;
+            materialChanged = true;
+            currentProgram = nullptr;
 
-                texturesCache.clear();
-            }
+            texturesCache.clear();
+        }
 
-            unsigned int DrawCalls = 0;
-            unsigned int PolygonsCount = 0;
-            unsigned int ShaderChanges = 0;
-            unsigned int TextureBindings = 0;
-            unsigned int UniformsBindings = 0;
-            unsigned int MatricesBindings = 0;
+        unsigned int DrawCalls = 0;
+        unsigned int PolygonsCount = 0;
+        unsigned int ShaderChanges = 0;
+        unsigned int TextureBindings = 0;
+        unsigned int UniformsBindings = 0;
+        unsigned int MatricesBindings = 0;
 
-            bool shaderChanged = true;
-            bool materialChanged = true; // was false in default constructor
+        bool shaderChanged = true;
+        bool materialChanged = true; // was false in default constructor
 
-            std::unordered_map<engineTextures, ITexturePtr> texturesCache;
+        std::unordered_map<engineTextures, ITexturePtr> texturesCache;
 
-            IProgramPtr currentProgram = nullptr;
-        };
-
-    public:
-        Renderer(IShaderManager * _pShaderManager, IShaderGenerator * _pShaderGenerator);
-
-        void DrawAll(RenderQueue & rq, double dt);
-
-        unsigned int GetDrawCalls() const;
-        unsigned int GetDrawnPolygonsCount() const;
-        unsigned int GetTextureBindings() const;
-        unsigned int GetUniformsBindings() const;
-        unsigned int GetMatricesBindings() const;
-
-        double GetElapsedTime() const;
-        int GetFPS() const;
-        double GetMSPF() const;
-        unsigned int GetShaderChanges() const;
-
-    private:
-        void PreProcess();
-        void Process(RenderQueue & rq);
-        void PostProcess();
-
-        void bindEngineUniforms(MeshSceneNode * currentNode, const RenderQueue & list);
-        void bindCustomUniforms(MeshSceneNode * currentNode, const RenderQueue & list);
-
-        void drawSky(RenderQueue &rq);
-        void bindLights(const LightsVector & lv, unsigned int startIndex, unsigned int count, Material * matPtr);
-
-        RendererState currentState;
-
-        windows_high_reference_timer FPSTimer;
-        double elapsedTime;
-        int	FPSCounter;
-        int	FPS;
-        double millisecondsPerFrame;
-
-        IShaderManager * pShaderManager;
-        IShaderGenerator * pShaderGenerator;
+        IProgramPtr currentProgram = nullptr;
     };
+
+public:
+    Renderer(IShaderManager * _pShaderManager, IShaderGenerator * _pShaderGenerator);
+
+    void DrawAll(RenderQueue & rq, double dt);
+
+    unsigned int GetDrawCalls() const;
+    unsigned int GetDrawnPolygonsCount() const;
+    unsigned int GetTextureBindings() const;
+    unsigned int GetUniformsBindings() const;
+    unsigned int GetMatricesBindings() const;
+
+    double GetElapsedTime() const;
+    int GetFPS() const;
+    double GetMSPF() const;
+    unsigned int GetShaderChanges() const;
+
+private:
+    void PreProcess();
+    void Process(RenderQueue & rq);
+    void PostProcess();
+
+    void bindEngineUniforms(MeshSceneNode * currentNode, const RenderQueue & list);
+    void bindCustomUniforms(MeshSceneNode * currentNode, const RenderQueue & list);
+
+    void drawSky(RenderQueue &rq);
+    void bindLights(const LightsVector & lv, unsigned int startIndex, unsigned int count, Material * matPtr);
+
+    RendererState currentState;
+
+    windows_high_reference_timer FPSTimer;
+    double elapsedTime;
+    int	FPSCounter;
+    int	FPS;
+    double millisecondsPerFrame;
+
+    IShaderManager * pShaderManager;
+    IShaderGenerator * pShaderGenerator;
+};
 }
