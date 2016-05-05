@@ -6,12 +6,13 @@
 #include "../../ShiftEngine.h"
 #include "../../Utils.h"
 
-ShiftEngine::D3D11MeshManager::D3D11MeshManager(ID3D11Device * pDevice)
-    : pDevice(pDevice)
-{
-}
+using namespace ShiftEngine;
 
-ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::LoadMesh(const std::wstring & fileName)
+D3D11MeshManager::D3D11MeshManager(ID3D11Device * pDevice)
+    : pDevice(pDevice)
+{}
+
+IMeshDataPtr D3D11MeshManager::LoadMesh(const std::wstring & fileName)
 {
     auto iter = meshesData.find(fileName);
     if (iter != meshesData.end())
@@ -36,11 +37,11 @@ ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::LoadMesh(const std::wst
     }
 }
 
-ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::CreateMeshFromVertices(const uint8_t * verticesData,
-                                                                                size_t verticesDataSize,
-                                                                                const std::vector<uint32_t> & indicesData,
-                                                                                const ShiftEngine::VertexSemantic * semantic,
-                                                                                const MathLib::AABB & bbox)
+IMeshDataPtr D3D11MeshManager::CreateMeshFromVertices(const uint8_t * verticesData,
+                                                      size_t verticesDataSize,
+                                                      const std::vector<uint32_t> & indicesData,
+                                                      const VertexSemantic * semantic,
+                                                      const MathLib::AABB & bbox)
 {
     if (!semantic)
         return LoadErrorMesh();
@@ -57,19 +58,19 @@ ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::CreateMeshFromVertices(
     return out;
 }
 
-ShiftEngine::IMeshDataPtr ShiftEngine::D3D11MeshManager::LoadErrorMesh()
+IMeshDataPtr D3D11MeshManager::LoadErrorMesh()
 {
     if (!errorMesh)
         errorMesh = Utilities::createCube();
     return errorMesh;
 }
 
-bool ShiftEngine::D3D11MeshManager::Load(const std::wstring & filename, D3D11MeshData * mesh)
+bool D3D11MeshManager::Load(const std::wstring & filename, D3D11MeshData * mesh)
 {
     SerializedLIM vertices;
     std::vector<uint32_t> indices;
 
-    if (!ShiftEngine::Utilities::getVerticesFromFile(filename, vertices, indices))
+    if (!Utilities::getVerticesFromFile(filename, vertices, indices))
         return false;
 
     if (vertices.position.empty())
@@ -110,7 +111,7 @@ bool ShiftEngine::D3D11MeshManager::Load(const std::wstring & filename, D3D11Mes
     }
 
     auto sem = CreateSemantic(vertices);
-    auto declaration = ShiftEngine::GetContextManager()->GetVertexDeclaration(*sem);
+    auto declaration = GetContextManager()->GetVertexDeclaration(*sem);
     if (!declaration)
         declaration = GetContextManager()->GetVertexDeclaration(*sem);
 
@@ -135,7 +136,7 @@ bool ShiftEngine::D3D11MeshManager::Load(const std::wstring & filename, D3D11Mes
     return true;
 }
 
-void ShiftEngine::D3D11MeshManager::UpdateVertices(SerializedLIM & vertices, std::vector<uint32_t>& indices) const
+void D3D11MeshManager::UpdateVertices(SerializedLIM & vertices, std::vector<uint32_t>& indices) const
 {
     for (size_t i = 0; i < vertices.position.size(); i++)
     {
@@ -150,7 +151,7 @@ void ShiftEngine::D3D11MeshManager::UpdateVertices(SerializedLIM & vertices, std
         std::swap(indices[i], indices[i + 1]);
 }
 
-const ShiftEngine::VertexSemantic * ShiftEngine::D3D11MeshManager::CreateSemantic(const SerializedLIM & vertices)
+const VertexSemantic * D3D11MeshManager::CreateSemantic(const SerializedLIM & vertices)
 {
     VertexSemantic sem;
     sem.addSemantic(ET_FLOAT, 3, ES_Position);

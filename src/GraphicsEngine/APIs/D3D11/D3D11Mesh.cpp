@@ -2,16 +2,17 @@
 
 #include <cassert>
 
-ShiftEngine::D3D11MeshData::D3D11MeshData(ID3D11Buffer * _VB /*= nullptr*/, ID3D11Buffer * _IB /*= nullptr*/, 
-                                          ID3D11Device * pDevice /*= nullptr*/, ID3D11DeviceContext * pDeviceContext /*= nullptr*/)
+using namespace ShiftEngine;
+
+D3D11MeshData::D3D11MeshData(ID3D11Buffer * _VB /*= nullptr*/, ID3D11Buffer * _IB /*= nullptr*/,
+                             ID3D11Device * pDevice /*= nullptr*/, ID3D11DeviceContext * pDeviceContext /*= nullptr*/)
     : VertexBuffer(_VB)
     , IndexBuffer(_IB)
     , pDevice(pDevice)
     , pDeviceContext(pDeviceContext)
-{
-}
+{}
 
-ShiftEngine::D3D11MeshData::D3D11MeshData(const D3D11MeshData & ref)
+D3D11MeshData::D3D11MeshData(const D3D11MeshData & ref)
     : pDevice(ref.pDevice)
     , pDeviceContext(ref.pDeviceContext)
 {
@@ -30,7 +31,7 @@ ShiftEngine::D3D11MeshData::D3D11MeshData(const D3D11MeshData & ref)
         VertexBuffer->AddRef();
 }
 
-ShiftEngine::D3D11MeshData& ShiftEngine::D3D11MeshData::operator = (const D3D11MeshData & ref)
+D3D11MeshData& D3D11MeshData::operator = (const D3D11MeshData & ref)
 {
     indicesCount = ref.indicesCount;
     vertexSize = ref.vertexSize;
@@ -53,19 +54,19 @@ ShiftEngine::D3D11MeshData& ShiftEngine::D3D11MeshData::operator = (const D3D11M
     return *this;
 }
 
-ShiftEngine::D3D11MeshData::~D3D11MeshData()
+D3D11MeshData::~D3D11MeshData()
 {
     Clear();
 }
 
-bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic, 
-                                               const uint8_t * vData, 
-                                               size_t vDataSize, 
-                                               const uint32_t * iData, 
-                                               size_t iDataSize, 
-                                               const VertexSemantic * semantic, 
-                                               const IVertexDeclarationPtr & declaration, 
-                                               const MathLib::AABB & _bbox)
+bool D3D11MeshData::CreateBuffers(bool dynamic,
+                                  const uint8_t * vData,
+                                  size_t vDataSize,
+                                  const uint32_t * iData,
+                                  size_t iDataSize,
+                                  const VertexSemantic * semantic,
+                                  const IVertexDeclarationPtr & declaration,
+                                  const MathLib::AABB & _bbox)
 {
     assert(pDevice);
     assert(pDeviceContext);
@@ -138,7 +139,7 @@ bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic,
     return true;
 }
 
-void ShiftEngine::D3D11MeshData::Clear()
+void D3D11MeshData::Clear()
 {
     if (VertexBuffer)
     {
@@ -153,7 +154,7 @@ void ShiftEngine::D3D11MeshData::Clear()
     }
 }
 
-size_t ShiftEngine::D3D11MeshData::Draw()
+size_t D3D11MeshData::Draw()
 {
     if (!pDevice)
         return 0;

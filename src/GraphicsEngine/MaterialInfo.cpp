@@ -1,6 +1,8 @@
 #include "MaterialInfo.h"
 
-ShiftEngine::materialFlags::materialFlags()
+using namespace ShiftEngine;
+
+materialFlags::materialFlags()
     : useVertexColors(false)
     , isCustom(false)
     , isReflective(false)
@@ -11,7 +13,7 @@ ShiftEngine::materialFlags::materialFlags()
 {
 }
 
-bool ShiftEngine::materialFlags::operator==(const materialFlags & ref) const
+bool materialFlags::operator==(const materialFlags & ref) const
 {
     return useVertexColors == ref.useVertexColors
         && lightingModel == ref.lightingModel
@@ -21,7 +23,7 @@ bool ShiftEngine::materialFlags::operator==(const materialFlags & ref) const
         && isCustom == ref.isCustom;
 }
 
-uint32_t ShiftEngine::materialFlags::GetHash() const
+uint32_t materialFlags::GetHash() const
 {
     static_assert(sizeof(lightingModel) == sizeof(uint8_t), "Update hash calculating");
     uint32_t out = 0x0;
@@ -36,7 +38,7 @@ uint32_t ShiftEngine::materialFlags::GetHash() const
 
 //////////////////////////////////////////////////////////////////////////
 
-ShiftEngine::MaterialInfo::MaterialInfo()
+MaterialInfo::MaterialInfo()
     : diffuseColor(1.0f, 1.0f, 1.0f, 1.0f)
     , specularColor(1.0f, 1.0f, 1.0f, 1.0f)
     , emissionColor(0.0f, 0.0f, 0.0f, 0.0f)
@@ -45,7 +47,7 @@ ShiftEngine::MaterialInfo::MaterialInfo()
 {
 }
 
-ShiftEngine::MaterialInfo::MaterialInfo(const materialFlags & _flags)
+MaterialInfo::MaterialInfo(const materialFlags & _flags)
     : diffuseColor(1.0f, 1.0f, 1.0f, 1.0f)
     , specularColor(1.0f, 1.0f, 1.0f, 1.0f)
     , emissionColor(0.0f, 0.0f, 0.0f, 0.0f)
@@ -56,12 +58,12 @@ ShiftEngine::MaterialInfo::MaterialInfo(const materialFlags & _flags)
 
 }
 
-const ShiftEngine::materialFlags * ShiftEngine::MaterialInfo::GetFlags() const
+const materialFlags * MaterialInfo::GetFlags() const
 {
     return &flags;
 }
 
-bool ShiftEngine::MaterialInfo::operator<(const MaterialInfo & ref) const
+bool MaterialInfo::operator<(const MaterialInfo & ref) const
 {
     if (*this == ref)
         return false;
@@ -69,7 +71,7 @@ bool ShiftEngine::MaterialInfo::operator<(const MaterialInfo & ref) const
     return this->GetHash() < ref.GetHash();
 }
 
-bool ShiftEngine::MaterialInfo::operator==(const MaterialInfo & ref) const
+bool MaterialInfo::operator==(const MaterialInfo & ref) const
 {
     return flags == ref.flags
         && diffuseColor == ref.diffuseColor
@@ -84,7 +86,7 @@ bool ShiftEngine::MaterialInfo::operator==(const MaterialInfo & ref) const
         && shininess == ref.shininess;
 }
 
-uint64_t ShiftEngine::MaterialInfo::GetHash() const
+uint64_t MaterialInfo::GetHash() const
 {
     uint64_t out = 0x0;
     // serialize flags first
@@ -98,22 +100,22 @@ uint64_t ShiftEngine::MaterialInfo::GetHash() const
 
 //////////////////////////////////////////////////////////////////////////
 
-ShiftEngine::MaterialTextureDescription::MaterialTextureDescription(TextureType _type)
+MaterialTextureDescription::MaterialTextureDescription(TextureType _type)
     : type(_type)
 {
 }
 
-ShiftEngine::TextureType ShiftEngine::MaterialTextureDescription::GetType() const
+TextureType MaterialTextureDescription::GetType() const
 {
     return type;
 }
 
-const std::vector<std::string> & ShiftEngine::MaterialTextureDescription::GetMaps() const
+const std::vector<std::string> & MaterialTextureDescription::GetMaps() const
 {
     return maps;
 }
 
-bool ShiftEngine::MaterialTextureDescription::operator==(const MaterialTextureDescription & ref) const
+bool MaterialTextureDescription::operator==(const MaterialTextureDescription & ref) const
 {
     if (this->type != ref.type)
         return false;
@@ -128,7 +130,7 @@ bool ShiftEngine::MaterialTextureDescription::operator==(const MaterialTextureDe
     return true;
 }
 
-void ShiftEngine::MaterialTextureDescription::SetMaps(const std::vector<std::string> & maps)
+void MaterialTextureDescription::SetMaps(const std::vector<std::string> & maps)
 {
     this->maps = maps;
 }

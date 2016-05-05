@@ -8,22 +8,22 @@
 #include <Utilities/ut.h>
 
 #if defined (NDEBUG) || (_NDEBUG)
-    uint32_t flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_OPTIMIZATION_LEVEL3;
+uint32_t flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR | D3DCOMPILE_OPTIMIZATION_LEVEL3;
 #else
-    uint32_t flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+uint32_t flags = D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_DEBUG | D3DCOMPILE_WARNINGS_ARE_ERRORS | D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
 #endif
 
-ShiftEngine::D3D11ShaderManager::D3D11ShaderManager(ID3D11Device * _pDevice)
+using namespace ShiftEngine;
+
+D3D11ShaderManager::D3D11ShaderManager(ID3D11Device * _pDevice)
     : pDevice(_pDevice)
     , shaderGenerator(new D3D11ShaderGenerator())
-{
-}
+{}
 
-ShiftEngine::D3D11ShaderManager::~D3D11ShaderManager()
-{
-}
+D3D11ShaderManager::~D3D11ShaderManager()
+{}
 
-ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompileVSFromSource(const std::string & source)
+D3D11ShaderPtr D3D11ShaderManager::CompileVSFromSource(const std::string & source)
 {
     ID3DBlob * compiledShader = nullptr;
     ID3DBlob * errors = nullptr;
@@ -53,7 +53,7 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompileVSFromSource
     return out;
 }
 
-ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompilePSFromSource(const std::string & source)
+D3D11ShaderPtr D3D11ShaderManager::CompilePSFromSource(const std::string & source)
 {
     ID3DBlob * compiledShader = nullptr;
     ID3DBlob * errors = nullptr;
@@ -82,7 +82,7 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompilePSFromSource
     return out;
 }
 
-//ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompileShaderFromSource(const std::string & source, D3D11ShaderType shaderType)
+//D3D11ShaderPtr D3D11ShaderManager::CompileShaderFromSource(const std::string & source, D3D11ShaderType shaderType)
 //{
 //    ID3DBlob * compiledShader = nullptr;
 //    ID3DBlob * errors = nullptr;
@@ -93,27 +93,27 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompilePSFromSource
 //
 //    switch (shaderType)
 //    {
-//    case ShiftEngine::D3D11ShaderType::ST_Vertex:
+//    case D3D11ShaderType::ST_Vertex:
 //        shaderMain = "VS";
 //        shaderVersion = "vs_5_0";
 //        break;
-//    case ShiftEngine::D3D11ShaderType::ST_Pixel:
+//    case D3D11ShaderType::ST_Pixel:
 //        shaderMain = "PS";
 //        shaderVersion = "ps_5_0";
 //        break;
-//    case ShiftEngine::D3D11ShaderType::ST_Geometry:
+//    case D3D11ShaderType::ST_Geometry:
 //        shaderMain = "GS";
 //        shaderVersion = "gs_5_0";
 //        break;
-//    case ShiftEngine::D3D11ShaderType::ST_Compute:
+//    case D3D11ShaderType::ST_Compute:
 //        shaderMain = "CS";
 //        shaderVersion = "cs_5_0";
 //        break;
-//    case ShiftEngine::D3D11ShaderType::ST_Hull:
+//    case D3D11ShaderType::ST_Hull:
 //        shaderMain = "HS";
 //        shaderVersion = "hs_5_0";
 //        break;
-//    case ShiftEngine::D3D11ShaderType::ST_Domain:
+//    case D3D11ShaderType::ST_Domain:
 //        shaderMain = "DS";
 //        shaderVersion = "ds_5_0";
 //        break;
@@ -147,7 +147,7 @@ ShiftEngine::D3D11ShaderPtr ShiftEngine::D3D11ShaderManager::CompilePSFromSource
 //    return out;
 //}
 
-ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromFile(const std::wstring & fileName)
+IProgramPtr D3D11ShaderManager::CreateProgramFromFile(const std::wstring & fileName)
 {
     auto program = filePrograms.find(fileName);
     if (program != filePrograms.end())
@@ -178,7 +178,7 @@ ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromFile(
     }
 }
 
-ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromSource(const std::string & source)
+IProgramPtr D3D11ShaderManager::CreateProgramFromSource(const std::string & source)
 {
     auto program = sourcePrograms.find(source);
     if (program != sourcePrograms.end())
@@ -198,7 +198,7 @@ ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromSourc
     }
 }
 
-ShiftEngine::IProgramPtr ShiftEngine::D3D11ShaderManager::CreateProgramFromMaterialFlags(const MaterialInfo & mtlInfo, const VertexSemantic & verticesInfo)
+IProgramPtr D3D11ShaderManager::CreateProgramFromMaterialFlags(const MaterialInfo & mtlInfo, const VertexSemantic & verticesInfo)
 {
     auto program = materialPrograms.find(std::make_pair(mtlInfo, verticesInfo));
     if (program != materialPrograms.end())

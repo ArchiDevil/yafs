@@ -21,8 +21,8 @@ CameraFrustum::CullingStatus SkySceneNode::CheckVisibility(const CameraSceneNode
     return CameraFrustum::CullingStatus::CS_In;
 }
 
-void ShiftEngine::SkySceneNode::SetMaterial(const ShiftEngine::Material * val)
+void SkySceneNode::SetMaterial(const Material * val)
 {}
 
-void ShiftEngine::SkySceneNode::SetDataPtr(IMeshDataPtr data)
+void SkySceneNode::SetDataPtr(IMeshDataPtr data)
 {}

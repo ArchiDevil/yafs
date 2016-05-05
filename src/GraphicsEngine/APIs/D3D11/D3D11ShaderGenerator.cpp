@@ -18,7 +18,9 @@ using std::string;
 using std::ostringstream;
 using std::endl;
 
-std::string ShiftEngine::D3D11ShaderGenerator::CreateShaderCode(const VertexSemantic & verticesInfo, const MaterialInfo & info)
+using namespace ShiftEngine;
+
+std::string D3D11ShaderGenerator::CreateShaderCode(const VertexSemantic & verticesInfo, const MaterialInfo & info)
 {
     ostringstream stream;
     ADD_LINE("//generated with D3D10 shader generator");
@@ -34,7 +36,7 @@ std::string ShiftEngine::D3D11ShaderGenerator::CreateShaderCode(const VertexSema
     return std::move(stream.str());
 }
 
-void ShiftEngine::D3D11ShaderGenerator::CreateUniforms(ostringstream & stream, const MaterialInfo & info)
+void D3D11ShaderGenerator::CreateUniforms(ostringstream & stream, const MaterialInfo & info)
 {
     vector<string> perObject;
     vector<string> perFrame;
@@ -82,7 +84,7 @@ void ShiftEngine::D3D11ShaderGenerator::CreateUniforms(ostringstream & stream, c
     SERIALIZE(perMaterial);
 }
 
-void ShiftEngine::D3D11ShaderGenerator::CreateSamplers(ostringstream & stream, const MaterialInfo & info)
+void D3D11ShaderGenerator::CreateSamplers(ostringstream & stream, const MaterialInfo & info)
 {
     ADD_LINE("SamplerState SS;");
 
@@ -105,7 +107,7 @@ void ShiftEngine::D3D11ShaderGenerator::CreateSamplers(ostringstream & stream, c
     }
 }
 
-void ShiftEngine::D3D11ShaderGenerator::CreateInput(ostringstream & stream, const VertexSemantic & verticesInfo)
+void D3D11ShaderGenerator::CreateInput(ostringstream & stream, const VertexSemantic & verticesInfo)
 {
     ADD_LINE("struct VS_IN" << endl << "{");
 
@@ -117,7 +119,7 @@ void ShiftEngine::D3D11ShaderGenerator::CreateInput(ostringstream & stream, cons
     ADD_LINE("};");
 }
 
-void ShiftEngine::D3D11ShaderGenerator::CreateOutput(ostringstream & stream, const VertexSemantic & verticesInfo, const MaterialInfo & info)
+void D3D11ShaderGenerator::CreateOutput(ostringstream & stream, const VertexSemantic & verticesInfo, const MaterialInfo & info)
 {
     ADD_LINE("struct VS_OUT" << endl << "{");
     ADD_LINE("float4 OutPos : SV_Position;");
@@ -129,7 +131,7 @@ void ShiftEngine::D3D11ShaderGenerator::CreateOutput(ostringstream & stream, con
     }
 
     if ((info.diffuseMap.GetType() != TextureType::Unknown ||
-        info.alphaMap.GetType() != TextureType::Unknown) &&
+         info.alphaMap.GetType() != TextureType::Unknown) &&
         verticesInfo.isTexcoordsHere())
     {
         if (info.diffuseMap.GetType() == TextureType::Texture2DArray)
@@ -150,7 +152,7 @@ void ShiftEngine::D3D11ShaderGenerator::CreateOutput(ostringstream & stream, con
     ADD_LINE("};");
 }
 
-void ShiftEngine::D3D11ShaderGenerator::CreateVS(ostringstream & stream, const VertexSemantic & verticesInfo, const MaterialInfo & info)
+void D3D11ShaderGenerator::CreateVS(ostringstream & stream, const VertexSemantic & verticesInfo, const MaterialInfo & info)
 {
     ADD_LINE("VS_OUT VS(VS_IN Input)" << endl << "{");
     ADD_LINE("VS_OUT Output;");
@@ -170,7 +172,7 @@ void ShiftEngine::D3D11ShaderGenerator::CreateVS(ostringstream & stream, const V
     }
 
     if ((info.diffuseMap.GetType() != TextureType::Unknown ||
-        info.alphaMap.GetType() != TextureType::Unknown) &&
+         info.alphaMap.GetType() != TextureType::Unknown) &&
         verticesInfo.isTexcoordsHere())
     {
         ADD_LINE("Output.Texcoord = Input.Texcoord;");
@@ -185,7 +187,7 @@ void ShiftEngine::D3D11ShaderGenerator::CreateVS(ostringstream & stream, const V
     ADD_LINE("}");
 }
 
-void ShiftEngine::D3D11ShaderGenerator::CreatePS(ostringstream & stream, const VertexSemantic & verticesInfo, const MaterialInfo & info)
+void D3D11ShaderGenerator::CreatePS(ostringstream & stream, const VertexSemantic & verticesInfo, const MaterialInfo & info)
 {
     ADD_LINE("float4 PS(VS_OUT Input) : SV_TARGET" << endl << "{");
 
@@ -267,7 +269,7 @@ void ShiftEngine::D3D11ShaderGenerator::CreatePS(ostringstream & stream, const V
     ADD_LINE("}");
 }
 
-std::string ShiftEngine::D3D11ShaderGenerator::GetNameBySemantic(const VertexInfo & info)
+std::string D3D11ShaderGenerator::GetNameBySemantic(const VertexInfo & info)
 {
     switch (info.semantic)
     {
@@ -292,7 +294,7 @@ std::string ShiftEngine::D3D11ShaderGenerator::GetNameBySemantic(const VertexInf
     return "";
 }
 
-std::string ShiftEngine::D3D11ShaderGenerator::GetSemanticBySemantic(ElemSemantic sem)
+std::string D3D11ShaderGenerator::GetSemanticBySemantic(ElemSemantic sem)
 {
     switch (sem)
     {
@@ -317,7 +319,7 @@ std::string ShiftEngine::D3D11ShaderGenerator::GetSemanticBySemantic(ElemSemanti
     return "";
 }
 
-std::string ShiftEngine::D3D11ShaderGenerator::GetTypeBySemantic(ElemType type, unsigned count)
+std::string D3D11ShaderGenerator::GetTypeBySemantic(ElemType type, unsigned count)
 {
     assert(count != 0);
 
@@ -325,7 +327,7 @@ std::string ShiftEngine::D3D11ShaderGenerator::GetTypeBySemantic(ElemType type, 
 
     switch (type)
     {
-    case ShiftEngine::ET_FLOAT:
+    case ET_FLOAT:
         os << "float";
         break;
     default:

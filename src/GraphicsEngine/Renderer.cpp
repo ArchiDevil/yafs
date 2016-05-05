@@ -11,7 +11,9 @@
 #include <Utilities/logger.hpp>
 #include <Utilities/ut.h>
 
-ShiftEngine::Renderer::Renderer(IShaderManager * _pShaderManager, IShaderGenerator * _pShaderGenerator)
+using namespace ShiftEngine;
+
+Renderer::Renderer(IShaderManager * _pShaderManager, IShaderGenerator * _pShaderGenerator)
     : FPS(0)
     , FPSCounter(0)
     , elapsedTime(0)
@@ -23,7 +25,7 @@ ShiftEngine::Renderer::Renderer(IShaderManager * _pShaderManager, IShaderGenerat
     FPSTimer.tick();
 }
 
-void ShiftEngine::Renderer::DrawAll(RenderQueue & rq, double /*dt*/)
+void Renderer::DrawAll(RenderQueue & rq, double /*dt*/)
 {
     static double baseTime = 0.0f;
     if (FPSTimer.get_running_time() - baseTime >= 1.0f)
@@ -41,7 +43,7 @@ void ShiftEngine::Renderer::DrawAll(RenderQueue & rq, double /*dt*/)
     FPSCounter++;
 }
 
-void ShiftEngine::Renderer::drawSky(RenderQueue &rq)
+void Renderer::drawSky(RenderQueue &rq)
 {
     SkySceneNode * skyNode = rq.GetActiveSky();
     if (skyNode)
@@ -64,7 +66,7 @@ void ShiftEngine::Renderer::drawSky(RenderQueue &rq)
     }
 }
 
-bool sortFunctor(ShiftEngine::MeshNode * left, ShiftEngine::MeshNode * right)
+bool sortFunctor(MeshNode * left, MeshNode * right)
 {
     bool leftTr = left->GetMaterialPtr()->GetMaterialInfo()->GetFlags()->isTransparent;
     bool rightTr = right->GetMaterialPtr()->GetMaterialInfo()->GetFlags()->isTransparent;
@@ -74,7 +76,7 @@ bool sortFunctor(ShiftEngine::MeshNode * left, ShiftEngine::MeshNode * right)
         return false;
 }
 
-void ShiftEngine::Renderer::Process(RenderQueue &rq)
+void Renderer::Process(RenderQueue &rq)
 {
     this->currentState.Reset();
 
@@ -135,17 +137,17 @@ void ShiftEngine::Renderer::Process(RenderQueue &rq)
     }
 }
 
-void ShiftEngine::Renderer::PreProcess()
+void Renderer::PreProcess()
 {
     throw std::exception("The method or operation is not implemented.");
 }
 
-void ShiftEngine::Renderer::PostProcess()
+void Renderer::PostProcess()
 {
     throw std::exception("The method or operation is not implemented.");
 }
 
-void ShiftEngine::Renderer::bindEngineUniforms(MeshNode * currentNode, const RenderQueue & list)
+void Renderer::bindEngineUniforms(MeshNode * currentNode, const RenderQueue & list)
 {
     if (!currentNode || !currentNode->GetMaterialPtr() || !currentNode->GetMaterialPtr()->program)
         return;
@@ -236,7 +238,7 @@ void ShiftEngine::Renderer::bindEngineUniforms(MeshNode * currentNode, const Ren
     }
 }
 
-void ShiftEngine::Renderer::bindCustomUniforms(MeshNode * currentNode, const RenderQueue & /*list*/)
+void Renderer::bindCustomUniforms(MeshNode * currentNode, const RenderQueue & /*list*/)
 {
     auto mat = currentNode->GetMaterialPtr();
 
@@ -280,7 +282,7 @@ void ShiftEngine::Renderer::bindCustomUniforms(MeshNode * currentNode, const Ren
     }
 }
 
-void ShiftEngine::Renderer::bindLights(const LightsVector & lv, unsigned int startIndex, unsigned int count, Material * matPtr)
+void Renderer::bindLights(const LightsVector & lv, unsigned int startIndex, unsigned int count, Material * matPtr)
 {
     if (!matPtr)
         return;
@@ -305,47 +307,47 @@ void ShiftEngine::Renderer::bindLights(const LightsVector & lv, unsigned int sta
     }
 }
 
-unsigned int ShiftEngine::Renderer::GetTextureBindings() const
+unsigned int Renderer::GetTextureBindings() const
 {
     return currentState.TextureBindings;
 }
 
-unsigned int ShiftEngine::Renderer::GetUniformsBindings() const
+unsigned int Renderer::GetUniformsBindings() const
 {
     return currentState.UniformsBindings;
 }
 
-unsigned int ShiftEngine::Renderer::GetMatricesBindings() const
+unsigned int Renderer::GetMatricesBindings() const
 {
     return currentState.MatricesBindings;
 }
 
-double ShiftEngine::Renderer::GetElapsedTime() const
+double Renderer::GetElapsedTime() const
 {
     return elapsedTime;
 }
 
-int ShiftEngine::Renderer::GetFPS() const
+int Renderer::GetFPS() const
 {
     return FPS;
 }
 
-double ShiftEngine::Renderer::GetMSPF() const
+double Renderer::GetMSPF() const
 {
     return millisecondsPerFrame;
 }
 
-unsigned int ShiftEngine::Renderer::GetDrawCalls() const
+unsigned int Renderer::GetDrawCalls() const
 {
     return currentState.DrawCalls;
 }
 
-unsigned int ShiftEngine::Renderer::GetDrawnPolygonsCount() const
+unsigned int Renderer::GetDrawnPolygonsCount() const
 {
     return currentState.PolygonsCount;
 }
 
-unsigned int ShiftEngine::Renderer::GetShaderChanges() const
+unsigned int Renderer::GetShaderChanges() const
 {
     return currentState.ShaderChanges;
 }

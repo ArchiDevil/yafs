@@ -4,7 +4,9 @@
 
 #include <cassert>
 
-ShiftEngine::SceneGraph::SceneGraph(SceneGraphType graphType /*= SGT_Plain*/)
+using namespace ShiftEngine;
+
+SceneGraph::SceneGraph(SceneGraphType graphType /*= SGT_Plain*/)
     : type(graphType)
 {
     skySemantic.addSemantic(ET_FLOAT, 3, ES_Position);
@@ -12,10 +14,10 @@ ShiftEngine::SceneGraph::SceneGraph(SceneGraphType graphType /*= SGT_Plain*/)
 
     switch (graphType)
     {
-    case ShiftEngine::SGT_Plain:
+    case SGT_Plain:
         rootNode = new PlainTreeNode();
         break;
-    case ShiftEngine::SGT_QuadTree:
+    case SGT_QuadTree:
         rootNode = new QuadTreeNode(-2048.0f, 2048.0f, -2048.0f, 2048.0f);
         break;
     default:
@@ -25,13 +27,13 @@ ShiftEngine::SceneGraph::SceneGraph(SceneGraphType graphType /*= SGT_Plain*/)
     rootNode->SetSceneGraph(this);
 }
 
-ShiftEngine::SceneGraph::~SceneGraph()
+SceneGraph::~SceneGraph()
 {
     if (rootNode)
         rootNode->release();
 }
 
-void ShiftEngine::SceneGraph::DrawAll(double dt) const
+void SceneGraph::DrawAll(double dt) const
 {
     RenderQueue rq(ambientColor);
 
@@ -50,7 +52,7 @@ void ShiftEngine::SceneGraph::DrawAll(double dt) const
     GetRenderer()->DrawAll(rq, dt);
 }
 
-ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(const std::wstring & meshFileName, const Material * material)
+MeshNode * SceneGraph::AddMeshNode(const std::wstring & meshFileName, const Material * material)
 {
     auto pCtxMgr = GetContextManager();
     IMeshDataPtr data = pCtxMgr->LoadMesh(meshFileName);
@@ -60,7 +62,7 @@ ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(const std::wstring 
     return out;
 }
 
-ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const Material * mat)
+MeshNode * SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const Material * mat)
 {
     MeshNode * out = new MeshNode(dataPtr, mat);
     rootNode->AddChild(out);
@@ -68,15 +70,15 @@ ShiftEngine::MeshNode * ShiftEngine::SceneGraph::AddMeshNode(IMeshDataPtr dataPt
     return out;
 }
 
-ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::AddCameraSceneNode(CameraViewType cameraType)
+CameraSceneNode * SceneGraph::AddCameraSceneNode(CameraViewType cameraType)
 {
     auto ContextManager = GetContextManager();
 
     CameraSceneNode * cam = new CameraSceneNode((float)ContextManager->GetEngineSettings().screenWidth,
-                                                (float)ContextManager->GetEngineSettings().screenHeight, 
-                                                ContextManager->GetEngineSettings().zNear, 
-                                                ContextManager->GetEngineSettings().zFar, 
-                                                60.0f, 
+        (float)ContextManager->GetEngineSettings().screenHeight,
+                                                ContextManager->GetEngineSettings().zNear,
+                                                ContextManager->GetEngineSettings().zFar,
+                                                60.0f,
                                                 cameraType);
     cam->SetSceneGraph(this);
     rootNode->AddChild(cam);
@@ -87,27 +89,27 @@ ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::AddCameraSceneNode(Camer
     return cam;
 }
 
-void ShiftEngine::SceneGraph::SetActiveCamera(CameraSceneNode * camera)
+void SceneGraph::SetActiveCamera(CameraSceneNode * camera)
 {
     this->activeCamera = camera;
 }
 
-ShiftEngine::CameraSceneNode * ShiftEngine::SceneGraph::GetActiveCamera() const
+CameraSceneNode * SceneGraph::GetActiveCamera() const
 {
     return activeCamera;
 }
 
-ShiftEngine::SkySceneNode * ShiftEngine::SceneGraph::AddSkySceneNode()
+SkySceneNode * SceneGraph::AddSkySceneNode()
 {
-    ShiftEngine::Material material(GetContextManager()->LoadShader(L"sky.fx"));
-    ShiftEngine::IMeshDataPtr mesh = GetContextManager()->LoadMesh(L"sky.lim");
+    Material material(GetContextManager()->LoadShader(L"sky.fx"));
+    IMeshDataPtr mesh = GetContextManager()->LoadMesh(L"sky.lim");
     SkySceneNode * out = new SkySceneNode(&material, mesh);
     activeSky = out;
     out->SetSceneGraph(this);
     return out;
 }
 
-ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color)
+LightNode * SceneGraph::AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color)
 {
     LightNode * out = new LightNode(LNT_Directional, color);
     out->SetDirection(direction);
@@ -117,7 +119,7 @@ ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddDirectionalLightNode(const 
     return out;
 }
 
-ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color)
+LightNode * SceneGraph::AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color)
 {
     LightNode * out = new LightNode(LNT_Point, color);
     out->SetRadius(radius);
@@ -127,22 +129,22 @@ ShiftEngine::LightNode * ShiftEngine::SceneGraph::AddPointLightNode(const MathLi
     return out;
 }
 
-void ShiftEngine::SceneGraph::SetAmbientColor(const MathLib::vec3f & color)
+void SceneGraph::SetAmbientColor(const MathLib::vec3f & color)
 {
     ambientColor = color;
 }
 
-MathLib::vec3f ShiftEngine::SceneGraph::GetAmbientColor() const
+MathLib::vec3f SceneGraph::GetAmbientColor() const
 {
     return ambientColor;
 }
 
-ShiftEngine::SkySceneNode * ShiftEngine::SceneGraph::GetActiveSkyNode() const
+SkySceneNode * SceneGraph::GetActiveSkyNode() const
 {
     return activeSky;
 }
 
-void ShiftEngine::SceneGraph::RemoveDirectionalLightNode(LightNode * node)
+void SceneGraph::RemoveDirectionalLightNode(LightNode * node)
 {
     for (auto iter = directionalLights.begin(); iter != directionalLights.end(); ++iter)
     {
@@ -156,13 +158,13 @@ void ShiftEngine::SceneGraph::RemoveDirectionalLightNode(LightNode * node)
     }
 }
 
-void ShiftEngine::SceneGraph::MoveNodeCallback(ISceneNode * node)
+void SceneGraph::MoveNodeCallback(ISceneNode * node)
 {
     switch (type)
     {
-    case ShiftEngine::SGT_Plain:
+    case SGT_Plain:
         return;
-    case ShiftEngine::SGT_QuadTree:
+    case SGT_QuadTree:
     {
         node->addRef();
         node->RemoveParent();
