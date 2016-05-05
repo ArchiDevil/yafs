@@ -4,8 +4,9 @@
 #include "SceneGraph.h"
 
 using namespace ShiftEngine;
+using namespace MathLib;
 
-LightSceneNode::LightSceneNode(SceneGraph * sceneGraph, LightNodeType _type, const MathLib::vec3f & _color)
+LightSceneNode::LightSceneNode(SceneGraph * sceneGraph, LightNodeType _type, const vec3f & _color)
     : ISceneNode(sceneGraph)
     , color(_color)
     , type(_type)
@@ -18,12 +19,12 @@ void LightSceneNode::PushToRQ(RenderQueue & rq)
         rq.AddLightNode(this);
 }
 
-void LightSceneNode::SetColor(const MathLib::vec3f & color)
+void LightSceneNode::SetColor(const vec3f & color)
 {
     this->color = color;
 }
 
-MathLib::vec3f LightSceneNode::GetColor() const
+vec3f LightSceneNode::GetColor() const
 {
     return color;
 }
@@ -43,12 +44,12 @@ void LightSceneNode::SetRadius(float val)
     radius = val;
 }
 
-MathLib::vec3f LightSceneNode::GetDirection() const
+vec3f LightSceneNode::GetDirection() const
 {
     return direction;
 }
 
-void LightSceneNode::SetDirection(const MathLib::vec3f & val)
+void LightSceneNode::SetDirection(const vec3f & val)
 {
     direction = val;
 }
@@ -74,7 +75,7 @@ void LightSceneNode::KillSelf()
     }
 }
 
-MathLib::AABB LightSceneNode::GetBBox() const
+AABB LightSceneNode::GetBBox() const
 {
     return {};
 }

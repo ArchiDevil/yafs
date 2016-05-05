@@ -57,7 +57,7 @@ int MeshSceneNode::Render()
     return GetContextManager()->DrawMesh(Data);
 }
 
-MathLib::AABB MeshSceneNode::GetBBox() const
+AABB MeshSceneNode::GetBBox() const
 {
     mat4f matWorld = GetWorldMatrix();
     vec4f points[8];

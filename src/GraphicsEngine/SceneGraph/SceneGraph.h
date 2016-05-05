@@ -38,23 +38,28 @@ public:
     SceneGraph(SceneGraphType graphType = SGT_Plain);
     ~SceneGraph();
 
+    // MESHES
     MeshSceneNode * AddMeshNode(const std::wstring & meshFileName, const Material * mat); //tries to load mesh with meshLoader
     MeshSceneNode * AddMeshNode(IMeshDataPtr dataPtr, const Material * mat);
     SpriteSceneNode * AddSpriteNode(const std::wstring & textureName);
 
+    // LIGHTS
     LightSceneNode * AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color = {1.0f, 1.0f, 1.0f});
     void RemoveDirectionalLightNode(LightSceneNode * node);
     LightSceneNode * AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color = {1.0f, 1.0f, 1.0f});
     void SetAmbientColor(const MathLib::vec3f & color);
     MathLib::vec3f GetAmbientColor() const;
 
+    // SKY
     SkySceneNode * AddSkySceneNode();
     SkySceneNode * GetActiveSkyNode() const;
 
+    // CAMERA
     CameraSceneNode * AddCameraSceneNode(CameraViewType cameraType);
     void SetActiveCamera(CameraSceneNode * camera);
     CameraSceneNode * GetActiveCamera() const;
 
+    // OTHER
     void DrawAll(double dt) const;
     void MoveNodeCallback(ISceneNode * node);
 
