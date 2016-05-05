@@ -3,7 +3,9 @@
 #include <cassert>
 #include <D3Dcompiler.h>
 
-ShiftEngine::D3D11Program::D3D11Program(D3D11ShaderPtr & _vertexShader, D3D11ShaderPtr & _pixelShader, CComPtr<ID3D11Device> _pDevice, CComPtr<ID3D11DeviceContext> _pDeviceContext)
+using namespace ShiftEngine;
+
+D3D11Program::D3D11Program(D3D11ShaderPtr & _vertexShader, D3D11ShaderPtr & _pixelShader, CComPtr<ID3D11Device> _pDevice, CComPtr<ID3D11DeviceContext> _pDeviceContext)
     : vertexShader(_vertexShader)
     , pixelShader(_pixelShader)
     , pDevice(_pDevice)
@@ -12,7 +14,7 @@ ShiftEngine::D3D11Program::D3D11Program(D3D11ShaderPtr & _vertexShader, D3D11Sha
     ParseInfo();
 }
 
-void ShiftEngine::D3D11Program::ParseInfo()
+void D3D11Program::ParseInfo()
 {
     D3D11_SHADER_DESC desc;
     //VERTEX SHADER
@@ -205,7 +207,7 @@ void ShiftEngine::D3D11Program::ParseInfo()
     }
 }
 
-bool ShiftEngine::D3D11Program::SetMatrixConstantByName(const char * nameInShader, const float * mat)
+bool D3D11Program::SetMatrixConstantByName(const char * nameInShader, const float * mat)
 {
     unsigned int index = 0;
     if (GetVariableIndex(nameInShader, &index))
@@ -216,7 +218,7 @@ bool ShiftEngine::D3D11Program::SetMatrixConstantByName(const char * nameInShade
     return false;
 }
 
-bool ShiftEngine::D3D11Program::SetScalarConstantByName(const char * nameInShader, const float * scalar)
+bool D3D11Program::SetScalarConstantByName(const char * nameInShader, const float * scalar)
 {
     unsigned int index = 0;
     if (GetVariableIndex(nameInShader, &index))
@@ -227,7 +229,7 @@ bool ShiftEngine::D3D11Program::SetScalarConstantByName(const char * nameInShade
     return false;
 }
 
-bool ShiftEngine::D3D11Program::SetVectorConstantByName(const char * nameInShader, const float * vec)
+bool D3D11Program::SetVectorConstantByName(const char * nameInShader, const float * vec)
 {
     unsigned int index = 0;
     if (GetVariableIndex(nameInShader, &index))
@@ -238,7 +240,7 @@ bool ShiftEngine::D3D11Program::SetVectorConstantByName(const char * nameInShade
     return false;
 }
 
-bool ShiftEngine::D3D11Program::SetArrayConstantByName(const char * nameInShader, const void * data)
+bool D3D11Program::SetArrayConstantByName(const char * nameInShader, const void * data)
 {
     unsigned int index = 0;
     if (GetVariableIndex(nameInShader, &index))
@@ -249,7 +251,7 @@ bool ShiftEngine::D3D11Program::SetArrayConstantByName(const char * nameInShader
     return false;
 }
 
-bool ShiftEngine::D3D11Program::SetTextureByName(const char * textureName, const ITexturePtr & texture)
+bool D3D11Program::SetTextureByName(const char * textureName, const ITexturePtr & texture)
 {
     unsigned int index = 0;
     if (GetResourceIndex(textureName, &index))
@@ -260,7 +262,7 @@ bool ShiftEngine::D3D11Program::SetTextureByName(const char * textureName, const
     return false;
 }
 
-void ShiftEngine::D3D11Program::Apply(bool shaderChanged)
+void D3D11Program::Apply(bool shaderChanged)
 {
     if (shaderChanged)
     {
@@ -301,7 +303,7 @@ void ShiftEngine::D3D11Program::Apply(bool shaderChanged)
     }
 }
 
-bool ShiftEngine::D3D11Program::GetVariableIndex(const char * name, unsigned int * index)
+bool D3D11Program::GetVariableIndex(const char * name, unsigned int * index)
 {
     if (index != nullptr)
     {
@@ -322,7 +324,7 @@ bool ShiftEngine::D3D11Program::GetVariableIndex(const char * name, unsigned int
     }
 }
 
-bool ShiftEngine::D3D11Program::GetResourceIndex(const char * name, unsigned int * index)
+bool D3D11Program::GetResourceIndex(const char * name, unsigned int * index)
 {
     if (index != nullptr)
     {
@@ -343,27 +345,27 @@ bool ShiftEngine::D3D11Program::GetResourceIndex(const char * name, unsigned int
     }
 }
 
-void ShiftEngine::D3D11Program::SetMatrixConstantByIndex(unsigned int index, const float * mat)
+void D3D11Program::SetMatrixConstantByIndex(unsigned int index, const float * mat)
 {
     return SetUniformByIndex(index, mat);
 }
 
-void ShiftEngine::D3D11Program::SetScalarConstantByIndex(unsigned int index, const float * scalar)
+void D3D11Program::SetScalarConstantByIndex(unsigned int index, const float * scalar)
 {
     return SetUniformByIndex(index, scalar);
 }
 
-void ShiftEngine::D3D11Program::SetVectorConstantByIndex(unsigned int index, const float * vec)
+void D3D11Program::SetVectorConstantByIndex(unsigned int index, const float * vec)
 {
     return SetUniformByIndex(index, vec);
 }
 
-void ShiftEngine::D3D11Program::SetArrayConstantByIndex(unsigned int index, const void * data)
+void D3D11Program::SetArrayConstantByIndex(unsigned int index, const void * data)
 {
     return SetUniformByIndex(index, data);
 }
 
-void ShiftEngine::D3D11Program::SetUniformByIndex(unsigned int index, const void * data)
+void D3D11Program::SetUniformByIndex(unsigned int index, const void * data)
 {
     assert(index < variables.size());
     const D3D11VarDesc & var = variables[index];
@@ -372,7 +374,7 @@ void ShiftEngine::D3D11Program::SetUniformByIndex(unsigned int index, const void
     memcpy(buffer.bufferData + var.Offset, data, var.Size);
 }
 
-bool ShiftEngine::D3D11Program::SetTextureByIndex(unsigned int index, const ITexturePtr & texture)
+bool D3D11Program::SetTextureByIndex(unsigned int index, const ITexturePtr & texture)
 {
     if (!texture)
         return false;

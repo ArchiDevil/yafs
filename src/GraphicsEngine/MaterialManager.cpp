@@ -6,6 +6,7 @@
 #include <Utilities/ut.h>
 
 using namespace tinyxml2;
+using namespace ShiftEngine;
 
 #define PARSING_ERROR(x)                                                            \
     {                                                                               \
@@ -53,17 +54,17 @@ using namespace tinyxml2;
         }                                                            \
     }                                                                \
 
-ShiftEngine::MaterialManager::MaterialManager(ITextureManager * pTextureManager, IShaderManager * pShaderManager)
+MaterialManager::MaterialManager(ITextureManager * pTextureManager, IShaderManager * pShaderManager)
     : pTextureManager(pTextureManager)
     , pShaderManager(pShaderManager)
 {
 }
 
-ShiftEngine::MaterialManager::~MaterialManager()
+MaterialManager::~MaterialManager()
 {
 }
 
-ShiftEngine::MaterialPtr ShiftEngine::MaterialManager::LoadMaterial(const std::wstring & filename, const std::wstring & mtlName /*= L"default"*/)
+MaterialPtr MaterialManager::LoadMaterial(const std::wstring & filename, const std::wstring & mtlName /*= L"default"*/)
 {
     std::map<std::string, XMLElement*> keyVal;	//name/node map
 
@@ -181,7 +182,7 @@ ShiftEngine::MaterialPtr ShiftEngine::MaterialManager::LoadMaterial(const std::w
     }
 
     if (!shaderName.empty())
-        pMaterial = std::make_shared<Material>(ShiftEngine::GetContextManager()->LoadShader(utils::widen(shaderName)), mtlInfo);
+        pMaterial = std::make_shared<Material>(GetContextManager()->LoadShader(utils::widen(shaderName)), mtlInfo);
     else
         pMaterial = std::make_shared<Material>(mtlInfo);
 
@@ -195,7 +196,7 @@ ShiftEngine::MaterialPtr ShiftEngine::MaterialManager::LoadMaterial(const std::w
     return pMaterial;
 }
 
-bool ShiftEngine::MaterialManager::CheckMaterialName(const std::string & name)
+bool MaterialManager::CheckMaterialName(const std::string & name)
 {
     std::regex nameRegex("^[A-Za-z][\\w]+");
     if (!std::regex_match(name, nameRegex))
@@ -207,7 +208,7 @@ bool ShiftEngine::MaterialManager::CheckMaterialName(const std::string & name)
     return true;
 }
 
-bool ShiftEngine::MaterialManager::FillProperties(MaterialInfo & info, const std::map<std::string, XMLElement*> & KeyVal)
+bool MaterialManager::FillProperties(MaterialInfo & info, const std::map<std::string, XMLElement*> & KeyVal)
 {
     //loading maps
     if (!LoadMaps(info, KeyVal))
@@ -222,7 +223,7 @@ bool ShiftEngine::MaterialManager::FillProperties(MaterialInfo & info, const std
     return true;
 }
 
-bool ShiftEngine::MaterialManager::LoadTextures(MaterialInfo & info, MaterialPtr & ptr)
+bool MaterialManager::LoadTextures(MaterialInfo & info, MaterialPtr & ptr)
 {
     if (info.diffuseMap.GetType() != TextureType::Unknown)
     {
@@ -247,7 +248,7 @@ bool ShiftEngine::MaterialManager::LoadTextures(MaterialInfo & info, MaterialPtr
     return true;
 }
 
-bool ShiftEngine::MaterialManager::LoadMaps(MaterialInfo & info, const std::map<std::string, XMLElement*> & KeyVal)
+bool MaterialManager::LoadMaps(MaterialInfo & info, const std::map<std::string, XMLElement*> & KeyVal)
 {
     //load diffuse map
     auto it = KeyVal.find("diffuseMap");
@@ -349,7 +350,7 @@ bool ShiftEngine::MaterialManager::LoadMaps(MaterialInfo & info, const std::map<
     return true;
 }
 
-bool ShiftEngine::MaterialManager::LoadColors(MaterialInfo & info, const std::map<std::string, XMLElement*> & KeyVal)
+bool MaterialManager::LoadColors(MaterialInfo & info, const std::map<std::string, XMLElement*> & KeyVal)
 {
     std::regex checkRegex("rgb\\(\\d+\\.\\d+\\,\\s*\\d+\\.\\d+\\,\\s*\\d+\\.\\d+\\)");
     std::regex numRegex("\\d+\\.\\d+");
@@ -387,7 +388,7 @@ bool ShiftEngine::MaterialManager::LoadColors(MaterialInfo & info, const std::ma
     return true;
 }
 
-bool ShiftEngine::MaterialManager::LoadOtherFlags(MaterialInfo & info, const std::map<std::string, XMLElement*> & KeyVal)
+bool MaterialManager::LoadOtherFlags(MaterialInfo & info, const std::map<std::string, XMLElement*> & KeyVal)
 {
     //loading bools first
     FIND_FLAG(twoFace);

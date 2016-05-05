@@ -2,16 +2,17 @@
 
 #include <cassert>
 
-ShiftEngine::D3D11MeshData::D3D11MeshData(ID3D11Buffer * _VB /*= nullptr*/, ID3D11Buffer * _IB /*= nullptr*/, 
-                                          ID3D11Device * pDevice /*= nullptr*/, ID3D11DeviceContext * pDeviceContext /*= nullptr*/)
+using namespace ShiftEngine;
+
+D3D11MeshData::D3D11MeshData(ID3D11Buffer * _VB /*= nullptr*/, ID3D11Buffer * _IB /*= nullptr*/,
+                             ID3D11Device * pDevice /*= nullptr*/, ID3D11DeviceContext * pDeviceContext /*= nullptr*/)
     : VertexBuffer(_VB)
     , IndexBuffer(_IB)
     , pDevice(pDevice)
     , pDeviceContext(pDeviceContext)
-{
-}
+{}
 
-bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic, 
+bool D3D11MeshData::CreateBuffers(bool dynamic, 
                                                const uint8_t * vData, 
                                                size_t vDataSize, 
                                                const uint32_t * iData, 
@@ -91,13 +92,13 @@ bool ShiftEngine::D3D11MeshData::CreateBuffers(bool dynamic,
     return true;
 }
 
-void ShiftEngine::D3D11MeshData::Clear()
+void D3D11MeshData::Clear()
 {
     VertexBuffer.Release();
     IndexBuffer.Release();
 }
 
-size_t ShiftEngine::D3D11MeshData::Draw()
+size_t D3D11MeshData::Draw()
 {
     if (!pDevice)
         return 0;

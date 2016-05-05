@@ -6,7 +6,9 @@
 
 #include <cassert>
 
-ShiftEngine::FontManager::FontManager()
+using namespace ShiftEngine;
+
+FontManager::FontManager()
     : currentFont(L"")
     , textShader(nullptr)
 {
@@ -17,7 +19,7 @@ ShiftEngine::FontManager::FontManager()
         currentFont = Fonts.begin()->first;
 }
 
-void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, float x, float y)
+void FontManager::DrawTextTL(const std::string & Text, float x, float y)
 {
     if (!pCurrentFont || !Text.size())
         return;
@@ -25,7 +27,7 @@ void ShiftEngine::FontManager::DrawTextTL(const std::string & Text, float x, flo
     BatchText(Text, x, y);
 }
 
-int ShiftEngine::FontManager::GetFontHeight()
+int FontManager::GetFontHeight()
 {
     if (!pCurrentFont)
         return 0;
@@ -33,7 +35,7 @@ int ShiftEngine::FontManager::GetFontHeight()
         return pCurrentFont->LineHeight;
 }
 
-int ShiftEngine::FontManager::GetStringWidth(const std::string & string)
+int FontManager::GetStringWidth(const std::string & string)
 {
     int result = 0;
 
@@ -52,7 +54,7 @@ int ShiftEngine::FontManager::GetStringWidth(const std::string & string)
     return result;
 }
 
-void ShiftEngine::FontManager::LoadFonts()
+void FontManager::LoadFonts()
 {
     IContextManager* pCntMng = GetContextManager();
     //TODO: добавить механизм, чтобы файл шрифта содержал имя текстуры
@@ -77,7 +79,7 @@ void ShiftEngine::FontManager::LoadFonts()
     }
 }
 
-void ShiftEngine::FontManager::SetFont(const std::wstring & fontName)
+void FontManager::SetFont(const std::wstring & fontName)
 {
     auto iter = Fonts.find(fontName);
     if (iter != Fonts.end())
@@ -93,12 +95,12 @@ void ShiftEngine::FontManager::SetFont(const std::wstring & fontName)
     }
 }
 
-std::wstring ShiftEngine::FontManager::GetCurrentFontName() const
+std::wstring FontManager::GetCurrentFontName() const
 {
     return currentFont;
 }
 
-void ShiftEngine::FontManager::BatchText(const std::string & text, float x, float y)
+void FontManager::BatchText(const std::string & text, float x, float y)
 {
     if (text.size() == 0)
         return;
@@ -173,7 +175,7 @@ void ShiftEngine::FontManager::BatchText(const std::string & text, float x, floa
     }
 }
 
-void ShiftEngine::FontManager::DrawBatchedText()
+void FontManager::DrawBatchedText()
 {
     for (auto & p : batchedVertices)
     {

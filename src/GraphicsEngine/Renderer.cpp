@@ -307,17 +307,17 @@ void Renderer::bindLights(const LightsVector & lv, unsigned int startIndex, unsi
     }
 }
 
-size_t ShiftEngine::Renderer::GetTextureBindings() const
+size_t Renderer::GetTextureBindings() const
 {
     return currentState.textureBindings;
 }
 
-size_t ShiftEngine::Renderer::GetUniformsBindings() const
+size_t Renderer::GetUniformsBindings() const
 {
     return currentState.uniformsBindings;
 }
 
-size_t ShiftEngine::Renderer::GetMatricesBindings() const
+size_t Renderer::GetMatricesBindings() const
 {
     return currentState.matricesBindings;
 }
@@ -327,12 +327,12 @@ double Renderer::GetElapsedTime() const
     return elapsedTime;
 }
 
-size_t ShiftEngine::Renderer::GetFPS() const
+size_t Renderer::GetFPS() const
 {
     return FPS;
 }
 
-void ShiftEngine::Renderer::drawSprites(SpritesVector & sprites, CameraSceneNode & currentCamera)
+void Renderer::drawSprites(SpritesVector & sprites, CameraSceneNode & currentCamera)
 {
     if (!spriteProgram || !spriteMesh)
         loadSpritesPrerequisites();
@@ -372,7 +372,7 @@ void ShiftEngine::Renderer::drawSprites(SpritesVector & sprites, CameraSceneNode
     }
 }
 
-void ShiftEngine::Renderer::loadSpritesPrerequisites()
+void Renderer::loadSpritesPrerequisites()
 {
     if(!spriteMesh)
         spriteProgram = GetContextManager()->LoadShader(L"SpriteShader.fx");
@@ -401,12 +401,12 @@ double Renderer::GetFrameDuration() const
     return millisecondsPerFrame;
 }
 
-size_t ShiftEngine::Renderer::GetDrawCalls() const
+size_t Renderer::GetDrawCalls() const
 {
     return currentState.drawCalls;
 }
 
-size_t ShiftEngine::Renderer::GetDrawnPolygonsCount() const
+size_t Renderer::GetDrawnPolygonsCount() const
 {
     return currentState.polygonsCount;
 }

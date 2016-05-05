@@ -2,7 +2,9 @@
 
 #include <cassert>
 
-ShiftEngine::Material::Material(IProgramPtr _program)
+using namespace ShiftEngine;
+
+Material::Material(IProgramPtr _program)
     : program(_program)
 {
     for (int i = 0; i < SV_Elems; i++)
@@ -15,7 +17,7 @@ ShiftEngine::Material::Material(IProgramPtr _program)
         LinkMaterial();
 }
 
-ShiftEngine::Material::Material(MaterialInfo & mtlParams)
+Material::Material(MaterialInfo & mtlParams)
     : info(mtlParams)
 {
     for (int i = 0; i < SV_Elems; i++)
@@ -25,7 +27,7 @@ ShiftEngine::Material::Material(MaterialInfo & mtlParams)
         builtinTextures[i] = std::make_pair(UINT_MAX, nullptr);
 }
 
-ShiftEngine::Material::Material(IProgramPtr _program, MaterialInfo & mtlParams)
+Material::Material(IProgramPtr _program, MaterialInfo & mtlParams)
     : program(_program)
     , info(mtlParams)
 {
@@ -39,7 +41,7 @@ ShiftEngine::Material::Material(IProgramPtr _program, MaterialInfo & mtlParams)
         LinkMaterial();
 }
 
-void ShiftEngine::Material::LinkMaterial()
+void Material::LinkMaterial()
 {
     program->GetVariableIndex("matWorld", &builtinVarIndices[SV_MatWorld]);
     program->GetVariableIndex("matView", &builtinVarIndices[SV_MatView]);
@@ -69,18 +71,18 @@ void ShiftEngine::Material::LinkMaterial()
     program->GetResourceIndex("alphaMap", &builtinTextures[ST_Alpha].first);
 }
 
-// void ShiftEngine::cMaterial::SetCustomTexture( cTexturePtr texture, const char * name )
+// void cMaterial::SetCustomTexture( cTexturePtr texture, const char * name )
 // {
 // 	textures[name] = texture;
 // }
 
-// void ShiftEngine::cMaterial::UnbindAllTextures()
+// void cMaterial::UnbindAllTextures()
 // {
 // 	for(auto & elem : builtinTexIndices)
 // 		elem = UINT_MAX;
 // }
 
-void ShiftEngine::Material::SetDiffuseTexture(const ITexturePtr & texture)
+void Material::SetDiffuseTexture(const ITexturePtr & texture)
 {
     if (builtinTextures[ST_Diffuse].first != UINT_MAX)
     {
@@ -94,7 +96,7 @@ void ShiftEngine::Material::SetDiffuseTexture(const ITexturePtr & texture)
     }
 }
 
-void ShiftEngine::Material::SetAlphaTexture(const ITexturePtr & texture)
+void Material::SetAlphaTexture(const ITexturePtr & texture)
 {
     if (builtinTextures[ST_Alpha].first != UINT_MAX)
     {
@@ -108,7 +110,7 @@ void ShiftEngine::Material::SetAlphaTexture(const ITexturePtr & texture)
     }
 }
 
-void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const float param)
+void Material::SetNamedParam(const std::string & parameter, const float param)
 {
     unsigned int var = 0;
     if (program)
@@ -116,7 +118,7 @@ void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const f
     floatParams[parameter] = param;
 }
 
-void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const MathLib::vec2f & param)
+void Material::SetNamedParam(const std::string & parameter, const MathLib::vec2f & param)
 {
     unsigned int var = 0;
     if (program)
@@ -124,7 +126,7 @@ void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const M
     float2Params[parameter] = param;
 }
 
-void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const MathLib::vec3f & param)
+void Material::SetNamedParam(const std::string & parameter, const MathLib::vec3f & param)
 {
     unsigned int var = 0;
     if (program)
@@ -132,7 +134,7 @@ void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const M
     float3Params[parameter] = param;
 }
 
-void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const MathLib::vec4f & param)
+void Material::SetNamedParam(const std::string & parameter, const MathLib::vec4f & param)
 {
     unsigned int var = 0;
     if (program)
@@ -140,7 +142,7 @@ void ShiftEngine::Material::SetNamedParam(const std::string & parameter, const M
     float4Params[parameter] = param;
 }
 
-void ShiftEngine::Material::SetZState(bool zState)
+void Material::SetZState(bool zState)
 {
     ZState = zState;
 }
@@ -156,7 +158,7 @@ struct shaderLightRefl
     float pack = 0.0f;
 };
 
-void ShiftEngine::Material::BindLights(const std::vector<LightInfo> & lights)
+void Material::BindLights(const std::vector<LightInfo> & lights)
 {
     if (!program || lights.size() > 4)
         return;
@@ -182,32 +184,32 @@ void ShiftEngine::Material::BindLights(const std::vector<LightInfo> & lights)
     return program->SetArrayConstantByIndex(builtinVarIndices[SV_LightsArray], binder);
 }
 
-ShiftEngine::MaterialInfo * ShiftEngine::Material::GetMaterialInfo()
+MaterialInfo * Material::GetMaterialInfo()
 {
     return &info;
 }
 
-unsigned int ShiftEngine::Material::GetUniformIndex(engineUniforms var) const
+unsigned int Material::GetUniformIndex(engineUniforms var) const
 {
     return builtinVarIndices[var];
 }
 
-const std::vector<ShiftEngine::engineUniforms> & ShiftEngine::Material::GetUniforms() const
+const std::vector<engineUniforms> & Material::GetUniforms() const
 {
     return knownUniforms;
 }
 
-void ShiftEngine::Material::SetDiffuseColor(const MathLib::vec4f & diffuseColor)
+void Material::SetDiffuseColor(const MathLib::vec4f & diffuseColor)
 {
     info.diffuseColor = diffuseColor;
 }
 
-void ShiftEngine::Material::SetSpecularColor(const MathLib::vec4f & specularColor)
+void Material::SetSpecularColor(const MathLib::vec4f & specularColor)
 {
     info.specularColor = specularColor;
 }
 
-void ShiftEngine::Material::SetEmissionColor(const MathLib::vec4f & emissionColor)
+void Material::SetEmissionColor(const MathLib::vec4f & emissionColor)
 {
     info.emissionColor = emissionColor;
 }

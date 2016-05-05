@@ -4,9 +4,11 @@
 
 #include <fstream>
 
-bool ShiftEngine::Utilities::getVerticesFromFile(const std::wstring & filename,
-                                                 SerializedLIM & vertices,
-                                                 std::vector<uint32_t> & indices)
+using namespace ShiftEngine;
+
+bool Utilities::getVerticesFromFile(const std::wstring & filename,
+                                    SerializedLIM & vertices,
+                                    std::vector<uint32_t> & indices)
 {
     std::ifstream in(filename.c_str(), std::ios::binary);
 
@@ -47,42 +49,42 @@ bool ShiftEngine::Utilities::getVerticesFromFile(const std::wstring & filename,
     return true;
 }
 
-ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createCube()
+IMeshDataPtr Utilities::createCube()
 {
     static IMeshDataPtr pDefaultMesh = nullptr;
     if (pDefaultMesh != nullptr)
         return pDefaultMesh;
     //some actions
     std::vector<DefaultVertex> vertices(24);
-    vertices[0] = { { 0.5f, 0.5f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } };
-    vertices[1] = { { 0.5f, -0.5f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f } };
-    vertices[2] = { { -0.5f, 0.5f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } };
-    vertices[3] = { { -0.5f, -0.5f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } };
+    vertices[0] = {{ 0.5f, 0.5f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }};
+    vertices[1] = {{ 0.5f, -0.5f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }};
+    vertices[2] = {{ -0.5f, 0.5f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }};
+    vertices[3] = {{ -0.5f, -0.5f, 1.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }};
 
-    vertices[4] = { { 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f } };
-    vertices[5] = { { 0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f } };
-    vertices[6] = { { -0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 0.0f } };
-    vertices[7] = { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 1.0f } };
+    vertices[4] = {{ 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 0.0f }};
+    vertices[5] = {{ 0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 0.0f, 1.0f }};
+    vertices[6] = {{ -0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 0.0f }};
+    vertices[7] = {{ -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 1.0f }};
 
-    vertices[8] = { { -0.5f, -0.5f, 1.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f } };
-    vertices[9] = { { 0.5f, -0.5f, 1.0f }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 0.0f } };
-    vertices[10] = { { 0.5f, -0.5f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 1.0f } };
-    vertices[11] = { { -0.5f, -0.5f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f } };
+    vertices[8] = {{ -0.5f, -0.5f, 1.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f }};
+    vertices[9] = {{ 0.5f, -0.5f, 1.0f }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 0.0f }};
+    vertices[10] = {{ 0.5f, -0.5f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 1.0f, 1.0f }};
+    vertices[11] = {{ -0.5f, -0.5f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f }};
 
-    vertices[12] = { { -0.5f, 0.5f, 1.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } };
-    vertices[13] = { { 0.5f, 0.5f, 1.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f } };
-    vertices[14] = { { 0.5f, 0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f } };
-    vertices[15] = { { -0.5f, 0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f } };
+    vertices[12] = {{ -0.5f, 0.5f, 1.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f }};
+    vertices[13] = {{ 0.5f, 0.5f, 1.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f }};
+    vertices[14] = {{ 0.5f, 0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f }};
+    vertices[15] = {{ -0.5f, 0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 1.0f }};
 
-    vertices[16] = { { -0.5f, 0.5f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } };
-    vertices[17] = { { -0.5f, -0.5f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } };
-    vertices[18] = { { -0.5f, -0.5f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f } };
-    vertices[19] = { { -0.5f, 0.5f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } };
+    vertices[16] = {{ -0.5f, 0.5f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }};
+    vertices[17] = {{ -0.5f, -0.5f, 1.0f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }};
+    vertices[18] = {{ -0.5f, -0.5f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }};
+    vertices[19] = {{ -0.5f, 0.5f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }};
 
-    vertices[20] = { { 0.5f, 0.5f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } };
-    vertices[21] = { { 0.5f, -0.5f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } };
-    vertices[22] = { { 0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f } };
-    vertices[23] = { { 0.5f, 0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f } };
+    vertices[20] = {{ 0.5f, 0.5f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f }};
+    vertices[21] = {{ 0.5f, -0.5f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f }};
+    vertices[22] = {{ 0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f }};
+    vertices[23] = {{ 0.5f, 0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 1.0f }};
 
     std::vector<uint32_t> indices =
     {
@@ -106,26 +108,26 @@ ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createCube()
         23, 22, 21
     };
 
-    IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
-    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), 
-                                                        vertices.size() * sizeof(DefaultVertex), 
-                                                        indices, 
-                                                        &defaultVertexSemantic, 
-                                                        { {-0.5f, -0.5f, 0.0f}, { 0.5f, 0.5f, 1.0f } });
+    IMeshManager * pMeshManager = GetContextManager()->GetMeshManager();
+    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(),
+                                                        vertices.size() * sizeof(DefaultVertex),
+                                                        indices,
+                                                        &defaultVertexSemantic,
+                                                        {{-0.5f, -0.5f, 0.0f}, { 0.5f, 0.5f, 1.0f }});
     return pDefaultMesh;
 }
 
-ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createPlane()
+IMeshDataPtr Utilities::createPlane()
 {
     static IMeshDataPtr pDefaultMesh = nullptr;
     if (pDefaultMesh != nullptr)
         return pDefaultMesh;
 
     std::vector<DefaultVertex> vertices(4);
-    vertices[0] = { { 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } };
-    vertices[1] = { { 0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f } };
-    vertices[2] = { { -0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } };
-    vertices[3] = { { -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } };
+    vertices[0] = {{ 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f }};
+    vertices[1] = {{ 0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f }};
+    vertices[2] = {{ -0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f }};
+    vertices[3] = {{ -0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f }};
 
     std::vector<uint32_t> indices =
     {
@@ -134,16 +136,16 @@ ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createPlane()
         2, 1, 3,
     };
 
-    IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
-    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), 
-                                                        vertices.size() * sizeof(DefaultVertex), 
-                                                        indices, 
-                                                        &defaultVertexSemantic, 
-                                                        { { -0.5f, -0.5f, 0.0f },{ 0.5f, 0.5f, 0.0f } });
+    IMeshManager * pMeshManager = GetContextManager()->GetMeshManager();
+    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(),
+                                                        vertices.size() * sizeof(DefaultVertex),
+                                                        indices,
+                                                        &defaultVertexSemantic,
+                                                        {{ -0.5f, -0.5f, 0.0f },{ 0.5f, 0.5f, 0.0f }});
     return pDefaultMesh;
 }
 
-ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createSphere()
+IMeshDataPtr Utilities::createSphere()
 {
     static IMeshDataPtr pDefaultMesh = nullptr;
     if (pDefaultMesh != nullptr)
@@ -161,23 +163,23 @@ ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createSphere()
     {
         for (int j = 0; j < subdivisions; j++) //vertical step (theta)
         {
-            float sinPhi[] = { sin(2.0f * step * i), sin(2.0f * step * (i + 1)) };
-            float cosPhi[] = { cos(2.0f * step * i), cos(2.0f * step * (i + 1)) };
-            float sinTheta[] = { sin(step * j), sin(step * (j + 1)) };
-            float cosTheta[] = { cos(step * j), cos(step * (j + 1)) };
+            float sinPhi[] = {sin(2.0f * step * i), sin(2.0f * step * (i + 1))};
+            float cosPhi[] = {cos(2.0f * step * i), cos(2.0f * step * (i + 1))};
+            float sinTheta[] = {sin(step * j), sin(step * (j + 1))};
+            float cosTheta[] = {cos(step * j), cos(step * (j + 1))};
 
             //create 4 vertices patch
             MathLib::vec3f patch[4];
-            patch[0] = { sinTheta[1] * cosPhi[0], sinTheta[1] * sinPhi[0], cosTheta[1] };
-            patch[1] = { sinTheta[1] * cosPhi[1], sinTheta[1] * sinPhi[1], cosTheta[1] };
-            patch[2] = { sinTheta[0] * cosPhi[1], sinTheta[0] * sinPhi[1], cosTheta[0] };
-            patch[3] = { sinTheta[0] * cosPhi[0], sinTheta[0] * sinPhi[0], cosTheta[0] };
+            patch[0] = {sinTheta[1] * cosPhi[0], sinTheta[1] * sinPhi[0], cosTheta[1]};
+            patch[1] = {sinTheta[1] * cosPhi[1], sinTheta[1] * sinPhi[1], cosTheta[1]};
+            patch[2] = {sinTheta[0] * cosPhi[1], sinTheta[0] * sinPhi[1], cosTheta[0]};
+            patch[3] = {sinTheta[0] * cosPhi[0], sinTheta[0] * sinPhi[0], cosTheta[0]};
 
             MathLib::vec2f texcoords[4];
-            texcoords[0] = { (float)i / subdivisions, (float)(j + 1) / subdivisions };
-            texcoords[1] = { (float)(i + 1) / subdivisions, (float)(j + 1) / subdivisions };
-            texcoords[2] = { (float)(i + 1) / subdivisions, (float)j / subdivisions };
-            texcoords[3] = { (float)i / subdivisions, (float)j / subdivisions };
+            texcoords[0] = {(float)i / subdivisions, (float)(j + 1) / subdivisions};
+            texcoords[1] = {(float)(i + 1) / subdivisions, (float)(j + 1) / subdivisions};
+            texcoords[2] = {(float)(i + 1) / subdivisions, (float)j / subdivisions};
+            texcoords[3] = {(float)i / subdivisions, (float)j / subdivisions};
 
             memcpy(vertices[i * subdivisions * 6 + j * 6].Pos, patch[0].ptr(), sizeof(MathLib::vec3f));
             memcpy(vertices[i * subdivisions * 6 + j * 6].Normal, patch[0].ptr(), sizeof(MathLib::vec3f));
@@ -205,16 +207,16 @@ ShiftEngine::IMeshDataPtr ShiftEngine::Utilities::createSphere()
         }
     }
 
-    IMeshManager * pMeshManager = ShiftEngine::GetContextManager()->GetMeshManager();
-    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(), 
-                                                        vertices.size() * sizeof(DefaultVertex), 
-                                                        {}, 
+    IMeshManager * pMeshManager = GetContextManager()->GetMeshManager();
+    pDefaultMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)vertices.data(),
+                                                        vertices.size() * sizeof(DefaultVertex),
+                                                        {},
                                                         &defaultVertexSemantic,
-                                                        { { -0.5f, -0.5f, 0.0f },{ 0.5f, 0.5f, 1.0f } });
+                                                        {{ -0.5f, -0.5f, 0.0f },{ 0.5f, 0.5f, 1.0f }});
     return pDefaultMesh;
 }
 
-void ShiftEngine::Utilities::convertVertices(const std::vector<DefaultVertex> & input, std::vector<ExtendedVertex> & output)
+void Utilities::convertVertices(const std::vector<DefaultVertex> & input, std::vector<ExtendedVertex> & output)
 {
     output.resize(input.size());
     for (size_t i = 0; i < input.size(); ++i)
@@ -230,7 +232,7 @@ void ShiftEngine::Utilities::convertVertices(const std::vector<DefaultVertex> & 
     }
 }
 
-void ShiftEngine::Utilities::convertVertices(const std::vector<DefaultVertex> & input, std::vector<ColorVertex> & output)
+void Utilities::convertVertices(const std::vector<DefaultVertex> & input, std::vector<ColorVertex> & output)
 {
     output.resize(input.size());
     for (size_t i = 0; i < input.size(); ++i)
@@ -244,7 +246,7 @@ void ShiftEngine::Utilities::convertVertices(const std::vector<DefaultVertex> & 
     }
 }
 
-void ShiftEngine::Utilities::convertVertices(const std::vector<ExtendedVertex> & input, std::vector<DefaultVertex> & output)
+void Utilities::convertVertices(const std::vector<ExtendedVertex> & input, std::vector<DefaultVertex> & output)
 {
     output.resize(input.size());
     for (size_t i = 0; i < input.size(); ++i)
@@ -260,7 +262,7 @@ void ShiftEngine::Utilities::convertVertices(const std::vector<ExtendedVertex> &
     }
 }
 
-void ShiftEngine::Utilities::convertVertices(const std::vector<ExtendedVertex> & input, std::vector<ColorVertex> & output)
+void Utilities::convertVertices(const std::vector<ExtendedVertex> & input, std::vector<ColorVertex> & output)
 {
     output.resize(input.size());
     for (size_t i = 0; i < input.size(); ++i)
@@ -277,7 +279,7 @@ void ShiftEngine::Utilities::convertVertices(const std::vector<ExtendedVertex> &
     }
 }
 
-void ShiftEngine::Utilities::convertVertices(const std::vector<ColorVertex> & input, std::vector<DefaultVertex> & output)
+void Utilities::convertVertices(const std::vector<ColorVertex> & input, std::vector<DefaultVertex> & output)
 {
     output.resize(input.size());
     for (size_t i = 0; i < input.size(); ++i)
@@ -291,7 +293,7 @@ void ShiftEngine::Utilities::convertVertices(const std::vector<ColorVertex> & in
     }
 }
 
-void ShiftEngine::Utilities::convertVertices(const std::vector<ColorVertex> & input, std::vector<ExtendedVertex> & output)
+void Utilities::convertVertices(const std::vector<ColorVertex> & input, std::vector<ExtendedVertex> & output)
 {
     output.resize(input.size());
     for (size_t i = 0; i < input.size(); ++i)
