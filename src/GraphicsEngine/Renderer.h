@@ -75,8 +75,8 @@ namespace ShiftEngine
         void Process(RenderQueue & rq);
         void PostProcess();
 
-        void bindEngineUniforms(MeshNode * currentNode, const RenderQueue & list);
-        void bindCustomUniforms(MeshNode * currentNode, const RenderQueue & list);
+        void bindEngineUniforms(MeshSceneNode * currentNode, const RenderQueue & list);
+        void bindCustomUniforms(MeshSceneNode * currentNode, const RenderQueue & list);
 
         void drawSky(RenderQueue &rq);
         void bindLights(const LightsVector & lv, unsigned int startIndex, unsigned int count, Material * matPtr);

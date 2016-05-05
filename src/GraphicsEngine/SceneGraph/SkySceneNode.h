@@ -7,10 +7,10 @@
 namespace ShiftEngine
 {
     class ISceneNode;
-    class MeshNode;
+    class MeshSceneNode;
     class CameraSceneNode;
 
-    class SkySceneNode final : public MeshNode
+    class SkySceneNode final : public MeshSceneNode
     {
     public:
         SkySceneNode(const Material * material, const IMeshDataPtr & meshData);

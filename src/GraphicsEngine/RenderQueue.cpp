@@ -1,9 +1,9 @@
 #include "RenderQueue.h"
 
-#include "SceneGraph/MeshNode.h"
+#include "SceneGraph/MeshSceneNode.h"
 #include "SceneGraph/CameraSceneNode.h"
 #include "SceneGraph/SkySceneNode.h"
-#include "SceneGraph/LightNode.h"
+#include "SceneGraph/LightSceneNode.h"
 
 using namespace ShiftEngine;
 
@@ -16,7 +16,7 @@ RenderQueue::~RenderQueue()
 {
 }
 
-void RenderQueue::AddRenderableNode(MeshNode * node)
+void RenderQueue::AddRenderableNode(MeshSceneNode * node)
 {
     if (!node)
         return;
@@ -49,7 +49,7 @@ SkySceneNode * RenderQueue::GetActiveSky() const
     return activeSky;
 }
 
-void RenderQueue::AddLightNode(LightNode * node)
+void RenderQueue::AddLightNode(LightSceneNode * node)
 {
     lights.push_back(node);
 }

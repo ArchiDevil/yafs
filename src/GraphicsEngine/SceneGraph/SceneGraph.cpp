@@ -52,19 +52,19 @@ void SceneGraph::DrawAll(double dt) const
     GetRenderer()->DrawAll(rq, dt);
 }
 
-MeshNode * SceneGraph::AddMeshNode(const std::wstring & meshFileName, const Material * material)
+MeshSceneNode * SceneGraph::AddMeshNode(const std::wstring & meshFileName, const Material * material)
 {
     auto pCtxMgr = GetContextManager();
     IMeshDataPtr data = pCtxMgr->LoadMesh(meshFileName);
-    MeshNode * out = new MeshNode(data, material);
+    MeshSceneNode * out = new MeshSceneNode(data, material);
     out->SetSceneGraph(this);
     rootNode->AddChild(out);
     return out;
 }
 
-MeshNode * SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const Material * mat)
+MeshSceneNode * SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const Material * mat)
 {
-    MeshNode * out = new MeshNode(dataPtr, mat);
+    MeshSceneNode * out = new MeshSceneNode(dataPtr, mat);
     rootNode->AddChild(out);
     out->SetSceneGraph(this);
     return out;
@@ -109,9 +109,9 @@ SkySceneNode * SceneGraph::AddSkySceneNode()
     return out;
 }
 
-LightNode * SceneGraph::AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color)
+LightSceneNode * SceneGraph::AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color)
 {
-    LightNode * out = new LightNode(LNT_Directional, color);
+    LightSceneNode * out = new LightSceneNode(LNT_Directional, color);
     out->SetDirection(direction);
     out->SetSceneGraph(this);
     out->addRef();
@@ -119,9 +119,9 @@ LightNode * SceneGraph::AddDirectionalLightNode(const MathLib::vec3f & direction
     return out;
 }
 
-LightNode * SceneGraph::AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color)
+LightSceneNode * SceneGraph::AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color)
 {
-    LightNode * out = new LightNode(LNT_Point, color);
+    LightSceneNode * out = new LightSceneNode(LNT_Point, color);
     out->SetRadius(radius);
     out->SetPosition(pos);
     out->SetSceneGraph(this);
@@ -144,7 +144,7 @@ SkySceneNode * SceneGraph::GetActiveSkyNode() const
     return activeSky;
 }
 
-void SceneGraph::RemoveDirectionalLightNode(LightNode * node)
+void SceneGraph::RemoveDirectionalLightNode(LightSceneNode * node)
 {
     for (auto iter = directionalLights.begin(); iter != directionalLights.end(); ++iter)
     {

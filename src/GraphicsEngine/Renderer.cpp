@@ -6,7 +6,7 @@
 #include "ShiftEngine.h"
 
 #include "SceneGraph/CameraSceneNode.h"
-#include "SceneGraph/LightNode.h"
+#include "SceneGraph/LightSceneNode.h"
 
 #include <Utilities/logger.hpp>
 #include <Utilities/ut.h>
@@ -66,7 +66,7 @@ void Renderer::drawSky(RenderQueue &rq)
     }
 }
 
-bool sortFunctor(MeshNode * left, MeshNode * right)
+bool sortFunctor(MeshSceneNode * left, MeshSceneNode * right)
 {
     bool leftTr = left->GetMaterialPtr()->GetMaterialInfo()->GetFlags()->isTransparent;
     bool rightTr = right->GetMaterialPtr()->GetMaterialInfo()->GetFlags()->isTransparent;
@@ -90,7 +90,7 @@ void Renderer::Process(RenderQueue &rq)
 
     for (auto iter = renderVec.begin(); iter != renderVec.end(); ++iter)
     {
-        MeshNode * currentNode = (*iter);
+        MeshSceneNode * currentNode = (*iter);
         if (!currentNode->GetDataPtr())
             continue;;
 
@@ -147,7 +147,7 @@ void Renderer::PostProcess()
     throw std::exception("The method or operation is not implemented.");
 }
 
-void Renderer::bindEngineUniforms(MeshNode * currentNode, const RenderQueue & list)
+void Renderer::bindEngineUniforms(MeshSceneNode * currentNode, const RenderQueue & list)
 {
     if (!currentNode || !currentNode->GetMaterialPtr() || !currentNode->GetMaterialPtr()->program)
         return;
@@ -238,7 +238,7 @@ void Renderer::bindEngineUniforms(MeshNode * currentNode, const RenderQueue & li
     }
 }
 
-void Renderer::bindCustomUniforms(MeshNode * currentNode, const RenderQueue & /*list*/)
+void Renderer::bindCustomUniforms(MeshSceneNode * currentNode, const RenderQueue & /*list*/)
 {
     auto mat = currentNode->GetMaterialPtr();
 

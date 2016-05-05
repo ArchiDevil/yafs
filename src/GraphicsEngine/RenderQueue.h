@@ -8,13 +8,13 @@
 namespace ShiftEngine
 {
     class ISceneNode;
-    class MeshNode;
+    class MeshSceneNode;
     class CameraSceneNode;
     class SkySceneNode;
-    class LightNode;
+    class LightSceneNode;
 
-    typedef std::vector<MeshNode*> RenderVector;
-    typedef std::vector<LightNode*> LightsVector;
+    typedef std::vector<MeshSceneNode*> RenderVector;
+    typedef std::vector<LightSceneNode*> LightsVector;
 
     class RenderQueue
     {
@@ -22,10 +22,10 @@ namespace ShiftEngine
         RenderQueue(const MathLib::vec3f & ambientColor);
         ~RenderQueue();
 
-        void AddRenderableNode(MeshNode * node);
+        void AddRenderableNode(MeshSceneNode * node);
         void SetCameraNode(CameraSceneNode * node);
         void SetSkyNode(SkySceneNode * node);
-        void AddLightNode(LightNode * node);
+        void AddLightNode(LightSceneNode * node);
 
         RenderVector & GetRenderableNodes();
         const LightsVector & GetLights() const;

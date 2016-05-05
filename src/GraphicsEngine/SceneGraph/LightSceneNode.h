@@ -11,10 +11,10 @@ namespace ShiftEngine
         //LNT_Omni,
     };
 
-    class LightNode final : public ISceneNode
+    class LightSceneNode final : public ISceneNode
     {
     public:
-        LightNode(LightNodeType type, const MathLib::vec3f & color = { 1.0f, 1.0f, 1.0f });
+        LightSceneNode(LightNodeType type, const MathLib::vec3f & color = { 1.0f, 1.0f, 1.0f });
 
         virtual void PushToRQ(RenderQueue & rq) override;
         void SetColor(const MathLib::vec3f & color);

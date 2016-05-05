@@ -11,11 +11,11 @@ namespace ShiftEngine
     class ISceneNode;
     class CameraSceneNode;
 
-    class MeshNode : public ISceneNode
+    class MeshSceneNode : public ISceneNode
     {
     public:
-        MeshNode(const IMeshDataPtr & _data, const Material * mat);
-        virtual ~MeshNode() {}
+        MeshSceneNode(const IMeshDataPtr & _data, const Material * mat);
+        virtual ~MeshSceneNode() {}
 
         virtual int Render();
         virtual void PushToRQ(RenderQueue & rq);

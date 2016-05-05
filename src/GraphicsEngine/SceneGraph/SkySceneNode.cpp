@@ -1,12 +1,12 @@
 #include "../ShiftEngine.h"
 
 #include "SkySceneNode.h"
-#include "MeshNode.h"
+#include "MeshSceneNode.h"
 
 using namespace ShiftEngine;
 
 SkySceneNode::SkySceneNode(const Material * material, const IMeshDataPtr & meshData)
-    : MeshNode(meshData, material)
+    : MeshSceneNode(meshData, material)
 {}
 
 void SkySceneNode::PushToRQ(RenderQueue & rq)

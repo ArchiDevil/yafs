@@ -1,4 +1,4 @@
-#include "LightNode.h"
+#include "LightSceneNode.h"
 
 #include "../RenderQueue.h"
 #include "SceneGraph.h"
@@ -6,65 +6,65 @@
 using namespace ShiftEngine;
 using namespace MathLib;
 
-LightNode::LightNode(LightNodeType _type, const vec3f & _color)
+LightSceneNode::LightSceneNode(LightNodeType _type, const vec3f & _color)
     : ISceneNode()
     , color(_color)
     , type(_type)
 {
 }
 
-void LightNode::PushToRQ(RenderQueue & rq)
+void LightSceneNode::PushToRQ(RenderQueue & rq)
 {
     if (active)
         rq.AddLightNode(this);
 }
 
-void LightNode::SetColor(const vec3f & color)
+void LightSceneNode::SetColor(const vec3f & color)
 {
     this->color = color;
 }
 
-vec3f LightNode::GetColor() const
+vec3f LightSceneNode::GetColor() const
 {
     return color;
 }
 
-LightNodeType LightNode::GetType() const
+LightNodeType LightSceneNode::GetType() const
 {
     return type;
 }
 
-float LightNode::GetRadius() const
+float LightSceneNode::GetRadius() const
 {
     return radius;
 }
 
-void LightNode::SetRadius(float val)
+void LightSceneNode::SetRadius(float val)
 {
     radius = val;
 }
 
-vec3f LightNode::GetDirection() const
+vec3f LightSceneNode::GetDirection() const
 {
     return direction;
 }
 
-void LightNode::SetDirection(const vec3f & val)
+void LightSceneNode::SetDirection(const vec3f & val)
 {
     direction = val;
 }
 
-void LightNode::SetActive(bool active)
+void LightSceneNode::SetActive(bool active)
 {
     this->active = active;
 }
 
-bool LightNode::IsActive() const
+bool LightSceneNode::IsActive() const
 {
     return active;
 }
 
-void LightNode::KillSelf()
+void LightSceneNode::KillSelf()
 {
     if (ISceneNode::pSceneGraph)
     {
@@ -75,7 +75,7 @@ void LightNode::KillSelf()
     }
 }
 
-AABB LightNode::GetBBox() const
+AABB LightSceneNode::GetBBox() const
 {
     return {};
 }

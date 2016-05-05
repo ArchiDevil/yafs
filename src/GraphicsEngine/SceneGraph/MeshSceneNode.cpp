@@ -1,11 +1,11 @@
-#include "MeshNode.h"
+#include "MeshSceneNode.h"
 
 #include "../ShiftEngine.h"
 
 using namespace ShiftEngine;
 using namespace MathLib;
 
-MeshNode::MeshNode(const IMeshDataPtr & _data, const Material * mat)
+MeshSceneNode::MeshSceneNode(const IMeshDataPtr & _data, const Material * mat)
     : ISceneNode()
     , isVisible(true)
     , material(*mat)
@@ -13,7 +13,7 @@ MeshNode::MeshNode(const IMeshDataPtr & _data, const Material * mat)
 {
 }
 
-void MeshNode::PushToRQ(RenderQueue & rq)
+void MeshSceneNode::PushToRQ(RenderQueue & rq)
 {
     int visibility = 1;//CheckVisibility(rq.GetActiveCamera());
 
@@ -21,44 +21,44 @@ void MeshNode::PushToRQ(RenderQueue & rq)
         rq.AddRenderableNode(this);
 }
 
-bool MeshNode::IsVisible() const
+bool MeshSceneNode::IsVisible() const
 {
     return isVisible;
 }
 
-void MeshNode::SetVisibility(bool vis)
+void MeshSceneNode::SetVisibility(bool vis)
 {
     isVisible = vis;
 }
 
-Material * MeshNode::GetMaterialPtr()
+Material * MeshSceneNode::GetMaterialPtr()
 {
     return &material;
 }
 
-void MeshNode::SetMaterial(const Material * val)
+void MeshSceneNode::SetMaterial(const Material * val)
 {
     material = Material(*val);
 }
 
-IMeshDataPtr MeshNode::GetDataPtr() const
+IMeshDataPtr MeshSceneNode::GetDataPtr() const
 {
     return Data;
 }
 
-void MeshNode::SetDataPtr(IMeshDataPtr data)
+void MeshSceneNode::SetDataPtr(IMeshDataPtr data)
 {
     Data = data;
 }
 
-int MeshNode::Render()
+int MeshSceneNode::Render()
 {
     if (!Data)
         return 0;
     return GetContextManager()->DrawMesh(Data);
 }
 
-AABB MeshNode::GetBBox() const
+AABB MeshSceneNode::GetBBox() const
 {
     mat4f matWorld = GetWorldMatrix();
     vec4f points[8];

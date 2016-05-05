@@ -4,7 +4,7 @@
 #include "PlainTreeNode.h"
 #include "QuadTreeNode.h"
 #include "CameraSceneNode.h"
-#include "MeshNode.h"
+#include "MeshSceneNode.h"
 #include "SkySceneNode.h"
 
 namespace ShiftEngine
@@ -19,10 +19,10 @@ namespace ShiftEngine
     class ISceneNode;
     class PlainTreeNode;
     class QuadTreeNode;
-    class MeshNode;
+    class MeshSceneNode;
     class CameraSceneNode;
     class SkySceneNode;
-    class LightNode;
+    class LightSceneNode;
 
     class SceneGraph
     {
@@ -31,13 +31,13 @@ namespace ShiftEngine
         ~SceneGraph();
 
         // MESHES
-        MeshNode * AddMeshNode(const std::wstring & meshFileName, const Material * mat); //tries to load mesh with meshLoader
-        MeshNode * AddMeshNode(IMeshDataPtr dataPtr, const Material * mat);
+        MeshSceneNode * AddMeshNode(const std::wstring & meshFileName, const Material * mat); //tries to load mesh with meshLoader
+        MeshSceneNode * AddMeshNode(IMeshDataPtr dataPtr, const Material * mat);
 
         // LIGHTS
-        LightNode * AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color = MathLib::vec3f(1.0f, 1.0f, 1.0f));
-        void RemoveDirectionalLightNode(LightNode * node);
-        LightNode * AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color = MathLib::vec3f(1.0f, 1.0f, 1.0f));
+        LightSceneNode * AddDirectionalLightNode(const MathLib::vec3f & direction, const MathLib::vec3f & color = MathLib::vec3f(1.0f, 1.0f, 1.0f));
+        void RemoveDirectionalLightNode(LightSceneNode * node);
+        LightSceneNode * AddPointLightNode(const MathLib::vec3f & pos, float radius, const MathLib::vec3f & color = MathLib::vec3f(1.0f, 1.0f, 1.0f));
         void SetAmbientColor(const MathLib::vec3f & color);
         MathLib::vec3f GetAmbientColor() const;
 
@@ -59,7 +59,7 @@ namespace ShiftEngine
         CameraSceneNode * activeCamera = nullptr;
         SkySceneNode * activeSky = nullptr;
         VertexSemantic skySemantic;
-        std::vector<LightNode*> directionalLights;
+        std::vector<LightSceneNode*> directionalLights;
         SceneGraphType type = SGT_Plain;
         MathLib::vec3f ambientColor = {};
 

@@ -71,8 +71,8 @@ endif()
 set(LS  SceneGraph/CameraFrustum.cpp
         SceneGraph/CameraSceneNode.cpp
         SceneGraph/ISceneNode.cpp
-        SceneGraph/LightNode.cpp
-        SceneGraph/MeshNode.cpp
+        SceneGraph/LightSceneNode.cpp
+        SceneGraph/MeshSceneNode.cpp
         SceneGraph/QuadTreeNode.cpp
         SceneGraph/SceneGraph.cpp
         SceneGraph/SkySceneNode.cpp
@@ -84,8 +84,8 @@ set(LS  SceneGraph/CameraFrustum.h
         SceneGraph/CameraSceneNode.h
         SceneGraph/ICameraController.h
         SceneGraph/ISceneNode.h
-        SceneGraph/LightNode.h
-        SceneGraph/MeshNode.h
+        SceneGraph/LightSceneNode.h
+        SceneGraph/MeshSceneNode.h
         SceneGraph/PlainTreeNode.h
         SceneGraph/QuadTreeNode.h
         SceneGraph/SceneGraph.h

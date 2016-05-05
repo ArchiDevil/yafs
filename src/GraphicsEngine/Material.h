@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 
-#include "SceneGraph/LightNode.h"
+#include "SceneGraph/LightSceneNode.h"
 #include "IProgram.h"
 #include "MaterialInfo.h"
 #include "MiscTypes.h"
