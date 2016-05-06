@@ -18,17 +18,7 @@ bool Player::handleEvent(const ProjectilePositionEvent & event)
 
 void Player::Shoot(MathLib::vec2f & targetPosition)
 {
-    MathLib::vec2f vec = targetPosition - position;
-    // Decrease speed
-    if (std::abs(vec.x) > std::abs(vec.y))
-    {
-        vec.y /= vec.x;
-        vec.x /= vec.x;
-    }
-    else
-    {
-        vec.x /= vec.y;
-        vec.y /= vec.y;
-    }
+    auto vec = MathLib::normalize<float>(targetPosition - position);
+
     EntityFactory::CreateProjectile(position, vec);
 }

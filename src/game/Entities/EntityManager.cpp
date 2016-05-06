@@ -10,7 +10,7 @@ void EntityManager::AddEntity(const std::shared_ptr<Entity> & ent)
 void EntityManager::RemoveEntity(const std::shared_ptr<Entity> & ent)
 {
     auto count = entities.size();
-    for (auto i = 0; i < count; ++i)
+    for (size_t i = 0; i < count; ++i)
     {
         if (entities[i] == ent)
         {
