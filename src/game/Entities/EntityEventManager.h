@@ -1,28 +1,24 @@
 #pragma once
 
-#include "Utilities/observer.h"
-#include "Utilities/singleton.h"
+#include <memory>
+#include <Utilities/observer.h>
+#include <Utilities/singleton.h>
 
-enum class EntityEventType
-{
-    ProjectilePosition
-};
+class Projectile;
 
-struct EntityEvent
+struct ProjectilePositionEvent
 {
-    EntityEvent(EntityEventType type, void * data)
-        : type(type)
-        , data(data)
+    ProjectilePositionEvent(const Projectile * projectile)
+        : projectile(projectile)
     {
     }
 
-    EntityEventType type;
-    void * data;
+    const Projectile * const projectile;
 };
 
 class EntityEventManager
-    : public singleton < EntityEventManager >
-    , public notifier <EntityEvent>
+    : public singleton <EntityEventManager>
+    , public notifier <ProjectilePositionEvent>
 {
 
 };

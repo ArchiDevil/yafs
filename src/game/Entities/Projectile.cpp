@@ -1,19 +1,15 @@
 #include "Projectile.h"
 #include "EntityEventManager.h"
 
-Projectile::Projectile(MathLib::vec2f & position, MathLib::vec2f & speed) : Entity(position)
+Projectile::Projectile(MathLib::vec2f & position, MathLib::vec2f & speed)
+    : Entity(position)
+    , speed(speed)
 {
-    this->speed = speed;
 }
 
-std::string Projectile::GetName()
+void Projectile::Update(double dt)
 {
-    return "Projectile";
-}
+    position += speed * dt;
 
-void Projectile::Update(double deltaTime)
-{
-    position += speed * deltaTime;
-
-    EntityEventManager::GetInstance().notifyAll(EntityEvent(EntityEventType::ProjectilePosition, this));
+    EntityEventManager::GetInstance().notifyAll(ProjectilePositionEvent(this));
 }

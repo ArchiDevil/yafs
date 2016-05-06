@@ -1,22 +1,23 @@
 #pragma once
 
 #include "Entity.h"
-#include "Utilities/singleton.h"
 
-#include <list>
 #include <memory>
+#include <Utilities/singleton.h>
+#include <vector>
 
-class EntityManager : public singleton <EntityManager>
+class EntityManager
+    : public singleton <EntityManager>
 {
 public:
-	EntityManager() {}
-	virtual ~EntityManager() {}
+    EntityManager() {}
+    virtual ~EntityManager() {}
 
-	void AddEnity(std::shared_ptr<Entity> ent);
-	void RemoveEntity(std::shared_ptr<Entity> ent);
+    void AddEntity(const std::shared_ptr<Entity> & ent);
+    void RemoveEntity(const std::shared_ptr<Entity> & ent);
 
-	void UpdateAllEntities(double deltaTime);
+    void UpdateAllEntities(double dt);
 
 private:
-	std::list<std::shared_ptr<Entity>> entities;
+    std::vector<std::shared_ptr<Entity>> entities;
 };

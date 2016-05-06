@@ -9,10 +9,12 @@ Entity::Entity(MathLib::vec2f & position)
 
 Entity::~Entity() {}
 
-bool Entity::CalculateCollision(Entity & ent)
+bool Entity::CalculateCollision(const Entity & ent)
 {
     auto isCollision = false;
-    if (ent.GetPosition() == position) // TODO Add Range support
+    
+    if (MathLib::isEqual(ent.GetPosition().x, position.x)
+        && MathLib::isEqual(ent.GetPosition().y, position.y)) // TODO Add Range support
         isCollision = true;
 
     return isCollision;

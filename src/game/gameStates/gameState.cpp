@@ -27,13 +27,12 @@ GameState::GameState(IniWorker * iw/*, MyGUI::Gui * guiModule, MyGUI::DirectX11P
 
 GameState::~GameState()
 {
-    if (player != nullptr)
-        EntityManager::GetInstance().RemoveEntity(player);
+    EntityManager::GetInstance().RemoveEntity(player);
 }
 
 bool GameState::initState()
 {
-    player = std::static_pointer_cast<Player>(EntityFactory::CreatePlayer(MathLib::vec2f(0.0, 0.0)));
+    player = EntityFactory::CreatePlayer(MathLib::vec2f(0.0, 0.0));
     // to receive events for GUI
     subscribe(&InputEngine::GetInstance());
 

@@ -4,30 +4,15 @@
 
 #include <cmath>
 
-Player::Player(MathLib::vec2f & position) : Entity(position)
+Player::Player(MathLib::vec2f & position)
+    : Entity(position)
 {
 }
 
-std::string Player::GetName()
+bool Player::handleEvent(const ProjectilePositionEvent & event)
 {
-    return "Player";
-}
-
-bool Player::handleEvent(const EntityEvent & event)
-{
-    switch (event.type)
-    {
-    case EntityEventType::ProjectilePosition:
-    {
-        if (CalculateCollision(*static_cast<Entity *>(event.data)))
-        {
-            isToDelete = true;
-        }
-        break;
-    }
-
-    }
-
+    if (CalculateCollision(*event.projectile))
+        isToDelete = true;
     return true;
 }
 
