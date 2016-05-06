@@ -21,5 +21,5 @@ void Player::Shoot(MathLib::vec2f & targetPosition)
 {
     auto vec = MathLib::normalize<float>(targetPosition - position);
 
-    LostIsland::GetGamePtr()->entityMgr->CreateProjectile(position, vec);
+    GoingHome::GetGamePtr()->entityMgr->CreateProjectile(position, vec);
 }

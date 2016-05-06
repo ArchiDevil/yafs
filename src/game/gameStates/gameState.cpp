@@ -164,7 +164,7 @@ bool GameState::handleEvent(const InputEvent & event)
     case InputEventType::MouseDown:
         MouseInfo & mouseInfo = InputEngine::GetInstance().GetMouseInfo();
 
-        LostIsland::GetGamePtr()->player.lock()->Shoot(
+        GoingHome::GetGamePtr()->player.lock()->Shoot(
             MathLib::vec2f((float)mouseInfo.absoluteX, (float)mouseInfo.absoluteY));
         break;
     //    // there will be always DirectInput keys in first two handlers
