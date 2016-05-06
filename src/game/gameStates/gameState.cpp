@@ -26,9 +26,7 @@ GameState::GameState(IniWorker * iw/*, MyGUI::Gui * guiModule, MyGUI::DirectX11P
 }
 
 GameState::~GameState()
-{
-    EntityManager::GetInstance().RemoveEntity(player);
-}
+{}
 
 bool GameState::initState()
 {
