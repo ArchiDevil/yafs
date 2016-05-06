@@ -7,7 +7,8 @@
 
 Game::Game()
 {
-    //entityMgr.reset(new GameObjectsManager());
+    entityMgr.reset(new EntityManager());
+    player = entityMgr->CreatePlayer(MathLib::vec2f(0.0, 0.0));
     //gameEventHandler.reset(new GameEventHandler());
 }
 

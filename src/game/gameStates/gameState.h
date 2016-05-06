@@ -49,7 +49,6 @@ private:
 
     IniWorker *                     iniLoader = nullptr;
 
-    std::shared_ptr<Player>           player = nullptr;
     //MyGUI::Gui *                    guiModule = nullptr;
     //MyGUI::DirectX11Platform *      guiPlatform = nullptr;
 

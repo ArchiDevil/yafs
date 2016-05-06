@@ -1,3 +1,4 @@
+#include "../Game.h"
 #include "Player.h"
 #include "Projectile.h"
 #include "EntityFactory.h"
@@ -20,5 +21,5 @@ void Player::Shoot(MathLib::vec2f & targetPosition)
 {
     auto vec = MathLib::normalize<float>(targetPosition - position);
 
-    EntityFactory::CreateProjectile(position, vec);
+    LostIsland::GetGamePtr()->entityMgr->CreateProjectile(position, vec);
 }

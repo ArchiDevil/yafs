@@ -30,7 +30,6 @@ GameState::~GameState()
 
 bool GameState::initState()
 {
-    player = EntityFactory::CreatePlayer(MathLib::vec2f(0.0, 0.0));
     // to receive events for GUI
     subscribe(&InputEngine::GetInstance());
 
@@ -179,8 +178,9 @@ bool GameState::handleEvent(const InputEvent & event)
     {
     case InputEventType::MouseDown:
         MouseInfo & mouseInfo = InputEngine::GetInstance().GetMouseInfo();
-        if (player != nullptr)
-            player->Shoot(MathLib::vec2f((float)mouseInfo.absoluteX, (float)mouseInfo.absoluteY));
+
+        LostIsland::GetGamePtr()->player.lock()->Shoot(
+            MathLib::vec2f((float)mouseInfo.absoluteX, (float)mouseInfo.absoluteY));
         break;
     //    // there will be always DirectInput keys in first two handlers
     //case InputEventType::KeyDown:
