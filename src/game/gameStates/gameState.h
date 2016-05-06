@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../game.h"
-#include "../Entities/Player.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 
@@ -18,7 +17,6 @@
 #include <Utilities/IManager.h>
 #include <Utilities/observer.h>
 
-#include <memory>
 
 class GameState final
     : public IAppState
