@@ -4,28 +4,30 @@
 
 namespace ShiftEngine
 {
-    class QuadTreeNode : public ISceneNode
-    {
-    public:
-        QuadTreeNode(float x1, float x2, float y1, float y2);
-        ~QuadTreeNode();
 
-        virtual void AddChild(ISceneNode * node) override;
-        virtual void PushToRQ(RenderQueue & rq) override;
-        virtual MathLib::mat4f GetWorldMatrix() const override;
-        virtual MathLib::AABB GetBBox() const override;
+class QuadTreeNode : public ISceneNode
+{
+public:
+    QuadTreeNode(float x1, float x2, float y1, float y2, SceneGraph * sceneGraph);
+    ~QuadTreeNode();
 
-    private:
-        void CreateChildSubtrees();
-        bool AddNode(ISceneNode * node);
-        void PushFull(RenderQueue & rq);
-        void SetSubparent(QuadTreeNode * _parent);
+    virtual void AddChild(ISceneNode * node) override;
+    virtual void PushToRQ(RenderQueue & rq) override;
+    virtual MathLib::mat4f GetWorldMatrix() const override;
+    virtual MathLib::AABB GetBBox() const override;
 
-        unsigned int GetChildsCount() const;
+private:
+    void CreateChildSubtrees();
+    bool AddNode(ISceneNode * node);
+    void PushFull(RenderQueue & rq);
+    void SetSubparent(QuadTreeNode * _parent);
 
-        virtual int CheckVisibility(CameraSceneNode * activeCam) const override;
+    unsigned int GetChildsCount() const;
 
-        QuadTreeNode * subtrees[4];
-        MathLib::AABB bbox = {};
-    };
+    CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const override;
+
+    QuadTreeNode * subtrees[4];
+    MathLib::AABB bbox = {};
+};
+
 }

@@ -1,71 +1,77 @@
 #pragma once
 
-//MY INCLUDES
+#include "CameraFrustum.h"
+
 #include <Utilities/refcounted.h>
 #include <MathLib/math.h>
 
-//STL INCLUDES
 #include <vector>
 
 namespace ShiftEngine
 {
-    class SceneGraph;
-    class RenderQueue;
-    class CameraSceneNode;
 
-    class ISceneNode : public Refcounted
-    {
-    public:
-        typedef std::vector<ISceneNode*> ChildsList;
+class SceneGraph;
+class RenderQueue;
+class CameraSceneNode;
 
-        ISceneNode();
-        virtual ~ISceneNode();
+class ISceneNode : public Refcounted
+{
+public:
+    typedef std::vector<ISceneNode*> ChildsList;
 
-        void Draw(RenderQueue & rq);
+    ISceneNode(SceneGraph * sceneGraph);
+    virtual ~ISceneNode();
 
-        virtual void AddChild(ISceneNode * node);
-        void RemoveChild(ISceneNode * node);
-        const ChildsList & GetChilds() const;
-        virtual void KillSelf();
+    ISceneNode(const ISceneNode&) = delete;
+    ISceneNode(ISceneNode&&) = delete;
+    ISceneNode& operator=(const ISceneNode&) = delete;
+    ISceneNode& operator=(ISceneNode&&) = delete;
 
-        ISceneNode * GetParent() const;
-        void SetParent(ISceneNode * _parent);
-        void RemoveParent();
+    void Draw(RenderQueue & rq);
 
-        MathLib::vec3f GetPosition() const;
-        void SetPosition(const MathLib::vec3f & val);
+    virtual void AddChild(ISceneNode * node);
+    void RemoveChild(ISceneNode * node);
+    const ChildsList & GetChilds() const;
+    virtual void KillSelf();
 
-        MathLib::vec3f GetScale() const;
-        void SetScale(const MathLib::vec3f & val);
-        void SetScale(float val);
+    ISceneNode * GetParent() const;
+    void SetParent(ISceneNode * _parent);
+    void RemoveParent();
 
-        MathLib::qaFloat GetRotation() const;
-        void SetRotation(const MathLib::qaFloat & val);
-        void RotateBy(const MathLib::qaFloat & val);
+    MathLib::vec3f GetWorldPosition() const;
+    MathLib::vec3f GetLocalPosition() const;
+    virtual void SetLocalPosition(const MathLib::vec3f & val);
 
-        SceneGraph * GetSceneGraph() const;
-        void SetSceneGraph(SceneGraph * val);
+    MathLib::vec3f GetWorldScale() const;
+    MathLib::vec3f GetLocalScale() const;
+    virtual void SetLocalScale(const MathLib::vec3f & val);
+    virtual void SetLocalScale(float val);
 
-        virtual MathLib::mat4f GetWorldMatrix() const;
+    MathLib::qaFloat GetWorldRotation() const;
+    MathLib::qaFloat GetLocalRotation() const;
+    virtual void SetLocalRotation(const MathLib::qaFloat & val);
+    virtual void RotateByLocalQuaternion(const MathLib::qaFloat & val);
 
-        virtual MathLib::AABB GetBBox() const = 0;
+    SceneGraph * GetSceneGraph() const;
+    virtual MathLib::mat4f GetWorldMatrix() const;
+    virtual MathLib::mat4f GetLocalMatrix() const;
+    virtual MathLib::AABB GetBBox() const = 0;
 
-    protected:
-        virtual void PushToRQ(RenderQueue & rq) = 0;
-        virtual int CheckVisibility(CameraSceneNode * activeCam) const;
+protected:
+    virtual void PushToRQ(RenderQueue & rq) = 0;
+    virtual CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const;
+    void CreateMatrices();
 
-        void CreateWorldMatrix();
+    SceneGraph * const      pSceneGraph = nullptr;
+    ISceneNode *            parent = nullptr;
+    ChildsList              children;    //semi-automatic shared ptrs
 
-        SceneGraph * pSceneGraph = nullptr;;
+    MathLib::vec3f          position = {0.0f, 0.0f, 0.0f};
+    MathLib::vec3f          scale = {1.0f, 1.0f, 1.0f};
+    MathLib::qaFloat        rotation = MathLib::quaternionFromVecAngle(MathLib::vec3f(0.0f, 1.0f, 0.0f), 0.0f);
 
-    private:
-        MathLib::vec3f Position = { 0.0f, 0.0f, 0.0f };
-        MathLib::vec3f Scale = { 1.0f, 1.0f, 1.0f };
-        MathLib::qaFloat Rotation = MathLib::quaternionFromVecAngle(MathLib::vec3f(0.0f, 0.0f, 1.0f), 0.0f);
+    MathLib::mat4f          localMatrix = {};
+    MathLib::mat4f          worldMatrix = {};
+};
 
-        MathLib::mat4f worldMatrix;
-
-        ISceneNode * parent = nullptr;
-        ChildsList children;    //semi-automatic shared ptrs
-    };
 }

@@ -7,40 +7,47 @@
 //This class provides storage for scene nodes that will be rendered by renderer.
 namespace ShiftEngine
 {
-    class ISceneNode;
-    class MeshNode;
-    class CameraSceneNode;
-    class SkySceneNode;
-    class LightNode;
+class ISceneNode;
+class MeshSceneNode;
+class CameraSceneNode;
+class SkySceneNode;
+class LightSceneNode;
+class SpriteSceneNode;
 
-    typedef std::vector<MeshNode*> RenderVector;
-    typedef std::vector<LightNode*> LightsVector;
+// remove this shit with huge amount of allocations
+using RenderVector = std::vector<MeshSceneNode*>;
+using LightsVector = std::vector<LightSceneNode*>;
+using SpritesVector = std::vector<SpriteSceneNode*>;
 
-    class RenderQueue
-    {
-    public:
-        RenderQueue(const MathLib::vec3f & ambientColor);
-        ~RenderQueue();
+class RenderQueue
+{
+public:
+    RenderQueue(const MathLib::vec3f & ambientColor);
+    ~RenderQueue();
 
-        void AddRenderableNode(MeshNode * node);
-        void SetCameraNode(CameraSceneNode * node);
-        void SetSkyNode(SkySceneNode * node);
-        void AddLightNode(LightNode * node);
+    void AddRenderableNode(MeshSceneNode * node);
+    void SetCameraNode(CameraSceneNode * node);
+    void SetSkyNode(SkySceneNode * node);
+    void AddLightNode(LightSceneNode * node);
+    void AddSpriteNode(SpriteSceneNode * node);
 
-        RenderVector & GetRenderableNodes();
-        const LightsVector & GetLights() const;
+    RenderVector & GetRenderableNodes();
+    SpritesVector & GetSpriteNodes();
+    const LightsVector & GetLights() const;
 
-        CameraSceneNode * GetActiveCamera() const;
-        SkySceneNode * GetActiveSky() const;
+    CameraSceneNode * GetActiveCamera() const;
+    SkySceneNode * GetActiveSky() const;
 
-        MathLib::vec3f GetAmbientColor() const;
+    MathLib::vec3f GetAmbientColor() const;
 
-    private:
-        RenderVector meshNodesVector;
-        LightsVector lights;
-        MathLib::vec3f ambientColor = { 0.0f, 0.0f, 0.0f };
-        CameraSceneNode * activeCamera = nullptr;
-        SkySceneNode * activeSky = nullptr;
+private:
+    RenderVector meshes;
+    LightsVector lights;
+    SpritesVector sprites;
 
-    };
+    MathLib::vec3f ambientColor = { 0.0f, 0.0f, 0.0f };
+    CameraSceneNode * activeCamera = nullptr;
+    SkySceneNode * activeSky = nullptr;
+
+};
 }

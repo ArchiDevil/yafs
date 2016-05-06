@@ -5,15 +5,17 @@
 
 #include <DirectXTex.h>
 
-ShiftEngine::D3D11TextureManager::D3D11TextureManager(ID3D11Device * pDevice, ID3D11DeviceContext * pDeviceContext, const std::wstring & texturesPath)
+using namespace ShiftEngine;
+
+D3D11TextureManager::D3D11TextureManager(CComPtr<ID3D11Device> device, CComPtr<ID3D11DeviceContext> pDeviceContext, const std::wstring & texturesPath)
     : texturesPath(texturesPath)
-    , pDevice(pDevice)
+    , pDevice(device)
     , pDeviceContext(pDeviceContext)
 {
     CreateErrorTexture();
 }
 
-ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTexture2D(const std::wstring & FileName)
+ITexturePtr D3D11TextureManager::CreateTexture2D(const std::wstring & FileName)
 {
     std::wstring innerName = texturesPath + FileName;
     auto iter = textures.find(innerName);
@@ -58,12 +60,12 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTexture2D(const
     }
 }
 
-ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const std::wstring & posX,
-    const std::wstring & negX,
-    const std::wstring & posY,
-    const std::wstring & negY,
-    const std::wstring & posZ,
-    const std::wstring & negZ)
+ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const std::wstring & posX,
+                                                            const std::wstring & negX,
+                                                            const std::wstring & posY,
+                                                            const std::wstring & negY,
+                                                            const std::wstring & posZ,
+                                                            const std::wstring & negZ)
 {
     std::wstring superString = negX + posX + negY + posY + negZ + posZ;
 
@@ -75,7 +77,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
         return nullptr;
     }
 
-    std::vector<std::wstring> items = { posX, negX, posY, negY, posZ, negZ };
+    std::vector<std::wstring> items = {posX, negX, posY, negY, posZ, negZ};
     ID3D11ShaderResourceView * SRW;
     const size_t elems = 6;
 
@@ -175,7 +177,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
             D3D11_MAPPED_SUBRESOURCE mappedTex2D;
             pDeviceContext->Map(srcTex[i], 0, D3D11_MAP_WRITE, 0, &mappedTex2D);
             pDeviceContext->UpdateSubresource(texArray, D3D11CalcSubresource(j, i, texElementDesc.MipLevels),
-                0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
+                                              0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
             pDeviceContext->Unmap(srcTex[i], 0);
         }
     }
@@ -196,7 +198,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const s
     return texturePtr;
 }
 
-ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(const std::vector<std::wstring> & names)
+ITexturePtr D3D11TextureManager::CreateTextureArray(const std::vector<std::wstring> & names)
 {
     std::wstring superString = L"";
     for (auto & elem : names)
@@ -310,7 +312,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(co
             D3D11_MAPPED_SUBRESOURCE mappedTex2D;
             pDeviceContext->Map(srcTex[i], 0, D3D11_MAP_WRITE, 0, &mappedTex2D);
             pDeviceContext->UpdateSubresource(texArray, D3D11CalcSubresource(j, i, texElementDesc.MipLevels),
-                0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
+                                              0, mappedTex2D.pData, mappedTex2D.RowPitch, 0);
             pDeviceContext->Unmap(srcTex[i], 0);
         }
     }
@@ -331,7 +333,7 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::CreateTextureArray(co
     return texturePtr;
 }
 
-ShiftEngine::TextureInfo ShiftEngine::D3D11TextureManager::GetTextureInfo(const std::wstring & filename)
+TextureInfo D3D11TextureManager::GetTextureInfo(const std::wstring & filename)
 {
     DirectX::TexMetadata info;
 
@@ -349,7 +351,7 @@ ShiftEngine::TextureInfo ShiftEngine::D3D11TextureManager::GetTextureInfo(const 
     }
 }
 
-void ShiftEngine::D3D11TextureManager::CreateErrorTexture()
+void D3D11TextureManager::CreateErrorTexture()
 {
     //trying to create texture procedurally
     const unsigned int width = 256;
@@ -421,7 +423,7 @@ void ShiftEngine::D3D11TextureManager::CreateErrorTexture()
     errorTexture = std::make_shared<D3D11Texture>(pDeviceContext, width, height, TextureType::Texture2D, pShaderResView);
 }
 
-ShiftEngine::ITexturePtr ShiftEngine::D3D11TextureManager::GetErrorTexture()
+ITexturePtr D3D11TextureManager::GetErrorTexture()
 {
     return errorTexture;
 }

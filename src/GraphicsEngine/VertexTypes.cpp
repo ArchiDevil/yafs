@@ -2,29 +2,26 @@
 
 #include <cassert>
 
-namespace ShiftEngine
-{
-    VertexSemantic defaultVertexSemantic;
-    VertexSemantic extendedVertexSemantic;
-    VertexSemantic colorVertexSemantic;
-    VertexSemantic plainSpriteVertexSemantic;
-}
+using namespace ShiftEngine;
 
-ShiftEngine::VertexInfo::VertexInfo()
+VertexSemantic ShiftEngine::defaultVertexSemantic;
+VertexSemantic ShiftEngine::extendedVertexSemantic;
+VertexSemantic ShiftEngine::colorVertexSemantic;
+VertexSemantic ShiftEngine::plainSpriteVertexSemantic;
+
+VertexInfo::VertexInfo()
     : type(ET_FLOAT)
     , count(1)
     , semantic(ES_Custom)
-{
-}
+{}
 
-ShiftEngine::VertexInfo::VertexInfo(ElemType _type, unsigned _count, ElemSemantic _sem, const std::string & /*name*/ /*= ""*/)
+VertexInfo::VertexInfo(ElemType _type, unsigned _count, ElemSemantic _sem, const std::string & /*name = ""*/)
     : type(_type)
     , count(_count)
     , semantic(_sem)
-{
-}
+{}
 
-bool ShiftEngine::VertexInfo::operator!=(const VertexInfo & ref) const
+bool VertexInfo::operator!=(const VertexInfo & ref) const
 {
     return type != ref.type
         || count != ref.count
@@ -32,7 +29,7 @@ bool ShiftEngine::VertexInfo::operator!=(const VertexInfo & ref) const
         || name != ref.name;
 }
 
-bool ShiftEngine::VertexInfo::operator<(const VertexInfo & ref) const
+bool VertexInfo::operator<(const VertexInfo & ref) const
 {
     if (type != ref.type) return type < ref.type;
     if (count != ref.count) return count < ref.count;
@@ -41,17 +38,17 @@ bool ShiftEngine::VertexInfo::operator<(const VertexInfo & ref) const
     return false;
 }
 
-void ShiftEngine::VertexSemantic::addSemantic(ElemType type, unsigned count, ElemSemantic semantic, const std::string & name /*= ""*/)
+void VertexSemantic::addSemantic(ElemType type, unsigned count, ElemSemantic semantic, const std::string & name /*= ""*/)
 {
     vertexSemantics.push_back(VertexInfo(type, count, semantic, name));
 }
 
-const std::vector<ShiftEngine::VertexInfo> & ShiftEngine::VertexSemantic::getInnerRepresentation() const
+const std::vector<VertexInfo> & VertexSemantic::getInnerRepresentation() const
 {
     return vertexSemantics;
 }
 
-bool ShiftEngine::VertexSemantic::operator<(const VertexSemantic & ref) const
+bool VertexSemantic::operator<(const VertexSemantic & ref) const
 {
     if (vertexSemantics.size() != ref.vertexSemantics.size())
         return vertexSemantics.size() < ref.vertexSemantics.size();
@@ -63,7 +60,7 @@ bool ShiftEngine::VertexSemantic::operator<(const VertexSemantic & ref) const
     return false;
 }
 
-bool ShiftEngine::VertexSemantic::isNormalsHere() const
+bool VertexSemantic::isNormalsHere() const
 {
     for (auto elem : vertexSemantics)
         if (elem.semantic == ES_Normal)
@@ -72,7 +69,7 @@ bool ShiftEngine::VertexSemantic::isNormalsHere() const
     return false;
 }
 
-bool ShiftEngine::VertexSemantic::isTexcoordsHere() const
+bool VertexSemantic::isTexcoordsHere() const
 {
     for (auto elem : vertexSemantics)
         if (elem.semantic == ES_Texcoord)
@@ -81,7 +78,7 @@ bool ShiftEngine::VertexSemantic::isTexcoordsHere() const
     return false;
 }
 
-bool ShiftEngine::VertexSemantic::isVertexColorsHere() const
+bool VertexSemantic::isVertexColorsHere() const
 {
     for (auto elem : vertexSemantics)
         if (elem.semantic == ES_Color)
@@ -90,7 +87,7 @@ bool ShiftEngine::VertexSemantic::isVertexColorsHere() const
     return false;
 }
 
-bool ShiftEngine::VertexSemantic::isTangentsHere() const
+bool VertexSemantic::isTangentsHere() const
 {
     for (auto elem : vertexSemantics)
         if (elem.semantic == ES_Tangent)
@@ -99,7 +96,7 @@ bool ShiftEngine::VertexSemantic::isTangentsHere() const
     return false;
 }
 
-bool ShiftEngine::VertexSemantic::isBinormalsHere() const
+bool VertexSemantic::isBinormalsHere() const
 {
     for (auto elem : vertexSemantics)
         if (elem.semantic == ES_Binormal)
@@ -108,7 +105,7 @@ bool ShiftEngine::VertexSemantic::isBinormalsHere() const
     return false;
 }
 
-size_t ShiftEngine::VertexSemantic::getVertexSize() const
+size_t VertexSemantic::getVertexSize() const
 {
     size_t vertexSize = 0;
     for (const auto & elem : vertexSemantics)

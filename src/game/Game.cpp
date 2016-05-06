@@ -18,19 +18,19 @@ Game::~Game()
 
 static Game * GamePtr = nullptr;
 
-void LostIsland::CreateGame()
+void GoingHome::CreateGame()
 {
     delete GamePtr;
     GamePtr = new Game();
 }
 
-void LostIsland::TerminateGame()
+void GoingHome::TerminateGame()
 {
     delete GamePtr;
     GamePtr = nullptr;
 }
 
-Game * LostIsland::GetGamePtr()
+Game * GoingHome::GetGamePtr()
 {
     return GamePtr;
 }

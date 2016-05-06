@@ -23,19 +23,19 @@ namespace UnitTests
             CameraFrustum frustum;
             InitFrustum(frustum, {0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, { 1.0f, 0.0f, 0.0f });
             CameraFrustum::CullingStatus status = frustum.CheckAABB(AABB({ 50.0f, -1.0f, -1.0f }, { 52.0f, 1.0f, 1.0f }));
-            Assert::IsTrue(status > CameraFrustum::CS_Out);
+            Assert::IsTrue((int)status > (int)CameraFrustum::CullingStatus::CS_Out);
 
             InitFrustum(frustum, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { -1.0f, 0.0f, 0.0f });
             status = frustum.CheckAABB(AABB({ -52.0f, -1.0f, -1.0f }, { -50.0f, 1.0f, 1.0f }));
-            Assert::IsTrue(status > CameraFrustum::CS_Out);
+            Assert::IsTrue((int)status > (int)CameraFrustum::CullingStatus::CS_Out);
 
             InitFrustum(frustum, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f });
             status = frustum.CheckAABB(AABB({ -1.0f, 50.0f, -1.0f }, { 1.0f, 52.0f, 1.0f }));
-            Assert::IsTrue(status > CameraFrustum::CS_Out);
+            Assert::IsTrue((int)status > (int)CameraFrustum::CullingStatus::CS_Out);
 
             InitFrustum(frustum, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, -1.0f, 0.0f });
             status = frustum.CheckAABB(AABB({ -1.0f, -52.0f, -1.0f }, { 1.0f, -50.0f, 1.0f }));
-            Assert::IsTrue(status > CameraFrustum::CS_Out);
+            Assert::IsTrue((int)status > (int)CameraFrustum::CullingStatus::CS_Out);
         }
 
         TEST_METHOD(CameraFrustumOOBBTest_NOT_IMPLEMENTED)

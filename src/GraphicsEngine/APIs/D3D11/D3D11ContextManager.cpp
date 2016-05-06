@@ -7,7 +7,9 @@
 
 #include <D3Dcompiler.h>
 
-ShiftEngine::D3D11ContextManager::D3D11ContextManager(HWND hwnd)
+using namespace ShiftEngine;
+
+D3D11ContextManager::D3D11ContextManager(HWND hwnd)
     : windowHandle(hwnd)
 {
     //MOVE TO ICONTEXTMANAGER CONSTRUCTOR
@@ -30,15 +32,18 @@ ShiftEngine::D3D11ContextManager::D3D11ContextManager(HWND hwnd)
 }
 
 ShiftEngine::D3D11ContextManager::~D3D11ContextManager()
-{
-}
+{}
 
-bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, ShiftEngine::PathSettings _Paths)
+bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettings _Paths)
 {
     engineSettings = _Settings;
     enginePaths = _Paths;
 
-    if (enginePaths.FontsPath.empty() || enginePaths.MaterialsPath.empty() || enginePaths.MeshPath.empty() || enginePaths.ShaderPath.empty() || enginePaths.TexturePath.empty())
+    if (enginePaths.FontsPath.empty() ||
+        enginePaths.MaterialsPath.empty() ||
+        enginePaths.MeshPath.empty() ||
+        enginePaths.ShaderPath.empty() ||
+        enginePaths.TexturePath.empty())
         LOG_ERROR("Some settings paths are not filled");
 
     DXGI_SWAP_CHAIN_DESC desc;
@@ -75,20 +80,19 @@ bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Setting
 
     D3D_FEATURE_LEVEL featureLevel;
 
-    HRESULT hr = D3D11CreateDeviceAndSwapChain(
-        NULL,
-        D3D_DRIVER_TYPE_HARDWARE,
-        NULL,
-        Flags,
-        featureLevels,
-        3,
-        D3D11_SDK_VERSION,
-        &desc,
-        &graphicsContext.SwapChain,
-        &graphicsContext.Device,
-        &featureLevel,
-        &graphicsContext.DeviceContext
-        );
+    HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL,
+                                               D3D_DRIVER_TYPE_HARDWARE,
+                                               NULL,
+                                               Flags,
+                                               featureLevels,
+                                               3,
+                                               D3D11_SDK_VERSION,
+                                               &desc,
+                                               &graphicsContext.SwapChain,
+                                               &graphicsContext.Device,
+                                               &featureLevel,
+                                               &graphicsContext.DeviceContext
+    );
 
     if (FAILED(hr))
         LOG_FATAL_ERROR("Unable to create D3D11 device: ", std::hex, hr, std::dec);
@@ -101,7 +105,7 @@ bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Setting
     ID3D11Texture2D * tempTex = nullptr;
 
     graphicsContext.SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&tempTex));
-    graphicsContext.Device->CreateRenderTargetView(tempTex, 0, &graphicsContext.DefaultRT->rt);
+    graphicsContext.Device->CreateRenderTargetView(tempTex, 0, &graphicsContext.DefaultRT->view);
     tempTex->Release();
 
     /////////////////////////////////////
@@ -121,9 +125,13 @@ bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Setting
     depthStencilDesc.CPUAccessFlags = 0;                                //доступ процессора
     depthStencilDesc.MiscFlags = 0;                                     //прочие флаги
 
-    graphicsContext.Device->CreateTexture2D(&depthStencilDesc, 0, &graphicsContext.DepthStencilBuffer);
-    graphicsContext.Device->CreateDepthStencilView(graphicsContext.DepthStencilBuffer, 0, &graphicsContext.DepthStencilView);
-    graphicsContext.DeviceContext->OMSetRenderTargets(1, &graphicsContext.DefaultRT->rt, graphicsContext.DepthStencilView); //установка рендер-таргетов
+    if (FAILED(graphicsContext.Device->CreateTexture2D(&depthStencilDesc, 0, &graphicsContext.DefaultDS->texture)))
+        LOG_FATAL_ERROR("Unable to create default depth buffer");
+
+    if (FAILED(graphicsContext.Device->CreateDepthStencilView(graphicsContext.DefaultDS->texture, 0, &graphicsContext.DefaultDS->view)))
+        LOG_FATAL_ERROR("Unable to create default depth buffer");
+
+    graphicsContext.DeviceContext->OMSetRenderTargets(1, &graphicsContext.DefaultRT->view.p, graphicsContext.DefaultDS->view);
 
     D3D11_VIEWPORT vp;
     vp.TopLeftX = 0;
@@ -141,7 +149,7 @@ bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Setting
     zBufferState = true;
     graphicsContext.DeviceContext->OMSetDepthStencilState(graphicsContext.dsStateZOn, 1);
     graphicsContext.DeviceContext->RSSetState(graphicsContext.rsNormal);
-    const float BlendFactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    const float BlendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsNormal, BlendFactor, 0xffffffff);
 
     shaderManager = new D3D11ShaderManager(graphicsContext.Device);
@@ -188,7 +196,7 @@ bool ShiftEngine::D3D11ContextManager::Initialize(GraphicEngineSettings _Setting
     return true;
 }
 
-std::wstring ShiftEngine::D3D11ContextManager::GetGPUDescription()
+std::wstring D3D11ContextManager::GetGPUDescription()
 {
     DXGI_ADAPTER_DESC adapterDesc;
     IDXGIFactory * factory;
@@ -204,14 +212,12 @@ std::wstring ShiftEngine::D3D11ContextManager::GetGPUDescription()
     return buffer;
 }
 
-void ShiftEngine::D3D11ContextManager::BeginScene()
+void D3D11ContextManager::BeginScene()
 {
-    float clearColors[] = { 208.0f / 255.0f, 238.0f / 255.0f, 248.0f / 255.0f, 1.0f };
-    graphicsContext.DeviceContext->ClearRenderTargetView(graphicsContext.DefaultRT->rt, clearColors);
-    graphicsContext.DeviceContext->ClearDepthStencilView(graphicsContext.DepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    graphicsContext.ClearDefaultRenderTarget();
 }
 
-void ShiftEngine::D3D11ContextManager::EndScene()
+void D3D11ContextManager::EndScene()
 {
     fontManager->DrawBatchedText();
 
@@ -221,7 +227,7 @@ void ShiftEngine::D3D11ContextManager::EndScene()
         graphicsContext.SwapChain->Present(0, 0);
 }
 
-void ShiftEngine::D3D11ContextManager::ResetPipeline()
+void D3D11ContextManager::ResetPipeline()
 {
     UINT null = 0;
     ID3D11Buffer* nullB = nullptr;
@@ -232,7 +238,7 @@ void ShiftEngine::D3D11ContextManager::ResetPipeline()
     currentProgram = nullptr;
 }
 
-ShiftEngine::ITexturePtr ShiftEngine::D3D11ContextManager::LoadTexture(const std::wstring & FileName)
+ITexturePtr D3D11ContextManager::LoadTexture(const std::wstring & FileName)
 {
     ITexturePtr out = textureManager->CreateTexture2D(FileName);
     if (out == nullptr)
@@ -243,12 +249,12 @@ ShiftEngine::ITexturePtr ShiftEngine::D3D11ContextManager::LoadTexture(const std
     return out;
 }
 
-ShiftEngine::IProgramPtr ShiftEngine::D3D11ContextManager::LoadShader(const std::wstring & FileName)
+IProgramPtr D3D11ContextManager::LoadShader(const std::wstring & FileName)
 {
     return shaderManager->CreateProgramFromFile(enginePaths.ShaderPath + FileName);
 }
 
-ShiftEngine::IMeshDataPtr ShiftEngine::D3D11ContextManager::LoadMesh(const std::wstring & FileName)
+IMeshDataPtr D3D11ContextManager::LoadMesh(const std::wstring & FileName)
 {
     IMeshDataPtr out = meshManager->LoadMesh(enginePaths.MeshPath + FileName);
     if (out == nullptr)
@@ -259,7 +265,7 @@ ShiftEngine::IMeshDataPtr ShiftEngine::D3D11ContextManager::LoadMesh(const std::
     return out;
 }
 
-ShiftEngine::MaterialPtr ShiftEngine::D3D11ContextManager::LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName)
+MaterialPtr D3D11ContextManager::LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName)
 {
     auto ptr = materialManager->LoadMaterial(enginePaths.MaterialsPath + FileName, mtlName);
 
@@ -272,7 +278,7 @@ ShiftEngine::MaterialPtr ShiftEngine::D3D11ContextManager::LoadMaterial(const st
     return ptr;
 }
 
-void ShiftEngine::D3D11ContextManager::SetZState(bool enabled)
+void D3D11ContextManager::SetZState(bool enabled)
 {
     zBufferState = enabled;
     if (enabled)
@@ -281,17 +287,17 @@ void ShiftEngine::D3D11ContextManager::SetZState(bool enabled)
         graphicsContext.DeviceContext->OMSetDepthStencilState(graphicsContext.dsStateZOff, 1);
 }
 
-const ShiftEngine::GraphicEngineSettings & ShiftEngine::D3D11ContextManager::GetEngineSettings() const
+const GraphicEngineSettings & D3D11ContextManager::GetEngineSettings() const
 {
     return engineSettings;
 }
 
-const ShiftEngine::PathSettings & ShiftEngine::D3D11ContextManager::GetPaths() const
+const PathSettings & D3D11ContextManager::GetPaths() const
 {
     return enginePaths;
 }
 
-int ShiftEngine::D3D11ContextManager::DrawMesh(IMeshDataPtr & mesh)
+int D3D11ContextManager::DrawMesh(IMeshDataPtr & mesh)
 {
     if (mesh && mesh->GetVertexDeclaration())
     {
@@ -308,29 +314,29 @@ int ShiftEngine::D3D11ContextManager::DrawMesh(IMeshDataPtr & mesh)
     }
 }
 
-ShiftEngine::IShaderManager * ShiftEngine::D3D11ContextManager::GetShaderManager()
+IShaderManager * D3D11ContextManager::GetShaderManager()
 {
     return shaderManager;
 }
 
-ShiftEngine::IShaderGenerator * ShiftEngine::D3D11ContextManager::GetShaderGenerator()
+IShaderGenerator * D3D11ContextManager::GetShaderGenerator()
 {
     return shaderGenerator;
 }
 
-void ShiftEngine::D3D11ContextManager::SetBlendingState(BlendingState bs)
+void D3D11ContextManager::SetBlendingState(BlendingState bs)
 {
-    const float BlendFactor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    const float BlendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 
     switch (bs)
     {
-    case ShiftEngine::BlendingState::None:
+    case BlendingState::None:
         graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsNormal, BlendFactor, 0xffffffff);
         break;
-    case ShiftEngine::BlendingState::AlphaEnabled:
+    case BlendingState::AlphaEnabled:
         graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsAlpha, BlendFactor, 0xffffffff);
         break;
-    case ShiftEngine::BlendingState::Additive:
+    case BlendingState::Additive:
         graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsAdditive, BlendFactor, 0xffffffff);
         break;
     default:
@@ -340,23 +346,23 @@ void ShiftEngine::D3D11ContextManager::SetBlendingState(BlendingState bs)
     currentBlendingState = bs;
 }
 
-ShiftEngine::BlendingState ShiftEngine::D3D11ContextManager::GetBlendingState() const
+BlendingState D3D11ContextManager::GetBlendingState() const
 {
     return currentBlendingState;
 }
 
-void ShiftEngine::D3D11ContextManager::SetRasterizerState(RasterizerState rs)
+void D3D11ContextManager::SetRasterizerState(RasterizerState rs)
 {
     currentRasterizerState = rs;
     switch (rs)
     {
-    case ShiftEngine::RasterizerState::Wireframe:
+    case RasterizerState::Wireframe:
         graphicsContext.DeviceContext->RSSetState(graphicsContext.rsWireframe);
         break;
-    case ShiftEngine::RasterizerState::Normal:
+    case RasterizerState::Normal:
         graphicsContext.DeviceContext->RSSetState(graphicsContext.rsNormal);
         break;
-    case ShiftEngine::RasterizerState::NoCulling:
+    case RasterizerState::NoCulling:
         graphicsContext.DeviceContext->RSSetState(graphicsContext.rsNoCulling);
         break;
     default:
@@ -364,17 +370,17 @@ void ShiftEngine::D3D11ContextManager::SetRasterizerState(RasterizerState rs)
     }
 }
 
-ShiftEngine::RasterizerState ShiftEngine::D3D11ContextManager::GetRasterizerState() const
+RasterizerState D3D11ContextManager::GetRasterizerState() const
 {
     return currentRasterizerState;
 }
 
-ShiftEngine::FontManager * ShiftEngine::D3D11ContextManager::GetFontManager()
+FontManager * D3D11ContextManager::GetFontManager()
 {
     return fontManager;
 }
 
-ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D11ContextManager::CreateVDFromDescription(const VertexSemantic & semantic)
+IVertexDeclarationPtr D3D11ContextManager::CreateVDFromDescription(const VertexSemantic & semantic)
 {
     ID3D11Device * pDevice = graphicsContext.Device;
     ID3D11InputLayout * outIL = nullptr;
@@ -390,25 +396,25 @@ ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D11ContextManager::CreateVDFro
     {
         switch (repr[i].semantic)
         {
-        case ShiftEngine::ES_Position:
+        case ES_Position:
             repr[i].name = "POSITION";
             break;
-        case ShiftEngine::ES_Normal:
+        case ES_Normal:
             repr[i].name = "NORMAL";
             break;
-        case ShiftEngine::ES_Texcoord:
+        case ES_Texcoord:
             repr[i].name = "TEXCOORD";
             break;
-        case ShiftEngine::ES_Color:
+        case ES_Color:
             repr[i].name = "COLOR";
             break;
-        case ShiftEngine::ES_Binormal:
+        case ES_Binormal:
             repr[i].name = "BINORMAL";
             break;
-        case ShiftEngine::ES_Tangent:
+        case ES_Tangent:
             repr[i].name = "TANGENT";
             break;
-        case ShiftEngine::ES_Custom:
+        case ES_Custom:
             break;                      //name should be specified by user
         default:
             throw;
@@ -434,7 +440,7 @@ ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D11ContextManager::CreateVDFro
         outIL = nullptr;
     }
 
-    D3D11_INPUT_ELEMENT_DESC * ilDesc = new D3D11_INPUT_ELEMENT_DESC[repr.size()];
+    std::vector<D3D11_INPUT_ELEMENT_DESC> ilDescription(repr.size());
     unsigned int align = 0;
 
     for (size_t i = 0; i < repr.size(); i++)
@@ -442,58 +448,54 @@ ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D11ContextManager::CreateVDFro
         //TEMP
         switch (repr[i].semantic)
         {
-        case ShiftEngine::ES_Position:
-            ilDesc[i].SemanticName = "POSITION";
+        case ES_Position:
+            ilDescription[i].SemanticName = "POSITION";
             break;
-        case ShiftEngine::ES_Normal:
-            ilDesc[i].SemanticName = "NORMAL";
+        case ES_Normal:
+            ilDescription[i].SemanticName = "NORMAL";
             break;
-        case ShiftEngine::ES_Texcoord:
-            ilDesc[i].SemanticName = "TEXCOORD";
+        case ES_Texcoord:
+            ilDescription[i].SemanticName = "TEXCOORD";
             break;
-        case ShiftEngine::ES_Color:
-            ilDesc[i].SemanticName = "COLOR";
+        case ES_Color:
+            ilDescription[i].SemanticName = "COLOR";
             break;
-        case ShiftEngine::ES_Binormal:
-            ilDesc[i].SemanticName = "BINORMAL";
+        case ES_Binormal:
+            ilDescription[i].SemanticName = "BINORMAL";
             break;
-        case ShiftEngine::ES_Tangent:
-            ilDesc[i].SemanticName = "TANGENT";
+        case ES_Tangent:
+            ilDescription[i].SemanticName = "TANGENT";
             break;
-        case ShiftEngine::ES_Custom:
+        case ES_Custom:
         default:
-            delete[] ilDesc;
-            ilDesc = nullptr;
             throw;
         }
         //TEMP
 
-        ilDesc[i].AlignedByteOffset = align;
+        ilDescription[i].AlignedByteOffset = align;
         if (repr[i].count == 1)
-            ilDesc[i].Format = DXGI_FORMAT_R32_FLOAT;
+            ilDescription[i].Format = DXGI_FORMAT_R32_FLOAT;
         if (repr[i].count == 2)
-            ilDesc[i].Format = DXGI_FORMAT_R32G32_FLOAT;
+            ilDescription[i].Format = DXGI_FORMAT_R32G32_FLOAT;
         if (repr[i].count == 3)
-            ilDesc[i].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+            ilDescription[i].Format = DXGI_FORMAT_R32G32B32_FLOAT;
         if (repr[i].count == 4)
-            ilDesc[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-        ilDesc[i].InputSlot = 0;
-        ilDesc[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-        ilDesc[i].InstanceDataStepRate = 0;
-        ilDesc[i].SemanticIndex = 0;
+            ilDescription[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+        ilDescription[i].InputSlot = 0;
+        ilDescription[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+        ilDescription[i].InstanceDataStepRate = 0;
+        ilDescription[i].SemanticIndex = 0;
         align += repr[i].count * 4;
     }
 
-    if (FAILED(pDevice->CreateInputLayout(ilDesc, repr.size(), compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), &outIL)))
+    if (FAILED(pDevice->CreateInputLayout(ilDescription.data(), repr.size(), compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), &outIL)))
     {
-        delete[] ilDesc;
         compiledShader->Release();
         outIL = nullptr;
         LOG_FATAL_ERROR("Unable to create input layout");
         return nullptr;
     }
 
-    delete[] ilDesc;
     compiledShader->Release();
 
     //HACK: slow but I'm lazy to rework
@@ -501,17 +503,17 @@ ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D11ContextManager::CreateVDFro
     return declarations[semantic];
 }
 
-ShiftEngine::ITextureManager * ShiftEngine::D3D11ContextManager::GetTextureManager()
+ITextureManager * D3D11ContextManager::GetTextureManager()
 {
     return textureManager;
 }
 
-ShiftEngine::IMeshManager * ShiftEngine::D3D11ContextManager::GetMeshManager()
+IMeshManager * D3D11ContextManager::GetMeshManager()
 {
     return meshManager;
 }
 
-ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D11ContextManager::GetVertexDeclaration(const VertexSemantic & semantic)
+IVertexDeclarationPtr D3D11ContextManager::GetVertexDeclaration(const VertexSemantic & semantic)
 {
     auto iter = declarations.find(semantic);
     if (iter == declarations.end())
@@ -524,7 +526,7 @@ ShiftEngine::IVertexDeclarationPtr ShiftEngine::D3D11ContextManager::GetVertexDe
     }
 }
 
-ID3D11Device* ShiftEngine::D3D11ContextManager::GetDevicePtr() const
+ID3D11Device* D3D11ContextManager::GetDevicePtr() const
 {
     return graphicsContext.Device;
 }
