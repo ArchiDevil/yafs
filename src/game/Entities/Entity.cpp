@@ -1,13 +1,19 @@
 #include "Entity.h"
 #include "EntityManager.h"
 
-Entity::Entity(MathLib::vec2f & position)
+Entity::Entity(
+    MathLib::vec2f & position,
+    ShiftEngine::SpriteSceneNode * sprite)
+        : position(position)
+        , sprite(std::unique_ptr<ShiftEngine::SpriteSceneNode>(sprite))
 {
-    this->position = position;
     subscribe(&EntityEventManager::GetInstance());
 }
 
-Entity::~Entity() {}
+Entity::~Entity()
+{
+    sprite->KillSelf();
+}
 
 bool Entity::CalculateCollision(const Entity & ent)
 {

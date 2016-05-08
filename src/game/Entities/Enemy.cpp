@@ -1,8 +1,12 @@
 #include "Enemy.h"
 #include "Projectile.h"
 
+#include <GraphicsEngine/ShiftEngine.h>
+
+const std::wstring textureName = L"enemy";
+
 Enemy::Enemy(MathLib::vec2f & position)
-    : Entity(position)
+    : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
 {
 }
 

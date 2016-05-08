@@ -4,9 +4,12 @@
 #include "EntityFactory.h"
 
 #include <cmath>
+#include <GraphicsEngine/ShiftEngine.h>
+
+const std::wstring textureName = L"player";
 
 Player::Player(MathLib::vec2f & position)
-    : Entity(position)
+    : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
 {
 }
 
