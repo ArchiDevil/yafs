@@ -4,10 +4,27 @@
 
 using namespace ShiftEngine;
 
-SpriteSceneNode::SpriteSceneNode(const ITexturePtr & texture, SceneGraph * sceneGraph)
+SpriteSceneNode::SpriteSceneNode(const ITexturePtr & texture,
+                                 SceneGraph * sceneGraph)
+    : SpriteSceneNode(texture, {0.0f, 0.0f}, {1.0f, 1.0f}, sceneGraph)
+{
+}
+
+SpriteSceneNode::SpriteSceneNode(const ITexturePtr & texture,
+                                 const MathLib::vec2f& leftTopCoords,
+                                 const MathLib::vec2f& rightBottomCoords,
+                                 SceneGraph * sceneGraph)
     : ISceneNode(sceneGraph)
     , texture(texture)
-{}
+{
+    float x_scale = rightBottomCoords.x - leftTopCoords.x;
+    float y_scale = rightBottomCoords.y - leftTopCoords.y;
+
+    float x_shift = leftTopCoords.x;
+    float y_shift = leftTopCoords.y;
+
+    textureMatrix = MathLib::matrixScaling(x_scale, y_scale) * MathLib::matrixTranslation(x_shift, y_shift);
+}
 
 void ShiftEngine::SpriteSceneNode::PushToRQ(RenderQueue & rq)
 {
@@ -68,6 +85,11 @@ MathLib::vec4f ShiftEngine::SpriteSceneNode::GetMaskColor() const
 const ITexturePtr & ShiftEngine::SpriteSceneNode::GetTexture() const
 {
     return texture;
+}
+
+MathLib::matrix<float, 3> ShiftEngine::SpriteSceneNode::GetTextureMatrix() const
+{
+    return textureMatrix;
 }
 
 void ShiftEngine::SpriteSceneNode::SetMaskColor(const MathLib::vec4f & color)

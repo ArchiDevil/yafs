@@ -69,7 +69,9 @@ MeshSceneNode * SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const Material * m
     return out;
 }
 
-SpriteSceneNode * ShiftEngine::SceneGraph::AddSpriteNode( const std::wstring & textureName )
+SpriteSceneNode * ShiftEngine::SceneGraph::AddSpriteNode(const std::wstring & textureName,
+                                                         const MathLib::vec2f & leftTopTextureCoords/* = {0.0f, 0.0f}*/,
+                                                         const MathLib::vec2f & rightBottomTextureCoords/* = {1.0f, 1.0f}*/)
 {
     if (!spriteMesh)
         CreateSpriteMesh();
@@ -77,7 +79,7 @@ SpriteSceneNode * ShiftEngine::SceneGraph::AddSpriteNode( const std::wstring & t
         CreateSpriteProgram();
 
     ITexturePtr texture = GetContextManager()->LoadTexture(textureName);
-    SpriteSceneNode * out = new SpriteSceneNode(texture, this);
+    SpriteSceneNode * out = new SpriteSceneNode(texture, leftTopTextureCoords, rightBottomTextureCoords, this);
     rootNode->AddChild(out);
     return out;
 }

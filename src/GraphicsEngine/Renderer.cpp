@@ -334,6 +334,15 @@ size_t Renderer::GetFPS() const
 
 void Renderer::drawSprites(SpritesVector & sprites, CameraSceneNode & currentCamera)
 {
+    struct alignas(16) textureMatrixWithPadding
+    {
+        float firstRow[3];
+        float padding1;
+        float secondRow[3];
+        float padding2;
+        float thirdRow[3];
+    };
+
     if (!spriteProgram || !spriteMesh)
         loadSpritesPrerequisites();
 
@@ -343,6 +352,12 @@ void Renderer::drawSprites(SpritesVector & sprites, CameraSceneNode & currentCam
     currentState.currentProgram = spriteProgram;
     for (SpriteSceneNode * sprite : sprites)
     {
+        if (!sprite)
+        {
+            LOG_ERROR("Empty sprite node in render queue");
+            continue;
+        }
+
         const ITexturePtr & texture = sprite->GetTexture();
 
         if (!texture)
@@ -360,7 +375,16 @@ void Renderer::drawSprites(SpritesVector & sprites, CameraSceneNode & currentCam
         matResult = currentCamera.GetViewMatrix() * currentCamera.GetProjectionMatrix();
         matResult = (matScale * matRot * matPos) * matResult;
 
-        spriteProgram->SetMatrixConstantByName("matRes", (float*)matResult);
+        spriteProgram->SetMatrixConstantByName("WVPMatrix", (float*)matResult);
+        currentState.matricesBindings++;
+
+        //TODO: ugly-ugly shit, need to do something with it D:<
+        textureMatrixWithPadding texMatrix;
+        memcpy(texMatrix.firstRow, sprite->GetTextureMatrix()[0], sizeof(float) * 3);
+        memcpy(texMatrix.secondRow, sprite->GetTextureMatrix()[1], sizeof(float) * 3);
+        memcpy(texMatrix.thirdRow, sprite->GetTextureMatrix()[2], sizeof(float) * 3);
+
+        spriteProgram->SetMatrixConstantByName("TextureMatrix", (float*)&texMatrix);
         currentState.matricesBindings++;
         spriteProgram->SetTextureByName("Texture", texture);
         currentState.textureBindings++;

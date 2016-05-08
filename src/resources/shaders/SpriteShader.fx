@@ -1,6 +1,7 @@
 cbuffer spriteConstants
 {
-    float4x4 matRes;
+    float4x4 WVPMatrix;
+    float3x3 TextureMatrix;
     float4 MaskColor;
 };
 
@@ -26,8 +27,9 @@ struct VS_O
 VS_O VS(VS_I Input)
 {
     VS_O Output;
-    Output.Position = mul(float4(Input.Position, 0.0f, 1.0f), matRes);
-    Output.Texcoord = Input.Texcoord;
+    Output.Position = mul(float4(Input.Position, 0.0f, 1.0f), WVPMatrix);
+    float3 texCoord = mul(float3(Input.Texcoord, 1.0f), TextureMatrix);
+    Output.Texcoord = texCoord.xy;
     return Output;
 };
 
