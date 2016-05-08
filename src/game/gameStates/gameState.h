@@ -17,6 +17,7 @@
 #include <Utilities/IManager.h>
 #include <Utilities/observer.h>
 
+
 class GameState final
     : public IAppState
     , public IManager

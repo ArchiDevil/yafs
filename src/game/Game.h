@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Entities/EntityManager.h"
+#include "Entities/Player.h"
+
 #include <memory>
 
 struct Game
@@ -12,8 +15,8 @@ struct Game
     Game(Game && ref) = delete;
     Game & operator=(Game && ref) = delete;
 
-    // PlayerGameObject * player = nullptr;
-    // std::unique_ptr<GameObjectsManager> entityMgr = nullptr;
+    std::weak_ptr<Player> player;
+    std::unique_ptr<EntityManager> entityMgr = nullptr;
     // std::unique_ptr<GameEventHandler> gameEventHandler = nullptr;
     // std::unique_ptr<GameHUD> gameHud = nullptr;
 

@@ -80,4 +80,11 @@ T raddeg(T radians)
     return radians * (T)180.0 / (T)M_PI;
 }
 
+template<class T,
+    class = typename std::enable_if<std::is_floating_point<T>::value>::type>
+bool isEqual(T a, T b)
+{
+    return std::abs(a - b) < std::numeric_limits<T>::epsilon();
+}
+
 }

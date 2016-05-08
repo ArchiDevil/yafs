@@ -1,4 +1,6 @@
 #include "GameState.h"
+#include "../Entities/EntityFactory.h"
+#include "../Entities/EntityManager.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <Utilities/inputConverter.h>
@@ -157,8 +159,14 @@ bool GameState::handleEvent(const InputEvent & event)
 {
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
 
-    //switch (event.type)
-    //{
+    switch (event.type)
+    {
+    case InputEventType::MouseDown:
+        MouseInfo & mouseInfo = InputEngine::GetInstance().GetMouseInfo();
+
+        GoingHome::GetGamePtr()->player.lock()->Shoot(
+            MathLib::vec2f((float)mouseInfo.absoluteX, (float)mouseInfo.absoluteY));
+        break;
     //    // there will be always DirectInput keys in first two handlers
     //case InputEventType::KeyDown:
     //    inputManager.injectKeyPress((MyGUI::KeyCode::Enum)event.key);
@@ -171,7 +179,7 @@ bool GameState::handleEvent(const InputEvent & event)
     //case InputEventType::SystemKey:
     //    inputManager.injectKeyPress((MyGUI::KeyCode::Enum)InputConverter::VirtualKeyToScanCode(event.key), event.key);
     //    break;
-    //}
+    }
 
     return true;
 }

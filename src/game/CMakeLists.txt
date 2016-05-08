@@ -15,6 +15,26 @@ set(LS  gameStates/gameState.h
 source_group("Header Files\\Game States" FILES ${LS})
 list(APPEND SRC ${LS})
 
+set(LS  Entities/Enemy.cpp
+        Entities/Entity.cpp
+        Entities/EntityEventManager.cpp
+        Entities/EntityFactory.cpp
+        Entities/EntityManager.cpp
+        Entities/Player.cpp
+        Entities/Projectile.cpp)
+source_group("Source Files\\Entities" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  Entities/Enemy.h
+        Entities/Entity.h
+        Entities/EntityEventManager.h
+        Entities/EntityFactory.h
+        Entities/EntityManager.h
+        Entities/Player.h
+        Entities/Projectile.h)
+source_group("Header Files\\Entities" FILES ${LS})
+list(APPEND SRC ${LS})
+
 include_directories(../../3rdparty/jsoncpp/include)
 
 if(${EX_PLATFORM} EQUAL 64)
