@@ -8,7 +8,7 @@
 
 const std::wstring textureName = L"player";
 
-Player::Player(MathLib::vec2f & position)
+Player::Player(const MathLib::vec2f & position) 
     : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
 {
 }
@@ -20,7 +20,7 @@ bool Player::handleEvent(const ProjectilePositionEvent & event)
     return true;
 }
 
-void Player::Shoot(MathLib::vec2f & targetPosition)
+void Player::Shoot(const MathLib::vec2f & targetPosition)
 {
     auto vec = MathLib::normalize<float>(targetPosition - position);
 

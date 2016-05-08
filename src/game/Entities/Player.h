@@ -8,10 +8,10 @@ class Player
     : public Entity
 {
 public:
-    Player(MathLib::vec2f & position);
+    Player(const MathLib::vec2f & position);
     virtual ~Player() { }
     bool handleEvent(const ProjectilePositionEvent & event) override;
     void Update(double dt) override {}
 
-    void Shoot(MathLib::vec2f & targetPosition);
+    void Shoot(const MathLib::vec2f & targetPosition);
 };

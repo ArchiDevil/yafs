@@ -5,7 +5,7 @@
 
 const std::wstring textureName = L"enemy";
 
-Enemy::Enemy(MathLib::vec2f & position)
+Enemy::Enemy(const MathLib::vec2f & position)
     : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
 {
 }

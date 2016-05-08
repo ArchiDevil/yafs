@@ -4,14 +4,15 @@
 #include "EntityFactory.h"
 
 #include <memory>
+#include <Utilities/IManager.h>
 #include <Utilities/singleton.h>
 #include <vector>
 
-class EntityManager
+class EntityManager : public IManager
 {
 public:
-    EntityManager();
-    virtual ~EntityManager() {}
+    EntityManager() = default;
+    virtual ~EntityManager() = default;
 
     void AddEntity(const std::shared_ptr<Entity> & ent);
     void RemoveEntity(const std::shared_ptr<Entity> & ent);
@@ -24,5 +25,6 @@ public:
 
 private:
     std::vector<std::shared_ptr<Entity>> entities;
-    std::shared_ptr<EntityFactory> factory;
+    std::shared_ptr<EntityFactory> factory = std::make_shared<EntityFactory>();
+
 };

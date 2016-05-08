@@ -5,7 +5,7 @@
 
 const std::wstring textureName = L"projectile";
 
-Projectile::Projectile(MathLib::vec2f & position, MathLib::vec2f & speed)
+Projectile::Projectile(const MathLib::vec2f & position, const MathLib::vec2f & speed) 
     : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
     , speed(speed)
 {
