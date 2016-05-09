@@ -36,6 +36,8 @@ SceneGraph::~SceneGraph()
 
 void SceneGraph::DrawAll(double dt) const
 {
+    rootNode->Update(dt);
+
     RenderQueue rq(ambientColor);
 
     if (activeCamera)
@@ -80,6 +82,19 @@ SpriteSceneNode * ShiftEngine::SceneGraph::AddSpriteNode(const std::wstring & te
 
     ITexturePtr texture = GetContextManager()->LoadTexture(textureName);
     SpriteSceneNode * out = new SpriteSceneNode(texture, leftTopTextureCoords, rightBottomTextureCoords, this);
+    rootNode->AddChild(out);
+    return out;
+}
+
+AnimatedSpriteSceneNode * ShiftEngine::SceneGraph::AddAnimatedSpriteNode(const std::wstring & textureName)
+{
+    if (!spriteMesh)
+        CreateSpriteMesh();
+    if (!spriteProgram)
+        CreateSpriteProgram();
+
+    ITexturePtr texture = GetContextManager()->LoadTexture(textureName);
+    AnimatedSpriteSceneNode * out = new AnimatedSpriteSceneNode(texture, this);
     rootNode->AddChild(out);
     return out;
 }

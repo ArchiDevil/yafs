@@ -68,7 +68,8 @@ if(${RENDERER} STREQUAL D3D11_RENDER)
     list(APPEND SRC ${LS})
 endif()
 
-set(LS  SceneGraph/CameraFrustum.cpp
+set(LS  SceneGraph/AnimatedSpriteSceneNode.cpp
+        SceneGraph/CameraFrustum.cpp
         SceneGraph/CameraSceneNode.cpp
         SceneGraph/ISceneNode.cpp
         SceneGraph/LightSceneNode.cpp
@@ -81,7 +82,8 @@ set(LS  SceneGraph/CameraFrustum.cpp
 source_group("Source Files\\Scene Graph" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  SceneGraph/CameraFrustum.h
+set(LS  SceneGraph/AnimatedSpriteSceneNode.h
+        SceneGraph/CameraFrustum.h
         SceneGraph/CameraSceneNode.h
         SceneGraph/ICameraController.h
         SceneGraph/ISceneNode.h
