@@ -57,7 +57,10 @@ public:
     virtual MathLib::mat4f GetLocalMatrix() const;
     virtual MathLib::AABB GetBBox() const = 0;
 
+    void Update(double dt);
+
 protected:
+    virtual void OnUpdate(double dt);
     virtual void PushToRQ(RenderQueue & rq) = 0;
     virtual CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const;
     void CreateMatrices();

@@ -81,14 +81,30 @@ namespace MathLib
 //D3DXMatrixAffineTransformation2D 
 //D3DXMatrixDecompose
 
-template <typename T>
-matrix<T, 4> matrixIdentity()
+template <typename T, size_t E>
+matrix<T, E> matrixIdentity()
 {
-    matrix<T, 4> out;
-    for (int i = 0; i < 4; i++)
+    matrix<T, E> out;
+    for (size_t i = 0; i < E; i++)
     {
         out[i][i] = (T)1;
     }
+    return out;
+}
+
+template <typename T>
+matrix<T, 3> matrixScaling(const vec2<T> & v)
+{
+    return matrixScaling(v.x, v.y);
+}
+
+template <typename T>
+matrix<T, 3> matrixScaling(T x, T y)
+{
+    matrix<T, 3> out;
+    out[0][0] = x;
+    out[1][1] = y;
+    out[2][2] = (T)1;
     return out;
 }
 
@@ -162,6 +178,25 @@ matrix<T, 4> matrixRotationYPR(T yaw, T pitch, T roll)
     out[2][1] = -sin(pitch);
     out[2][2] = (cos(pitch) * cos(yaw));
     out[3][3] = (T)1;
+    return out;
+}
+
+template <typename T>
+matrix<T, 3> matrixTranslation(const vec2<T> & v)
+{
+    return matrixTranslation(v.x, v.y);
+}
+
+template <typename T>
+matrix<T, 3> matrixTranslation(T x, T y)
+{
+    matrix<T, 3> out;
+    out[0][0] = (T)1;
+    out[1][1] = (T)1;
+    out[2][2] = (T)1;
+
+    out[2][0] = x;
+    out[2][1] = y;
     return out;
 }
 
