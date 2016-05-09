@@ -1,8 +1,12 @@
 #include "Enemy.h"
 #include "Projectile.h"
 
-Enemy::Enemy(MathLib::vec2f & position)
-    : Entity(position)
+#include <GraphicsEngine/ShiftEngine.h>
+
+const std::wstring textureName = L"enemy";
+
+Enemy::Enemy(const MathLib::vec2f & position)
+    : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
 {
 }
 
@@ -11,4 +15,9 @@ bool Enemy::handleEvent(const ProjectilePositionEvent & event)
     if (CalculateCollision(*event.projectile))
         isToDelete = true;
     return true;
+}
+
+void Enemy::Update(double dt)
+{
+    SetSpritePosition();
 }

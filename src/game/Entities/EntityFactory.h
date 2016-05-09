@@ -13,8 +13,8 @@ public:
     EntityFactory() { }
     virtual ~EntityFactory() { }
 
-    std::shared_ptr<Player> CreatePlayer(MathLib::vec2f & position);
-    std::shared_ptr<Enemy> CreateEnemy(MathLib::vec2f & position);
-    std::shared_ptr<Projectile> CreateProjectile(MathLib::vec2f & position, MathLib::vec2f & speed);
+    std::shared_ptr<Player> CreatePlayer(const MathLib::vec2f & position) const;
+    std::shared_ptr<Enemy> CreateEnemy(const MathLib::vec2f & position) const;
+    std::shared_ptr<Projectile> CreateProjectile(const MathLib::vec2f & position, const MathLib::vec2f & speed) const;
 
 };

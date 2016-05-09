@@ -2,11 +2,6 @@
 
 #include <algorithm>
 
-EntityManager::EntityManager()
-{
-    factory = std::make_shared<EntityFactory>();
-}
-
 void EntityManager::AddEntity(const std::shared_ptr<Entity> & ent)
 {
     entities.push_back(ent);

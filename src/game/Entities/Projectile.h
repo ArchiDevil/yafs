@@ -8,7 +8,7 @@ class Projectile
     : public Entity
 {
 public:
-    Projectile(MathLib::vec2f & position, MathLib::vec2f & speed);
+    Projectile(const MathLib::vec2f & position, const MathLib::vec2f & speed);
     virtual ~Projectile() { }
     void Update(double dt) override;
 

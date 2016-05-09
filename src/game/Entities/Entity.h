@@ -2,7 +2,9 @@
 
 #include "EntityEventManager.h"
 
+#include <GraphicsEngine/SceneGraph/SpriteSceneNode.h>
 #include <MathLib/math.h>
+#include <memory>
 #include <string>
 #include <Utilities/observer.h>
 
@@ -10,21 +12,32 @@ class Entity
     : public observer <ProjectilePositionEvent>
 {
 public:
-    Entity(MathLib::vec2f & position);
-    virtual ~Entity();
+    Entity(const MathLib::vec2f & position,
+           ShiftEngine::SpriteSceneNode * sprite);
+    virtual ~Entity() = default;
 
     virtual void Update(double dt) = 0;
-    virtual void Show() { }
-    virtual void Hide() { }
-    virtual void Move(double x, double y) { }
+    virtual void Show();
+    virtual void Hide();
+    virtual void Move(double x, double y);
 
-    bool handleEvent(const ProjectilePositionEvent & event) override { return true; };
+    bool handleEvent(const ProjectilePositionEvent & event) override;;
 
-    const MathLib::vec2f GetPosition() const { return position; }
+    const MathLib::vec2f GetPosition() const;
     bool IsToDelete() { return isToDelete; }
 protected:
-    bool CalculateCollision(const Entity & ent);
+    bool CalculateCollision(const Entity & ent) const;
+    void SetSpritePosition();
+
+    struct sprites_deleter
+    {
+        void operator()(ShiftEngine::SpriteSceneNode* ref)
+        {
+            ref->KillSelf();
+        }
+    };
 
     MathLib::vec2f position;
     bool isToDelete = false;
+    std::unique_ptr<ShiftEngine::SpriteSceneNode, sprites_deleter> sprite;
 };
