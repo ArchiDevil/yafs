@@ -162,7 +162,7 @@ bool QuadTreeNode::AddNode(ISceneNode * node)
 
 MathLib::mat4f QuadTreeNode::GetWorldMatrix() const
 {
-    return MathLib::matrixIdentity<float>();
+    return MathLib::matrixIdentity<float, 4>();
 }
 
 CameraFrustum::CullingStatus QuadTreeNode::CheckVisibility(const CameraSceneNode & activeCam) const
