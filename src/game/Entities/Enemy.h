@@ -10,6 +10,6 @@ public:
     Enemy(const MathLib::vec2f & position);
     virtual ~Enemy() { }
     bool handleEvent(const ProjectilePositionEvent & event) override;
-    void Update(double dt) override {}
+    void Update(double dt) override;
 
 };

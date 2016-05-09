@@ -16,3 +16,8 @@ bool Enemy::handleEvent(const ProjectilePositionEvent & event)
         isToDelete = true;
     return true;
 }
+
+void Enemy::Update(double dt)
+{
+    SetSpritePosition();
+}

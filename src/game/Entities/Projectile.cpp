@@ -14,6 +14,7 @@ Projectile::Projectile(const MathLib::vec2f & position, const MathLib::vec2f & s
 void Projectile::Update(double dt)
 {
     position += speed * dt;
+    SetSpritePosition();
 
     EntityEventManager::GetInstance().notifyAll(ProjectilePositionEvent(this));
 }

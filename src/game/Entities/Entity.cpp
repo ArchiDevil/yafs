@@ -6,6 +6,7 @@ Entity::Entity(const MathLib::vec2f & position,
     : position(position)
     , sprite(sprite)
 {
+    SetSpritePosition();
     subscribe(&EntityEventManager::GetInstance());
 }
 
@@ -40,4 +41,9 @@ bool Entity::CalculateCollision(const Entity & ent) const
         isCollision = true;
 
     return isCollision;
+}
+
+void Entity::SetSpritePosition()
+{
+    sprite->SetLocalPosition(MathLib::vec3f(position.x, position.y, 0.0));
 }

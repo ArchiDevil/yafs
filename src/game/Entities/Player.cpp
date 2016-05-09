@@ -26,3 +26,8 @@ void Player::Shoot(const MathLib::vec2f & targetPosition)
 
     GoingHome::GetGamePtr()->entityMgr->CreateProjectile(position, vec);
 }
+
+void Player::Update(double dt)
+{
+    SetSpritePosition();
+}

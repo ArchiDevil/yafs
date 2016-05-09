@@ -27,6 +27,7 @@ public:
     bool IsToDelete() { return isToDelete; }
 protected:
     bool CalculateCollision(const Entity & ent) const;
+    void SetSpritePosition();
 
     struct sprites_deleter
     {
