@@ -336,6 +336,8 @@ void Renderer::drawSprites(SpritesVector & sprites, CameraSceneNode & currentCam
 {
     struct alignas(16) textureMatrixWithPadding
     {
+        // this is 3x3 matrix and this requires 
+        // padding (16 bytes alignment) for HLSL shader
         float firstRow[3];
         float padding1;
         float secondRow[3];
