@@ -3,6 +3,7 @@
 #include "../RenderQueue.h"
 
 using namespace ShiftEngine;
+using namespace MathLib;
 
 SpriteSceneNode::SpriteSceneNode(const ITexturePtr & texture,
                                  SceneGraph * sceneGraph)
@@ -11,11 +12,21 @@ SpriteSceneNode::SpriteSceneNode(const ITexturePtr & texture,
 }
 
 SpriteSceneNode::SpriteSceneNode(const ITexturePtr & texture,
-                                 const MathLib::vec2f& leftTopCoords,
-                                 const MathLib::vec2f& rightBottomCoords,
+                                 const vec2f& leftTopCoords,
+                                 const vec2f& rightBottomCoords,
                                  SceneGraph * sceneGraph)
     : ISceneNode(sceneGraph)
     , texture(texture)
+{
+    CalculateTextureMatrix(leftTopCoords, rightBottomCoords);
+}
+
+void SpriteSceneNode::PushToRQ(RenderQueue & rq)
+{
+    rq.AddSpriteNode(this);
+}
+
+void SpriteSceneNode::CalculateTextureMatrix(const vec2f& leftTopCoords, const vec2f& rightBottomCoords)
 {
     float x_scale = rightBottomCoords.x - leftTopCoords.x;
     float y_scale = rightBottomCoords.y - leftTopCoords.y;
@@ -23,19 +34,14 @@ SpriteSceneNode::SpriteSceneNode(const ITexturePtr & texture,
     float x_shift = leftTopCoords.x;
     float y_shift = leftTopCoords.y;
 
-    textureMatrix = MathLib::matrixScaling(x_scale, y_scale) * MathLib::matrixTranslation(x_shift, y_shift);
+    textureMatrix = matrixScaling(x_scale, y_scale) * matrixTranslation(x_shift, y_shift);
 }
 
-void ShiftEngine::SpriteSceneNode::PushToRQ(RenderQueue & rq)
+AABB SpriteSceneNode::GetBBox() const
 {
-    rq.AddSpriteNode(this);
-}
-
-MathLib::AABB ShiftEngine::SpriteSceneNode::GetBBox() const
-{
-    MathLib::mat4f matWorld = GetWorldMatrix();
-    MathLib::vec4f points[8];
-    MathLib::AABB bbox = {{}, {}};
+    mat4f matWorld = GetWorldMatrix();
+    vec4f points[8];
+    AABB bbox = {{}, {}};
 
     points[0] = {bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f};
     points[1] = {bbox.bMin.x, bbox.bMin.y, bbox.bMax.z, 1.0f};
@@ -46,10 +52,10 @@ MathLib::AABB ShiftEngine::SpriteSceneNode::GetBBox() const
     points[6] = {bbox.bMax.x, bbox.bMin.y, bbox.bMax.z, 1.0f};
     points[7] = {bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f};
 
-    MathLib::vec3f min, max;
+    vec3f min, max;
 
     for (int i = 0; i < 8; i++)
-        points[i] = MathLib::vec4Transform(points[i], matWorld);
+        points[i] = vec4Transform(points[i], matWorld);
 
     min.x = points[0].x;
     min.y = points[0].y;
@@ -77,22 +83,22 @@ MathLib::AABB ShiftEngine::SpriteSceneNode::GetBBox() const
     return {{min.x, min.y, min.z}, {max.x, max.y, max.z}};
 }
 
-MathLib::vec4f ShiftEngine::SpriteSceneNode::GetMaskColor() const
+vec4f SpriteSceneNode::GetMaskColor() const
 {
     return maskColor;
 }
 
-const ITexturePtr & ShiftEngine::SpriteSceneNode::GetTexture() const
+const ITexturePtr & SpriteSceneNode::GetTexture() const
 {
     return texture;
 }
 
-MathLib::matrix<float, 3> ShiftEngine::SpriteSceneNode::GetTextureMatrix() const
+matrix<float, 3> SpriteSceneNode::GetTextureMatrix() const
 {
     return textureMatrix;
 }
 
-void ShiftEngine::SpriteSceneNode::SetMaskColor(const MathLib::vec4f & color)
+void SpriteSceneNode::SetMaskColor(const vec4f & color)
 {
     maskColor = color;
 }

@@ -12,6 +12,7 @@ class SpriteSceneNode : public ISceneNode
 public:
     SpriteSceneNode(const ITexturePtr & texture,
                     SceneGraph * sceneGraph);
+
     SpriteSceneNode(const ITexturePtr & texture,
                     const MathLib::vec2f& leftTopCoords,
                     const MathLib::vec2f& rightBottomCoords,
@@ -26,6 +27,7 @@ public:
 
 protected:
     void PushToRQ(RenderQueue & rq) override;
+    void CalculateTextureMatrix(const MathLib::vec2f& leftTopCoords, const MathLib::vec2f& rightBottomCoords);
 
     MathLib::vec4f maskColor = {1.0f, 1.0f, 1.0f, 1.0f};
     MathLib::matrix<float, 3> textureMatrix = MathLib::matrixIdentity<float, 3>();

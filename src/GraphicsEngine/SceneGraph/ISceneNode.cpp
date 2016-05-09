@@ -210,3 +210,16 @@ SceneGraph * ISceneNode::GetSceneGraph() const
 {
     return pSceneGraph;
 }
+
+void ShiftEngine::ISceneNode::Update(double dt)
+{
+    OnUpdate(dt);
+    for (auto& child : children)
+    {
+        child->Update(dt);
+    }
+}
+
+void ShiftEngine::ISceneNode::OnUpdate(double dt)
+{
+}
