@@ -6,24 +6,27 @@ using namespace ShiftEngine;
 using namespace MathLib;
 
 SpriteSceneNode::SpriteSceneNode(const ITexturePtr & texture,
-                                 SceneGraph * sceneGraph)
-    : SpriteSceneNode(texture, {0.0f, 0.0f}, {1.0f, 1.0f}, sceneGraph)
+                                 SceneGraph * sceneGraph,
+                                 int spriteLayer)
+    : SpriteSceneNode(texture, {0.0f, 0.0f}, {1.0f, 1.0f}, sceneGraph, spriteLayer)
 {
 }
 
 SpriteSceneNode::SpriteSceneNode(const ITexturePtr & texture,
                                  const vec2f& leftTopCoords,
                                  const vec2f& rightBottomCoords,
-                                 SceneGraph * sceneGraph)
+                                 SceneGraph * sceneGraph,
+                                 int spriteLayer)
     : ISceneNode(sceneGraph)
     , texture(texture)
+    , layer(spriteLayer)
 {
     CalculateTextureMatrix(leftTopCoords, rightBottomCoords);
 }
 
 void SpriteSceneNode::PushToRQ(RenderQueue & rq)
 {
-    rq.AddSpriteNode(this);
+    rq.AddSpriteNode(this, layer);
 }
 
 void SpriteSceneNode::CalculateTextureMatrix(const vec2f& leftTopCoords, const vec2f& rightBottomCoords)
@@ -101,4 +104,9 @@ matrix<float, 3> SpriteSceneNode::GetTextureMatrix() const
 void SpriteSceneNode::SetMaskColor(const vec4f & color)
 {
     maskColor = color;
+}
+
+int SpriteSceneNode::GetRenderingLayer() const
+{
+    return layer;
 }

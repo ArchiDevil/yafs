@@ -22,10 +22,6 @@ set(SRC FontManager.cpp
         RenderQueue.h
         ShiftEngine.cpp
         ShiftEngine.h
-        Sprite.cpp
-        Sprite.h
-        SpriteManager.cpp
-        SpriteManager.h
         Utils.cpp
         Utils.h
         VertexTypes.cpp

@@ -3,6 +3,7 @@
 #include <MathLib/math.h>
 
 #include <vector>
+#include <map>
 
 //This class provides storage for scene nodes that will be rendered by renderer.
 namespace ShiftEngine
@@ -14,10 +15,21 @@ class SkySceneNode;
 class LightSceneNode;
 class SpriteSceneNode;
 
+// custom functor to sort sprite layers from high to low 
+// in map to overdraw sprites with bigger layer number
+template<class T>
+struct greater
+{
+    bool operator()(const T& left, const T& right) const
+    {
+        return (left > right);
+    }
+};
+
 // remove this shit with huge amount of allocations
 using RenderVector = std::vector<MeshSceneNode*>;
 using LightsVector = std::vector<LightSceneNode*>;
-using SpritesVector = std::vector<SpriteSceneNode*>;
+using SpritesVault = std::map<int, std::vector<SpriteSceneNode*>, greater<int>>;
 
 class RenderQueue
 {
@@ -29,10 +41,10 @@ public:
     void SetCameraNode(CameraSceneNode * node);
     void SetSkyNode(SkySceneNode * node);
     void AddLightNode(LightSceneNode * node);
-    void AddSpriteNode(SpriteSceneNode * node);
+    void AddSpriteNode(SpriteSceneNode * node, int renderingLayer);
 
     RenderVector & GetRenderableNodes();
-    SpritesVector & GetSpriteNodes();
+    SpritesVault & GetSpriteNodes();
     const LightsVector & GetLights() const;
 
     CameraSceneNode * GetActiveCamera() const;
@@ -43,9 +55,9 @@ public:
 private:
     RenderVector meshes;
     LightsVector lights;
-    SpritesVector sprites;
+    SpritesVault sprites;
 
-    MathLib::vec3f ambientColor = { 0.0f, 0.0f, 0.0f };
+    MathLib::vec3f ambientColor = {0.0f, 0.0f, 0.0f};
     CameraSceneNode * activeCamera = nullptr;
     SkySceneNode * activeSky = nullptr;
 
