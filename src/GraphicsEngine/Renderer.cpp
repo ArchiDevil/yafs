@@ -332,7 +332,7 @@ size_t Renderer::GetFPS() const
     return FPS;
 }
 
-void Renderer::drawSprites(SpritesVector & sprites, CameraSceneNode & currentCamera)
+void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & currentCamera)
 {
     struct alignas(16) textureMatrixWithPadding
     {
@@ -352,49 +352,52 @@ void Renderer::drawSprites(SpritesVector & sprites, CameraSceneNode & currentCam
     GetContextManager()->SetRasterizerState(RasterizerState::NoCulling);
     currentState.shaderChanges++;
     currentState.currentProgram = spriteProgram;
-    for (SpriteSceneNode * sprite : sprites)
+    for (auto spriteLayerPair : sprites)
     {
-        if (!sprite)
+        for (const SpriteSceneNode* sprite : spriteLayerPair.second)
         {
-            LOG_ERROR("Empty sprite node in render queue");
-            continue;
+            if (!sprite)
+            {
+                LOG_ERROR("Empty sprite node in render queue");
+                continue;
+            }
+
+            const ITexturePtr & texture = sprite->GetTexture();
+
+            if (!texture)
+                return;
+
+            const vec3f & position = sprite->GetWorldPosition();
+            const vec3f & scale = sprite->GetWorldScale();
+            const qaFloat rotation = sprite->GetWorldRotation();
+            const vec4f & maskColor = sprite->GetMaskColor();
+
+            mat4f matResult, matScale, matPos, matRot;
+            matPos = matrixTranslation(position.x, position.y, 0.0f);
+            matScale = matrixScaling(scale.x, scale.y, 0.0f);
+            matRot = rotation.to_matrix();
+            matResult = currentCamera.GetViewMatrix() * currentCamera.GetProjectionMatrix();
+            matResult = (matScale * matRot * matPos) * matResult;
+
+            spriteProgram->SetMatrixConstantByName("WVPMatrix", (float*)matResult);
+            currentState.matricesBindings++;
+
+            //TODO: ugly-ugly shit, need to do something with it D:<
+            textureMatrixWithPadding texMatrix;
+            memcpy(texMatrix.firstRow, sprite->GetTextureMatrix()[0], sizeof(float) * 3);
+            memcpy(texMatrix.secondRow, sprite->GetTextureMatrix()[1], sizeof(float) * 3);
+            memcpy(texMatrix.thirdRow, sprite->GetTextureMatrix()[2], sizeof(float) * 3);
+
+            spriteProgram->SetMatrixConstantByName("TextureMatrix", (float*)&texMatrix);
+            currentState.matricesBindings++;
+            spriteProgram->SetTextureByName("Texture", texture);
+            currentState.textureBindings++;
+            spriteProgram->SetVectorConstantByName("MaskColor", maskColor.ptr());
+            currentState.uniformsBindings++;
+            spriteProgram->Apply(true);
+            currentState.polygonsCount += GetContextManager()->DrawMesh(spriteMesh);
+            currentState.drawCalls++;
         }
-
-        const ITexturePtr & texture = sprite->GetTexture();
-
-        if (!texture)
-            return;
-
-        const vec3f & position = sprite->GetWorldPosition();
-        const vec3f & scale = sprite->GetWorldScale();
-        const qaFloat rotation = sprite->GetWorldRotation();
-        const vec4f & maskColor = sprite->GetMaskColor();
-
-        mat4f matResult, matScale, matPos, matRot;
-        matPos = matrixTranslation(position.x, position.y, 0.0f);
-        matScale = matrixScaling(scale.x, scale.y, 0.0f);
-        matRot = rotation.to_matrix();
-        matResult = currentCamera.GetViewMatrix() * currentCamera.GetProjectionMatrix();
-        matResult = (matScale * matRot * matPos) * matResult;
-
-        spriteProgram->SetMatrixConstantByName("WVPMatrix", (float*)matResult);
-        currentState.matricesBindings++;
-
-        //TODO: ugly-ugly shit, need to do something with it D:<
-        textureMatrixWithPadding texMatrix;
-        memcpy(texMatrix.firstRow, sprite->GetTextureMatrix()[0], sizeof(float) * 3);
-        memcpy(texMatrix.secondRow, sprite->GetTextureMatrix()[1], sizeof(float) * 3);
-        memcpy(texMatrix.thirdRow, sprite->GetTextureMatrix()[2], sizeof(float) * 3);
-
-        spriteProgram->SetMatrixConstantByName("TextureMatrix", (float*)&texMatrix);
-        currentState.matricesBindings++;
-        spriteProgram->SetTextureByName("Texture", texture);
-        currentState.textureBindings++;
-        spriteProgram->SetVectorConstantByName("MaskColor", maskColor.ptr());
-        currentState.uniformsBindings++;
-        spriteProgram->Apply(true);
-        currentState.polygonsCount += GetContextManager()->DrawMesh(spriteMesh);
-        currentState.drawCalls++;
     }
 }
 

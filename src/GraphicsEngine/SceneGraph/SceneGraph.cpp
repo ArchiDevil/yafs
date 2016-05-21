@@ -71,32 +71,56 @@ MeshSceneNode * SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const Material * m
     return out;
 }
 
-SpriteSceneNode * ShiftEngine::SceneGraph::AddSpriteNode(const std::wstring & textureName,
-                                                         const MathLib::vec2f & leftTopTextureCoords/* = {0.0f, 0.0f}*/,
-                                                         const MathLib::vec2f & rightBottomTextureCoords/* = {1.0f, 1.0f}*/)
+SpriteSceneNode * SceneGraph::AddSpriteNode(const std::wstring & textureName,
+                                            const MathLib::vec2f & leftTopTextureCoords/* = {0.0f, 0.0f}*/,
+                                            const MathLib::vec2f & rightBottomTextureCoords/* = {1.0f, 1.0f}*/,
+                                            int spriteLayer/* = 0*/)
 {
-    if (!spriteMesh)
-        CreateSpriteMesh();
-    if (!spriteProgram)
-        CreateSpriteProgram();
+    CreateSpriteRequisites();
 
     ITexturePtr texture = GetContextManager()->LoadTexture(textureName);
-    SpriteSceneNode * out = new SpriteSceneNode(texture, leftTopTextureCoords, rightBottomTextureCoords, this);
+    SpriteSceneNode * out = new SpriteSceneNode(texture, leftTopTextureCoords, rightBottomTextureCoords, this, spriteLayer);
     rootNode->AddChild(out);
     return out;
 }
 
-AnimatedSpriteSceneNode * ShiftEngine::SceneGraph::AddAnimatedSpriteNode(const std::wstring & textureName)
+AnimatedSpriteSceneNode * SceneGraph::AddAnimatedSpriteNode(const std::wstring & textureName,
+                                                            int spriteLayer/* = 0*/)
 {
-    if (!spriteMesh)
-        CreateSpriteMesh();
-    if (!spriteProgram)
-        CreateSpriteProgram();
+    CreateSpriteRequisites();
 
     ITexturePtr texture = GetContextManager()->LoadTexture(textureName);
-    AnimatedSpriteSceneNode * out = new AnimatedSpriteSceneNode(texture, this);
+    AnimatedSpriteSceneNode * out = new AnimatedSpriteSceneNode(texture, this, spriteLayer);
     rootNode->AddChild(out);
     return out;
+}
+
+void SceneGraph::CreateSpriteRequisites()
+{
+    if (!spriteMesh)
+    {
+        // TODO: this may take place in mesh manager or somewhere not in scene graph for future
+        // this is asset/mesh, and this is not zone of responsibility of scene graph
+        std::array<PlainSpriteVertex, 4> ver = {};
+        ver[0] = {{-0.5f, -0.5f}, {0.0f, 0.0f}};
+        ver[1] = {{0.5f, -0.5f}, {1.0f, 0.0f}};
+        ver[2] = {{-0.5f, 0.5f}, {0.0f, 1.0f}};
+        ver[3] = {{0.5f, 0.5f}, {1.0f, 1.0f}};
+
+        std::vector<uint32_t> ind = {0, 1, 2, 1, 3, 2};
+
+        IMeshManager * pMeshManager = GetContextManager()->GetMeshManager();
+        spriteMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)ver.data(),
+                                                          ver.size() * sizeof(PlainSpriteVertex),
+                                                          ind,
+                                                          &plainSpriteVertexSemantic,
+                                                          {});
+    }
+
+    if (!spriteProgram)
+    {
+        spriteProgram = GetContextManager()->LoadShader(L"SpriteShader.fx");
+    }
 }
 
 CameraSceneNode * SceneGraph::AddCameraSceneNode(CameraViewType cameraType)
@@ -104,7 +128,7 @@ CameraSceneNode * SceneGraph::AddCameraSceneNode(CameraViewType cameraType)
     auto engineSettings = GetContextManager()->GetEngineSettings();
 
     CameraSceneNode * cam = new CameraSceneNode((float)engineSettings.screenWidth,
-                                                (float)engineSettings.screenHeight,
+        (float)engineSettings.screenHeight,
                                                 engineSettings.zNear,
                                                 engineSettings.zFar,
                                                 60.0f,
@@ -201,29 +225,4 @@ void SceneGraph::MoveNodeCallback(ISceneNode * node)
     default:
         assert(false);
     }
-}
-
-void SceneGraph::CreateSpriteMesh()
-{
-    // TODO: this may take place in mesh manager or somewhere not in scene graph for future
-    // this is asset/mesh, and this is not zone of responsibility of scene graph
-    std::array<PlainSpriteVertex, 4> ver = {};
-    ver[0] = {{-0.5f, -0.5f}, {0.0f, 0.0f}};
-    ver[1] = {{0.5f, -0.5f}, {1.0f, 0.0f}};
-    ver[2] = {{-0.5f, 0.5f}, {0.0f, 1.0f}};
-    ver[3] = {{0.5f, 0.5f}, {1.0f, 1.0f}};
-
-    std::vector<uint32_t> ind = {0, 1, 2, 1, 3, 2};
-
-    IMeshManager * pMeshManager = GetContextManager()->GetMeshManager();
-    spriteMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)ver.data(),
-                                                      ver.size() * sizeof(PlainSpriteVertex),
-                                                      ind,
-                                                      &plainSpriteVertexSemantic,
-                                                      {});
-}
-
-void SceneGraph::CreateSpriteProgram()
-{
-    spriteProgram = GetContextManager()->LoadShader(L"SpriteShader.fx");
 }
