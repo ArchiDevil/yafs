@@ -81,6 +81,7 @@ list(APPEND SRC ${LS})
 set(LS  SceneGraph/AnimatedSpriteSceneNode.h
         SceneGraph/CameraFrustum.h
         SceneGraph/CameraSceneNode.h
+        SceneGraph/EmptySceneNode.h
         SceneGraph/ICameraController.h
         SceneGraph/ISceneNode.h
         SceneGraph/LightSceneNode.h

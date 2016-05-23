@@ -8,6 +8,7 @@
 #include "SkySceneNode.h"
 #include "SpriteSceneNode.h"
 #include "AnimatedSpriteSceneNode.h"
+#include "EmptySceneNode.h"
 
 #include <string>
 #include <vector>
@@ -33,6 +34,7 @@ class SkySceneNode;
 class LightSceneNode;
 class SpriteSceneNode;
 class AnimatedSpriteSceneNode;
+class EmptySceneNode;
 
 class SceneGraph final
 {
@@ -49,6 +51,7 @@ public:
                                     int spriteLayer = 0);
     AnimatedSpriteSceneNode * AddAnimatedSpriteNode(const std::wstring & textureName,
                                                     int spriteLayer = 0);
+    EmptySceneNode * AddEmptyNode();
 
     // LIGHTS
     LightSceneNode * AddDirectionalLightNode(const MathLib::vec3f & direction,

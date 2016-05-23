@@ -16,7 +16,6 @@
 #include "../../IProgram.h"
 #include "../../MiscTypes.h"
 #include "../../MaterialManager.h"
-#include "../../Sprite.h"
 #include "../../Material.h"
 #include "../../FontManager.h"
 

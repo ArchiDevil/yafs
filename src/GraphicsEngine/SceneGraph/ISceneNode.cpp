@@ -185,6 +185,7 @@ qaFloat ISceneNode::GetLocalRotation() const
 void ISceneNode::SetLocalRotation(const qaFloat & val)
 {
     rotation = val;
+    CreateMatrices();
 }
 
 void ISceneNode::RotateByLocalQuaternion(const qaFloat & val)
