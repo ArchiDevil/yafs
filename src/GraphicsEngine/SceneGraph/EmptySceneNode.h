@@ -26,7 +26,6 @@ protected:
         return CameraFrustum::CullingStatus::CS_In;
     }
 
-    // Унаследовано через ISceneNode
     MathLib::AABB GetBBox() const override
     {
         return {};
