@@ -95,6 +95,13 @@ AnimatedSpriteSceneNode * SceneGraph::AddAnimatedSpriteNode(const std::wstring &
     return out;
 }
 
+EmptySceneNode * ShiftEngine::SceneGraph::AddEmptyNode()
+{
+    EmptySceneNode * out = new EmptySceneNode(this);
+    rootNode->AddChild(out);
+    return out;
+}
+
 void SceneGraph::CreateSpriteRequisites()
 {
     if (!spriteMesh)

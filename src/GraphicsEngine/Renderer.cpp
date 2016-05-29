@@ -367,17 +367,10 @@ void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & curre
             if (!texture)
                 return;
 
-            const vec3f & position = sprite->GetWorldPosition();
-            const vec3f & scale = sprite->GetWorldScale();
-            const qaFloat rotation = sprite->GetWorldRotation();
             const vec4f & maskColor = sprite->GetMaskColor();
-
-            mat4f matResult, matScale, matPos, matRot;
-            matPos = matrixTranslation(position.x, position.y, 0.0f);
-            matScale = matrixScaling(scale.x, scale.y, 0.0f);
-            matRot = rotation.to_matrix();
-            matResult = currentCamera.GetViewMatrix() * currentCamera.GetProjectionMatrix();
-            matResult = (matScale * matRot * matPos) * matResult;
+            const mat4f & matWorld = sprite->GetWorldMatrix();
+            mat4f matResult = currentCamera.GetViewMatrix() * currentCamera.GetProjectionMatrix();
+            matResult = matWorld * matResult;
 
             spriteProgram->SetMatrixConstantByName("WVPMatrix", (float*)matResult);
             currentState.matricesBindings++;
