@@ -1,7 +1,7 @@
 #include "Entity.h"
 #include "EntityManager.h"
 
-Entity::Entity(MathLib::vec2f & position)
+Entity::Entity(const MathLib::vec2f & position)
 {
     this->position = position;
     subscribe(&EntityEventManager::GetInstance());

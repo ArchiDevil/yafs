@@ -115,12 +115,14 @@ void ISceneNode::CreateMatrices()
     matrix<float, 4> _rotation = rotation.to_matrix();
     matrix<float, 4> _position = matrixTranslation(position);
 
+    localMatrix = _scale * _rotation * _position;
+
     if (parent)
         worldMatrix = localMatrix * parent->GetWorldMatrix();
     else
         worldMatrix = localMatrix;
 
-    localMatrix = _scale * _rotation * _position;
+    MatrixNotifyChilds();
 }
 
 vec3f ISceneNode::GetWorldPosition() const
@@ -221,6 +223,22 @@ void ShiftEngine::ISceneNode::Update(double dt)
     }
 }
 
+void ShiftEngine::ISceneNode::MatrixNotifyChilds()
+{
+    for (auto& child : children)
+    {
+        if (child)
+        {
+            child->OnParentMatrixUpdate();
+        }
+    }
+}
+
 void ShiftEngine::ISceneNode::OnUpdate(double dt)
 {
+}
+
+void ShiftEngine::ISceneNode::OnParentMatrixUpdate()
+{
+    CreateMatrices();
 }

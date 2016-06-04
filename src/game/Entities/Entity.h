@@ -10,7 +10,7 @@ class Entity
     : public observer <ProjectilePositionEvent>
 {
 public:
-    Entity(MathLib::vec2f & position);
+    Entity(const MathLib::vec2f & position);
     virtual ~Entity();
 
     virtual void Update(double dt) = 0;
