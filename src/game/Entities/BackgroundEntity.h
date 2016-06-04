@@ -19,6 +19,5 @@ public:
 
 private:
     const int layer = 0;
-    ShiftEngine::SpriteSceneNode *sprite = nullptr;
 
 };

@@ -3,9 +3,8 @@
 #include <stdexcept>
 
 BackgroundEntity::BackgroundEntity(ShiftEngine::SpriteSceneNode *sprite, int layer)
-    : Entity({0.0f, 0.0f})
+    : Entity({0.0f, 0.0f}, sprite)
     , layer(layer)
-    , sprite(sprite)
 {
     if (layer < 1 || layer > 3)
         throw std::runtime_error("layer must be > 0 and < 4");
