@@ -37,7 +37,7 @@ void BackgroundManager::Update(double dt)
     for (int i = 1; i < 4; ++i)
     {
         // invert position of background layer simulating movement to the different direction of player
-        float k = 4 - i;
-        layers[i - 1]->SetLocalPosition({-cos_val * k, -sin_val * k, 0.0f});
+        float k = 1.0f / i;
+        layers[i - 1]->SetLocalPosition({/*playerPosition.x*/sin_val * k, /*playerPosition.y*/cos_val * k, 0.0f});
     }
 }
