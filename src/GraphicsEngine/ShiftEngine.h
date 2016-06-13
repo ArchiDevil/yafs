@@ -8,7 +8,7 @@
 namespace ShiftEngine
 {
 //TODO: remove window handle and replace it by something cross-platform
-bool InitEngine(const GraphicEngineSettings & settings, const PathSettings & paths, HWND hwnd);
+bool InitEngine(const GraphicEngineSettings & settings, const PathSettings & paths, HWND hwnd, SceneGraphType sceneGraphType);
 void ShutdownEngine();
 
 IContextManager * GetContextManager();

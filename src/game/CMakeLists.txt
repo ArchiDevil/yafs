@@ -1,4 +1,6 @@
-set(SRC Common.h
+set(SRC BackgroundManager.cpp
+        BackgroundManager.h
+        Common.h
         Game.cpp
         Game.h
         GoingHomeApplication.cpp
@@ -15,7 +17,8 @@ set(LS  gameStates/gameState.h
 source_group("Header Files\\Game States" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  Entities/Enemy.cpp
+set(LS  Entities/BackgroundEntity.cpp 
+        Entities/Enemy.cpp
         Entities/Entity.cpp
         Entities/EntityEventManager.cpp
         Entities/EntityFactory.cpp
@@ -25,7 +28,8 @@ set(LS  Entities/Enemy.cpp
 source_group("Source Files\\Entities" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  Entities/Enemy.h
+set(LS  Entities/BackgroundEntity.h
+        Entities/Enemy.h
         Entities/Entity.h
         Entities/EntityEventManager.h
         Entities/EntityFactory.h

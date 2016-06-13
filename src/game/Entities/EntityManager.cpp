@@ -23,7 +23,7 @@ void EntityManager::RemoveEntity(const std::shared_ptr<Entity> & ent)
 
 void EntityManager::UpdateAllEntities(double dt)
 {
-    for (auto ent : entities )
+    for (auto &ent : entities)
     {
         ent->Update(dt);
         if (ent->IsToDelete())
@@ -35,21 +35,28 @@ void EntityManager::UpdateAllEntities(double dt)
 
 std::shared_ptr<Player> EntityManager::CreatePlayer(MathLib::vec2f & position)
 {
-    auto entity = factory->CreatePlayer(position);
+    auto entity = factory->CreateEntity<Player>(position);
     AddEntity(entity);
     return entity;
 }
 
 std::shared_ptr<Enemy> EntityManager::CreateEnemy(MathLib::vec2f & position)
 {
-    auto entity = factory->CreateEnemy(position);
+    auto entity = factory->CreateEntity<Enemy>(position);
     AddEntity(entity);
     return entity;
 }
 
 std::shared_ptr<Projectile> EntityManager::CreateProjectile(MathLib::vec2f & position, MathLib::vec2f & speed)
 {
-    auto entity = factory->CreateProjectile(position, speed);
+    auto entity = factory->CreateEntity<Projectile>(position, speed);
+    AddEntity(entity);
+    return entity;
+}
+
+std::shared_ptr<BackgroundEntity> EntityManager::CreateBackgroundEntity(ShiftEngine::SpriteSceneNode *sprite, int layer)
+{
+    auto entity = factory->CreateEntity<BackgroundEntity>(sprite, layer);
     AddEntity(entity);
     return entity;
 }
