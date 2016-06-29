@@ -38,13 +38,14 @@ HRESULT D3D11Context::CreateStates()
 {
     D3D11_BLEND_DESC bdDescNormal;
     ZeroMemory(&bdDescNormal, sizeof(D3D11_BLEND_DESC));
-    bdDescNormal.AlphaToCoverageEnable = false;
     for (int i = 0; i < 8; ++i)
     {
-        bdDescNormal.RenderTarget[i].BlendEnable = false;
         bdDescNormal.RenderTarget[i].BlendOp = D3D11_BLEND_OP_MAX;
+
         bdDescNormal.RenderTarget[i].DestBlend = D3D11_BLEND_DEST_COLOR;
+
         bdDescNormal.RenderTarget[i].SrcBlend = D3D11_BLEND_SRC_COLOR;
+
         bdDescNormal.RenderTarget[i].RenderTargetWriteMask = 0x0F;
     }
     HRESULT hr = Device->CreateBlendState(&bdDescNormal, &bsNormal);
@@ -57,12 +58,16 @@ HRESULT D3D11Context::CreateStates()
     for (int i = 0; i < 8; ++i)
     {
         bdDescAlpha.RenderTarget[i].BlendEnable = true;
+
         bdDescAlpha.RenderTarget[i].BlendOp = D3D11_BLEND_OP_ADD;
         bdDescAlpha.RenderTarget[i].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+
         bdDescAlpha.RenderTarget[i].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
-        bdDescAlpha.RenderTarget[i].SrcBlend = D3D11_BLEND_SRC_ALPHA;
         bdDescAlpha.RenderTarget[i].DestBlendAlpha = D3D11_BLEND_ONE;
+        
+        bdDescAlpha.RenderTarget[i].SrcBlend = D3D11_BLEND_SRC_ALPHA;
         bdDescAlpha.RenderTarget[i].SrcBlendAlpha = D3D11_BLEND_ONE;
+
         bdDescAlpha.RenderTarget[i].RenderTargetWriteMask = 0x0F;
     }
     hr = Device->CreateBlendState(&bdDescAlpha, &bsAlpha);
@@ -75,12 +80,16 @@ HRESULT D3D11Context::CreateStates()
     for (int i = 0; i < 8; ++i)
     {
         bdDescAdditive.RenderTarget[i].BlendEnable = true;
+
         bdDescAdditive.RenderTarget[i].BlendOp = D3D11_BLEND_OP_ADD;
         bdDescAdditive.RenderTarget[i].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-        bdDescAdditive.RenderTarget[i].DestBlend = D3D11_BLEND_ONE;
-        bdDescAdditive.RenderTarget[i].SrcBlend = D3D11_BLEND_ONE;
-        bdDescAdditive.RenderTarget[i].DestBlendAlpha = D3D11_BLEND_ONE;
-        bdDescAdditive.RenderTarget[i].SrcBlendAlpha = D3D11_BLEND_ONE;
+
+        bdDescAdditive.RenderTarget[i].DestBlend = D3D11_BLEND_DEST_ALPHA;
+        bdDescAdditive.RenderTarget[i].DestBlendAlpha = D3D11_BLEND_DEST_ALPHA;
+
+        bdDescAdditive.RenderTarget[i].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+        bdDescAdditive.RenderTarget[i].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+
         bdDescAdditive.RenderTarget[i].RenderTargetWriteMask = 0x0F;
     }
     hr = Device->CreateBlendState(&bdDescAdditive, &bsAdditive);
