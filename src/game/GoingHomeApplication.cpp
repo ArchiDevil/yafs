@@ -24,10 +24,10 @@ bool GoingHomeApplication::Initialize()
 {
     // ::ShowCursor(false);
 
-    //инициализируем наш загрузчик .ini файлов
+    // Init files loader initialization
     settingsLoader.Initialize("settings.ini");
 
-    //загружаем настройки для графического движка из файла настроек
+    // Load settings for graphics engine
     ShiftEngine::GraphicEngineSettings settings;
     settings.screenHeight       = settingsLoader.GetInteger("Height");
     settings.screenWidth        = settingsLoader.GetInteger("Width");
@@ -38,7 +38,7 @@ bool GoingHomeApplication::Initialize()
     settings.zFar               = settingsLoader.GetFloat("zFar");
     settings.anisotropyLevel    = settingsLoader.GetInteger("AnisotropyLevel");
 
-    //загружаем данные о путях
+    // Load paths settings
     ShiftEngine::PathSettings path;
     path.MeshPath      = settingsLoader.GetWString("MeshPath");
     path.TexturePath   = settingsLoader.GetWString("TexturePath");
@@ -46,8 +46,8 @@ bool GoingHomeApplication::Initialize()
     path.FontsPath     = settingsLoader.GetWString("FontsPath");
     path.MaterialsPath = settingsLoader.GetWString("MaterialsPath");
 
-    //инициализируем графический движок
-    if (!ShiftEngine::InitEngine(settings, path, GetHWND()))
+    // Graphics engine initialization
+    if (!ShiftEngine::InitEngine(settings, path, GetHWND(), ShiftEngine::SceneGraphType::SGT_QuadTree))
         LOG_FATAL_ERROR("Unable to inititalize graphics engine");
     else
         LOG_INFO("Graphics engine has been initialized");
@@ -159,18 +159,17 @@ void GoingHomeApplication::ProcessMessage(MSG /*msg*/)
 
 void GoingHomeApplication::SaveTechInfo()
 {
-    //собираем информацию о процессоре и его частоте
+    // Collection information about CPU
     PerformanceLog.Message("Processor name: " + utils::narrow(registryWorker.GetString(HKEY_LOCAL_MACHINE_R, L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", L"ProcessorNameString")));
     PerformanceLog.Message("Frequency = " + std::to_string(registryWorker.GetInteger(HKEY_LOCAL_MACHINE_R, L"HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0", L"~MHz")) + " MHz");
 
-    //получаем количество оперативной памяти в системе и её загруженность
-    //после, записываем все это в файл
+    // Getting memory info + GPU description
     MEMORYSTATUSEX memoryStatus;
     memoryStatus.dwLength = sizeof(memoryStatus);
     GlobalMemoryStatusEx(&memoryStatus);
     PerformanceLog.Message("Total physical memory: " + std::to_string((int64_t)memoryStatus.ullTotalPhys / 1024 / 1024) + " MBs");
     PerformanceLog.Message("Using: " + std::to_string((int)memoryStatus.dwMemoryLoad) + "%");
-    PerformanceLog.Message("Videocard description: " + utils::narrow(ShiftEngine::GetContextManager()->GetGPUDescription()));
+    PerformanceLog.Message("GPU description: " + utils::narrow(ShiftEngine::GetContextManager()->GetGPUDescription()));
 }
 
 IAppState * GoingHomeApplication::GetTopState() const
