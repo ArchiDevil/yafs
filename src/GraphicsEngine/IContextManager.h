@@ -2,7 +2,6 @@
 
 #include "IVertexDeclaration.h"
 #include "MaterialManager.h"
-#include "Sprite.h"
 #include "Material.h"
 #include "FontManager.h"
 #include "MiscTypes.h"

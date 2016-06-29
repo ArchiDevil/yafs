@@ -17,7 +17,7 @@ class CameraSceneNode;
 class ISceneNode : public Refcounted
 {
 public:
-    typedef std::vector<ISceneNode*> ChildsList;
+    using ChildsList = std::vector<ISceneNode*>;
 
     ISceneNode(SceneGraph * sceneGraph);
     virtual ~ISceneNode();
@@ -60,6 +60,9 @@ public:
     void Update(double dt);
 
 protected:
+    void MatrixNotifyChilds();
+    void OnParentMatrixUpdate();
+
     virtual void OnUpdate(double dt);
     virtual void PushToRQ(RenderQueue & rq) = 0;
     virtual CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const;

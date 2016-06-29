@@ -51,8 +51,10 @@ const std::vector<SpriteAnimation::AnimationFrame>& SpriteAnimation::GetFrames()
 //////////////////////////////////////////////////////////////////////////
 // AnimatedSpriteSceneNode
 
-AnimatedSpriteSceneNode::AnimatedSpriteSceneNode(ITexturePtr &texture, SceneGraph * sceneGraph)
-    : SpriteSceneNode(texture, sceneGraph)
+AnimatedSpriteSceneNode::AnimatedSpriteSceneNode(ITexturePtr &texture,
+                                                 SceneGraph * sceneGraph,
+                                                 int spriteLayer)
+    : SpriteSceneNode(texture, sceneGraph, spriteLayer)
 {
 }
 

@@ -43,7 +43,9 @@ private:
 class AnimatedSpriteSceneNode : public SpriteSceneNode
 {
 public:
-    AnimatedSpriteSceneNode(ITexturePtr &texture, SceneGraph * sceneGraph);
+    AnimatedSpriteSceneNode(ITexturePtr &texture, 
+                            SceneGraph * sceneGraph,
+                            int spriteLayer);
     SpriteAnimation& GetAnimationHandler();
     void OnUpdate(double dt) override;
 

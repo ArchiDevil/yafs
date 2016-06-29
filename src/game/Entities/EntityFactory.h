@@ -3,18 +3,22 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "Projectile.h"
+#include "BackgroundEntity.h"
 
+#include <GraphicsEngine/ShiftEngine.h>
 #include <MathLib/math.h>
+
 #include <memory>
 
-class EntityFactory
+class EntityFactory final
 {
 public:
-    EntityFactory() { }
-    virtual ~EntityFactory() { }
+    EntityFactory() = default;
+    ~EntityFactory() = default;
 
-    std::shared_ptr<Player> CreatePlayer(const MathLib::vec2f & position) const;
-    std::shared_ptr<Enemy> CreateEnemy(const MathLib::vec2f & position) const;
-    std::shared_ptr<Projectile> CreateProjectile(const MathLib::vec2f & position, const MathLib::vec2f & speed) const;
-
+    template<typename T, typename ... Args>
+    std::shared_ptr<T> CreateEntity(Args&& ... args)
+    {
+        return std::make_shared<T>(std::forward<Args>(args)...);
+    }
 };

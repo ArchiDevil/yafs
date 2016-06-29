@@ -27,7 +27,7 @@ RenderVector & RenderQueue::GetRenderableNodes()
     return meshes;
 }
 
-SpritesVector & RenderQueue::GetSpriteNodes()
+SpritesVault & RenderQueue::GetSpriteNodes()
 {
     return sprites;
 }
@@ -60,12 +60,12 @@ void RenderQueue::AddLightNode(LightSceneNode * node)
     lights.push_back(node);
 }
 
-void RenderQueue::AddSpriteNode(SpriteSceneNode * node)
+void RenderQueue::AddSpriteNode(SpriteSceneNode * node, int renderingLayer)
 {
     if (!node)
         return;
 
-    sprites.push_back(node);
+    sprites[renderingLayer].push_back(node);
 }
 
 const LightsVector & RenderQueue::GetLights() const
