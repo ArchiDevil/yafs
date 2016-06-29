@@ -37,7 +37,8 @@ if(${RENDERER} STREQUAL D3D11_RENDER)
                     d3dcompiler.lib
                     dxguid.lib
                     dinput8.lib
-                    dxgi.lib)
+                    dxgi.lib
+                    Xinput.lib)
     
     set(LS  APIs/D3D11/D3D11Context.cpp
             APIs/D3D11/D3D11ContextManager.cpp

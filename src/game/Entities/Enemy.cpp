@@ -13,7 +13,10 @@ Enemy::Enemy(const MathLib::vec2f & position)
 bool Enemy::handleEvent(const ProjectilePositionEvent & event)
 {
     if (CalculateCollision(*event.projectile))
-        isToDelete = true;
+    {
+        Die();
+        event.projectile->Die();
+    }
     return true;
 }
 

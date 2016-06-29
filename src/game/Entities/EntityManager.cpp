@@ -14,8 +14,7 @@ void EntityManager::RemoveEntity(const std::shared_ptr<Entity> & ent)
     {
         if (entities[i] == ent)
         {
-            std::swap(entities[i], entities.back());
-            entities.pop_back();
+            EraseEntityFromList(entities[i]);
             break;
         }
     }
@@ -23,12 +22,20 @@ void EntityManager::RemoveEntity(const std::shared_ptr<Entity> & ent)
 
 void EntityManager::UpdateAllEntities(double dt)
 {
-    for (auto ent : entities )
+    for (auto it = entities.begin(); it != entities.end(); ++it)
     {
-        ent->Update(dt);
-        if (ent->IsToDelete())
+        (*it)->Update(dt);
+        if ((*it)->IsDead())
         {
-            RemoveEntity(ent);
+            if (it + 1 == entities.end())
+            {
+                EraseEntityFromList(*it);
+                break;
+            }
+
+            EraseEntityFromList(*it);
+            if (it != entities.begin())
+                --it;
         }
     }
 }
@@ -52,4 +59,10 @@ std::shared_ptr<Projectile> EntityManager::CreateProjectile(MathLib::vec2f & pos
     auto entity = factory->CreateProjectile(position, speed);
     AddEntity(entity);
     return entity;
+}
+
+void EntityManager::EraseEntityFromList(std::shared_ptr<Entity> & ent)
+{
+    std::swap(ent, entities.back());
+    entities.pop_back();
 }

@@ -15,4 +15,5 @@ public:
 private:
 
     MathLib::vec2f speed;
+    double lifetime = 0.0;
 };

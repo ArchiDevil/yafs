@@ -10,6 +10,11 @@ Entity::Entity(const MathLib::vec2f & position,
     subscribe(&EntityEventManager::GetInstance());
 }
 
+Entity::~Entity()
+{
+    unsubscribe(&EntityEventManager::GetInstance());
+}
+
 void Entity::Show()
 {
 }
@@ -30,6 +35,16 @@ bool Entity::handleEvent(const ProjectilePositionEvent & event)
 const MathLib::vec2f Entity::GetPosition() const
 {
     return position;
+}
+
+bool Entity::IsDead()
+{
+    return isToDelete;
+}
+
+void Entity::Die()
+{
+    isToDelete = true;
 }
 
 bool Entity::CalculateCollision(const Entity & ent) const

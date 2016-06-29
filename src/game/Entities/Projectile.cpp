@@ -3,7 +3,7 @@
 
 #include <GraphicsEngine/ShiftEngine.h>
 
-const std::wstring textureName = L"projectile";
+const std::wstring textureName = L"sprite.png";
 
 Projectile::Projectile(const MathLib::vec2f & position, const MathLib::vec2f & speed) 
     : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
@@ -13,8 +13,15 @@ Projectile::Projectile(const MathLib::vec2f & position, const MathLib::vec2f & s
 
 void Projectile::Update(double dt)
 {
+    lifetime += dt;
+
     position += speed * dt;
     SetSpritePosition();
 
     EntityEventManager::GetInstance().notifyAll(ProjectilePositionEvent(this));
+    
+    if (lifetime > 3)
+    {
+        Die();
+    }
 }

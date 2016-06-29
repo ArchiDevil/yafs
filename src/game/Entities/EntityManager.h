@@ -24,6 +24,8 @@ public:
     std::shared_ptr<Projectile> CreateProjectile(MathLib::vec2f & position, MathLib::vec2f & speed);
 
 private:
+    void EraseEntityFromList(std::shared_ptr<Entity> & ent);
+
     std::vector<std::shared_ptr<Entity>> entities;
     std::shared_ptr<EntityFactory> factory = std::make_shared<EntityFactory>();
 

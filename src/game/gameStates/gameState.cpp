@@ -65,6 +65,8 @@ bool GameState::update(double dt)
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);
 
+    GoingHome::GetGamePtr()->entityMgr->UpdateAllEntities(dt);
+
     return true;
 }
 
@@ -136,6 +138,42 @@ void GameState::ProcessInput(double dt)
     if (inputEngine.IsKeyUp(DIK_V))
         switchWireframe();
 
+    if (inputEngine.IsControllerConnected())
+    {
+        if (inputEngine.IsControllerKeyDown(XINPUT_GAMEPAD_A))
+        {
+            inputEngine.VibrateController(65535, 0);
+        }
+        else if (inputEngine.IsControllerKeyUp(XINPUT_GAMEPAD_B))
+        {
+            inputEngine.VibrateController(0, 65535);
+        }
+        else if (inputEngine.IsControllerKeyDown(XINPUT_GAMEPAD_X))
+        {
+            inputEngine.VibrateController(65535, 65535);
+        }
+        else
+        {
+            inputEngine.VibrateController(0, 0);
+        }
+    }
+
+    static bool click = false;
+    if (inputEngine.IsMouseDown(LButton) && !click)
+    {
+        click = true;
+        MouseInfo & mouseInfo = InputEngine::GetInstance().GetMouseInfo();
+
+        auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
+        float x = (float)mouseInfo.absoluteX - settings.screenWidth / 2;
+        float y = (float)mouseInfo.absoluteY + settings.screenHeight / 2;
+
+        GoingHome::GetGamePtr()->player.lock()->Shoot(
+            MathLib::vec2f(x, y));
+    }
+    if (inputEngine.IsMouseUp(LButton))
+        click = false;
+
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
     //bool guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);
 
@@ -159,14 +197,8 @@ bool GameState::handleEvent(const InputEvent & event)
 {
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
 
-    switch (event.type)
-    {
-    case InputEventType::MouseDown:
-        MouseInfo & mouseInfo = InputEngine::GetInstance().GetMouseInfo();
-
-        GoingHome::GetGamePtr()->player.lock()->Shoot(
-            MathLib::vec2f((float)mouseInfo.absoluteX, (float)mouseInfo.absoluteY));
-        break;
+    //switch (event.type)
+    //{
     //    // there will be always DirectInput keys in first two handlers
     //case InputEventType::KeyDown:
     //    inputManager.injectKeyPress((MyGUI::KeyCode::Enum)event.key);
@@ -179,7 +211,7 @@ bool GameState::handleEvent(const InputEvent & event)
     //case InputEventType::SystemKey:
     //    inputManager.injectKeyPress((MyGUI::KeyCode::Enum)InputConverter::VirtualKeyToScanCode(event.key), event.key);
     //    break;
-    }
+    //}
 
     return true;
 }
