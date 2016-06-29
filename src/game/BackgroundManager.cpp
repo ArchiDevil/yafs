@@ -11,9 +11,10 @@ BackgroundManager::BackgroundManager(EntityManager *entityMgr)
     {
         layers.push_back(sceneGraph->AddEmptyNode());
         //FIXME: this sprite image only for example, needed to be fixed
-        SpriteSceneNode *sprite = sceneGraph->AddSpriteNode(L"sprite.png", {{}, {}}, {1.0, 1.0}, i);
+        SpriteSceneNode *sprite = sceneGraph->AddSpriteNode(L"cloud.png", {{}, {}}, {1.0, 1.0}, i);
+        sprite->SetDrawingMode(SpriteSceneNode::SpriteDrawingMode::Additive);
         sprite->SetLocalScale((4 - i) * 0.5f);
-        sprite->SetMaskColor({1.0f / i, 1.0f / i, 1.0f / i, 1.0f});
+        sprite->SetMaskColor({1.0f / i, 1.0f / i, 1.0f / i, 0.5f});
         layers.back()->AddChild(sprite);
         entityMgr->CreateBackgroundEntity(sprite, i);
     }

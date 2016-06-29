@@ -332,7 +332,7 @@ size_t Renderer::GetFPS() const
     return FPS;
 }
 
-void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & currentCamera)
+void Renderer::drawSprites(SpritesVault & sprites, CameraSceneNode & currentCamera)
 {
     struct alignas(16) textureMatrixWithPadding
     {
@@ -345,15 +345,21 @@ void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & curre
         float thirdRow[3];
     };
 
+    auto spriteSortFunctor = [] (SpriteSceneNode* left, SpriteSceneNode* right) { return left->GetDrawingMode() < right->GetDrawingMode(); };
+    IContextManager* contextMgr = GetContextManager();
+
     if (!spriteProgram || !spriteMesh)
         loadSpritesPrerequisites();
 
-    GetContextManager()->SetZState(true);
-    GetContextManager()->SetRasterizerState(RasterizerState::NoCulling);
+    contextMgr->SetZState(true);
+    contextMgr->SetRasterizerState(RasterizerState::NoCulling);
     currentState.shaderChanges++;
     currentState.currentProgram = spriteProgram;
-    for (auto spriteLayerPair : sprites)
+    for (auto& spriteLayerPair : sprites)
     {
+        std::sort(spriteLayerPair.second.begin(), spriteLayerPair.second.end(), spriteSortFunctor);
+        contextMgr->SetBlendingState(BlendingState::AlphaEnabled);
+
         for (const SpriteSceneNode* sprite : spriteLayerPair.second)
         {
             if (!sprite)
@@ -361,6 +367,9 @@ void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & curre
                 LOG_ERROR("Empty sprite node in render queue");
                 continue;
             }
+
+            if (contextMgr->GetBlendingState() == BlendingState::AlphaEnabled && sprite->GetDrawingMode() == SpriteSceneNode::SpriteDrawingMode::Additive)
+                contextMgr->SetBlendingState(BlendingState::Additive);
 
             const ITexturePtr & texture = sprite->GetTexture();
 
@@ -388,7 +397,7 @@ void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & curre
             spriteProgram->SetVectorConstantByName("MaskColor", maskColor.ptr());
             currentState.uniformsBindings++;
             spriteProgram->Apply(true);
-            currentState.polygonsCount += GetContextManager()->DrawMesh(spriteMesh);
+            currentState.polygonsCount += contextMgr->DrawMesh(spriteMesh);
             currentState.drawCalls++;
         }
     }
