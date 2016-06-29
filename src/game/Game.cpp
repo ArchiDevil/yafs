@@ -9,11 +9,8 @@ Game::Game()
 {
     entityMgr.reset(new EntityManager());
     player = entityMgr->CreatePlayer(MathLib::vec2f(0.0, 0.0));
+    backgroundMgr.reset(new BackgroundManager(entityMgr.get()));
     //gameEventHandler.reset(new GameEventHandler());
-}
-
-Game::~Game()
-{
 }
 
 static Game * GamePtr = nullptr;

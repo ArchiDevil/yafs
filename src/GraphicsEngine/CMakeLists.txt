@@ -22,10 +22,6 @@ set(SRC FontManager.cpp
         RenderQueue.h
         ShiftEngine.cpp
         ShiftEngine.h
-        Sprite.cpp
-        Sprite.h
-        SpriteManager.cpp
-        SpriteManager.h
         Utils.cpp
         Utils.h
         VertexTypes.cpp
@@ -86,6 +82,7 @@ list(APPEND SRC ${LS})
 set(LS  SceneGraph/AnimatedSpriteSceneNode.h
         SceneGraph/CameraFrustum.h
         SceneGraph/CameraSceneNode.h
+        SceneGraph/EmptySceneNode.h
         SceneGraph/ICameraController.h
         SceneGraph/ISceneNode.h
         SceneGraph/LightSceneNode.h

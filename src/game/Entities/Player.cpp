@@ -9,7 +9,7 @@
 const std::wstring textureName = L"sprite.png";
 
 Player::Player(const MathLib::vec2f & position) 
-    : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
+    : Entity(position, nullptr)//ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
 {
 }
 

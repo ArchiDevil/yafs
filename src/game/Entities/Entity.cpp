@@ -60,5 +60,6 @@ bool Entity::CalculateCollision(const Entity & ent) const
 
 void Entity::SetSpritePosition()
 {
-    sprite->SetLocalPosition(MathLib::vec3f(position.x, position.y, 0.0));
+    if (sprite)
+        sprite->SetLocalPosition(MathLib::vec3f(position.x, position.y, 0.0));
 }

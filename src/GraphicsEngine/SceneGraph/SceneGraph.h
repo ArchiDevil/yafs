@@ -8,6 +8,7 @@
 #include "SkySceneNode.h"
 #include "SpriteSceneNode.h"
 #include "AnimatedSpriteSceneNode.h"
+#include "EmptySceneNode.h"
 
 #include <string>
 #include <vector>
@@ -33,6 +34,7 @@ class SkySceneNode;
 class LightSceneNode;
 class SpriteSceneNode;
 class AnimatedSpriteSceneNode;
+class EmptySceneNode;
 
 class SceneGraph final
 {
@@ -45,10 +47,13 @@ public:
     MeshSceneNode * AddMeshNode(IMeshDataPtr dataPtr, const Material * mat);
     SpriteSceneNode * AddSpriteNode(const std::wstring & textureName,
                                     const MathLib::vec2f & leftTopTextureCoords = {0.0f, 0.0f},
-                                    const MathLib::vec2f & rightBottomTextureCoords = {1.0f, 1.0f});
-    AnimatedSpriteSceneNode * AddAnimatedSpriteNode(const std::wstring & textureName);
+                                    const MathLib::vec2f & rightBottomTextureCoords = {1.0f, 1.0f},
+                                    int spriteLayer = 0);
+    AnimatedSpriteSceneNode * AddAnimatedSpriteNode(const std::wstring & textureName,
+                                                    int spriteLayer = 0);
+    EmptySceneNode * AddEmptyNode();
 
-                    // LIGHTS
+    // LIGHTS
     LightSceneNode * AddDirectionalLightNode(const MathLib::vec3f & direction,
                                              const MathLib::vec3f & color = {1.0f, 1.0f, 1.0f});
     void RemoveDirectionalLightNode(LightSceneNode * node);
@@ -72,19 +77,18 @@ public:
     void MoveNodeCallback(ISceneNode * node);
 
 private:
-    void CreateSpriteMesh();
-    void CreateSpriteProgram();
+    void CreateSpriteRequisites();
 
-    ISceneNode *                rootNode = nullptr;
-    CameraSceneNode *           activeCamera = nullptr;
-    SkySceneNode *              activeSky = nullptr;
-    VertexSemantic              skySemantic;
-    std::vector<LightSceneNode*>     directionalLights;
-    SceneGraphType              type = SGT_Plain;
-    MathLib::vec3f              ambientColor = {};
+    ISceneNode *                    rootNode = nullptr;
+    CameraSceneNode *               activeCamera = nullptr;
+    SkySceneNode *                  activeSky = nullptr;
+    VertexSemantic                  skySemantic;
+    std::vector<LightSceneNode*>    directionalLights;
+    SceneGraphType                  type = SGT_Plain;
+    MathLib::vec3f                  ambientColor = {};
 
-    IProgramPtr                 spriteProgram = nullptr;
-    IMeshDataPtr                spriteMesh = nullptr;
+    IProgramPtr                     spriteProgram = nullptr;
+    IMeshDataPtr                    spriteMesh = nullptr;
 
 };
 

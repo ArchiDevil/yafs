@@ -5,10 +5,6 @@
 #include <GraphicsEngine/ShiftEngine.h>
 #include <Utilities/inputConverter.h>
 
-// #include "../Entities/GameObjectsManager.h"
-
-ShiftEngine::SpriteSceneNode * spriteNode = nullptr;
-
 using namespace MathLib;
 
 GameState::GameState(IniWorker * iw/*, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform*/)
@@ -39,11 +35,6 @@ bool GameState::initState()
 
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
-    spriteNode = pScene->AddSpriteNode(L"sprite.png");
-    spriteNode->SetLocalPosition({0.0f, 0.0f, -1.0f});
-    // temporary here, due to some issues with matrices
-    spriteNode->SetLocalScale(1.0f);
-
     LOG_INFO("End of game state initializing");
 
     return true;
@@ -56,11 +47,13 @@ bool GameState::update(double dt)
     // for example
     static double totalTime = 0.0;
     totalTime += dt;
+
+    GoingHome::GetGamePtr()->backgroundMgr->Update(dt);
+
     // pScene->GetActiveCamera()->SetLocalPosition({(float)totalTime, 0.0f, 0.0f});
     
     // doesn't work somehow :(
     // pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle<float>({0.0f, 1.0f, 0.0f}, totalTime / 1000.0f));
-    spriteNode->SetLocalPosition({std::cosf((float)totalTime), std::sinf((float)totalTime), 1.0f});
 
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);

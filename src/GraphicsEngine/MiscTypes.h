@@ -1,21 +1,22 @@
 #pragma once
 
+#include <MathLib/math.h>
+
 #include <string>
 #include <cstdint>
-
-#include <MathLib/math.h>
 
 #define LIM_HEADER_VERSION 3
 
 namespace ShiftEngine
 {
-//форматы рендер-таргетов для движка
-enum RTFormats
+// Render target formats for the engine
+enum class RTFormats : uint8_t
 {
     Format_RGBA8,
     Format_R32,
 };
 
+// Different texture types
 enum class TextureType : uint8_t
 {
     Unknown,
@@ -25,33 +26,18 @@ enum class TextureType : uint8_t
     Texture3D
 };
 
-//хидер для файла с моделями
+// Mesh file header
 struct MeshLIMHeader
 {
-    MeshLIMHeader(int VERSION = 0,
-                  bool hasNormals = false,
-                  bool hasTexCoords = false,
-                  bool hasColors = false,
-                  unsigned int verticesCount = 0,
-                  unsigned int indicesCount = 0)
-        : VERSION(VERSION)
-        , hasNormals(hasNormals)
-        , hasTexCoords(hasTexCoords)
-        , hasColors(hasColors)
-        , verticesCount(verticesCount)
-        , indicesCount(indicesCount)
-    {
-    }
-
-    unsigned int VERSION;
-    bool hasNormals;
-    bool hasTexCoords;
-    bool hasColors;
-    unsigned int verticesCount;
-    unsigned int indicesCount;
+    unsigned int VERSION = 0;
+    bool hasNormals = false;
+    bool hasTexCoords = false;
+    bool hasColors = false;
+    unsigned int verticesCount = 0;
+    unsigned int indicesCount = 0;
 };
 
-//прямоугольная область
+// Rectangle
 struct gRect
 {
     float left;
@@ -60,7 +46,7 @@ struct gRect
     float bottom;
 };
 
-//параметры графического движка
+// Different settings for graphics engine
 struct GraphicEngineSettings
 {
     GraphicEngineSettings()
@@ -75,17 +61,17 @@ struct GraphicEngineSettings
     {
     }
 
-    int screenWidth;
-    int screenHeight;
-    int multisampleQuality;
-    bool windowed;
-    int screenRate;
-    float zNear;
-    float zFar;
-    int anisotropyLevel;
+    int screenWidth = 800;
+    int screenHeight = 600;
+    int multisampleQuality = 0;
+    bool windowed = true;
+    int screenRate = 0;
+    float zNear = 0.1f;
+    float zFar = 200.0f;
+    int anisotropyLevel = 0;
 };
 
-//структура хранит относительные пути для загрузки ресурсов
+// Relative paths to the resources
 struct PathSettings
 {
     std::wstring MeshPath;
