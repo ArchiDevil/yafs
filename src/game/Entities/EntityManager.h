@@ -19,7 +19,7 @@ public:
     std::shared_ptr<Player> CreatePlayer(MathLib::vec2f & position);
     std::shared_ptr<Enemy> CreateEnemy(MathLib::vec2f & position);
     std::shared_ptr<Projectile> CreateProjectile(MathLib::vec2f & position, MathLib::vec2f & speed);
-    std::shared_ptr<BackgroundEntity> CreateBackgroundEntity(ShiftEngine::SpriteSceneNode *sprite, int layer);
+    std::shared_ptr<BackgroundBlinker> CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode *sprite);
 
 private:
     void AddEntity(const std::shared_ptr<Entity> & ent);

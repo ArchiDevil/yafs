@@ -3,7 +3,7 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "Projectile.h"
-#include "BackgroundEntity.h"
+#include "BackgroundBlinker.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <MathLib/math.h>

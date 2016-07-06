@@ -49,6 +49,7 @@ bool GameState::update(double dt)
     totalTime += dt;
 
     GoingHome::GetGamePtr()->backgroundMgr->Update(dt);
+    GoingHome::GetGamePtr()->entityMgr->UpdateAllEntities(dt);
 
     // pScene->GetActiveCamera()->SetLocalPosition({(float)totalTime, 0.0f, 0.0f});
     

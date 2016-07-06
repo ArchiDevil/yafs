@@ -17,7 +17,7 @@ set(LS  gameStates/gameState.h
 source_group("Header Files\\Game States" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  Entities/BackgroundEntity.cpp 
+set(LS  Entities/BackgroundBlinker.cpp
         Entities/Enemy.cpp
         Entities/Entity.cpp
         Entities/EntityEventManager.cpp
@@ -28,7 +28,7 @@ set(LS  Entities/BackgroundEntity.cpp
 source_group("Source Files\\Entities" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  Entities/BackgroundEntity.h
+set(LS  Entities/BackgroundBlinker.h
         Entities/Enemy.h
         Entities/Entity.h
         Entities/EntityEventManager.h

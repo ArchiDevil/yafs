@@ -8,15 +8,16 @@ BackgroundManager::BackgroundManager(EntityManager *entityMgr)
 {
     auto* sceneGraph = GetSceneGraph();
     for (int i = 1; i < 4; ++i)
-    {
         layers.push_back(sceneGraph->AddEmptyNode());
-        //FIXME: this sprite image only for example, needed to be fixed
-        SpriteSceneNode *sprite = sceneGraph->AddSpriteNode(L"cloud.png", {{}, {}}, {1.0, 1.0}, i);
+
+    for (int i = 0; i < 50; ++i)
+    {
+        SpriteSceneNode *sprite = sceneGraph->AddSpriteNode(L"cloud.png", {{}, {}}, {1.0, 1.0}, 3);
         sprite->SetDrawingMode(SpriteSceneNode::SpriteDrawingMode::Additive);
-        sprite->SetLocalScale((4 - i) * 0.5f);
-        sprite->SetMaskColor({1.0f / i, 1.0f / i, 1.0f / i, 0.5f});
-        layers.back()->AddChild(sprite);
-        entityMgr->CreateBackgroundEntity(sprite, i);
+        sprite->SetLocalScale(std::rand() % 330 / 100.0f + 0.7f);
+        sprite->SetLocalPosition({float(std::rand() % 800) / 100.0f - 4.0f, float(std::rand() % 600) / 100.0f - 3.0f, 0.0f});
+        layers[2]->AddChild(sprite);
+        entityMgr->CreateBackgroundBlinker(sprite);
     }
 }
 
