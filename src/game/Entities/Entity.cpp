@@ -7,12 +7,10 @@ Entity::Entity(const MathLib::vec2f & position,
     , sprite(sprite)
 {
     SetSpritePosition();
-    subscribe(&EntityEventManager::GetInstance());
 }
 
 Entity::~Entity()
 {
-    unsubscribe(&EntityEventManager::GetInstance());
 }
 
 void Entity::Show()
