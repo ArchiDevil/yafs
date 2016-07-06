@@ -131,38 +131,16 @@ void GameState::ProcessInput(double dt)
     if (inputEngine.IsKeyUp(DIK_V))
         switchWireframe();
 
-    if (inputEngine.IsControllerConnected())
-    {
-        if (inputEngine.IsControllerKeyDown(XINPUT_GAMEPAD_A))
-        {
-            inputEngine.VibrateController(65535, 0);
-        }
-        else if (inputEngine.IsControllerKeyUp(XINPUT_GAMEPAD_B))
-        {
-            inputEngine.VibrateController(0, 65535);
-        }
-        else if (inputEngine.IsControllerKeyDown(XINPUT_GAMEPAD_X))
-        {
-            inputEngine.VibrateController(65535, 65535);
-        }
-        else
-        {
-            inputEngine.VibrateController(0, 0);
-        }
-    }
-
     static bool click = false;
     if (inputEngine.IsMouseDown(LButton) && !click)
     {
         click = true;
-        MouseInfo & mouseInfo = InputEngine::GetInstance().GetMouseInfo();
 
         auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
         float x = (float)mouseInfo.absoluteX - settings.screenWidth / 2;
         float y = (float)mouseInfo.absoluteY + settings.screenHeight / 2;
 
-        GoingHome::GetGamePtr()->player.lock()->Shoot(
-            MathLib::vec2f(x, y));
+        GoingHome::GetGamePtr()->player.lock()->Shoot({x, y});
     }
     if (inputEngine.IsMouseUp(LButton))
         click = false;
@@ -186,7 +164,7 @@ void GameState::ProcessInput(double dt)
     //    return;
 }
 
-bool GameState::handleEvent(const InputEvent & event)
+bool GameState::handleEvent(const InputEvent& /*event*/)
 {
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
 
