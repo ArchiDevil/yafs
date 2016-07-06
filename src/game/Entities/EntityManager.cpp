@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+using namespace MathLib;
+
 void EntityManager::AddEntity(const std::shared_ptr<Entity> & ent)
 {
     entities.push_back(ent);
@@ -33,21 +35,21 @@ void EntityManager::UpdateAllEntities(double dt)
     }
 }
 
-std::shared_ptr<Player> EntityManager::CreatePlayer(MathLib::vec2f & position)
+std::shared_ptr<Player> EntityManager::CreatePlayer(const vec2f & position)
 {
     auto entity = factory->CreateEntity<Player>(position);
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<Enemy> EntityManager::CreateEnemy(MathLib::vec2f & position)
+std::shared_ptr<Enemy> EntityManager::CreateEnemy(const vec2f & position)
 {
     auto entity = factory->CreateEntity<Enemy>(position);
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<Projectile> EntityManager::CreateProjectile(MathLib::vec2f & position, MathLib::vec2f & speed)
+std::shared_ptr<Projectile> EntityManager::CreateProjectile(const vec2f & position, const vec2f & speed)
 {
     auto entity = factory->CreateEntity<Projectile>(position, speed);
     AddEntity(entity);

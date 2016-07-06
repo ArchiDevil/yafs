@@ -29,5 +29,6 @@ void Player::Shoot(const MathLib::vec2f & targetPosition)
 
 void Player::Update(double dt)
 {
+    dt;
     SetSpritePosition();
 }

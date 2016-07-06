@@ -10,7 +10,7 @@ BackgroundEntity::BackgroundEntity(ShiftEngine::SpriteSceneNode *sprite, int lay
         throw std::runtime_error("layer must be > 0 and < 4");
 }
 
-void BackgroundEntity::Update(double dt)
+void BackgroundEntity::Update(double /*dt*/)
 {
     // Current behavior depends on layer where entity exists.
     // Of course, this should be in another class, but for now, 
@@ -26,7 +26,7 @@ void BackgroundEntity::Update(double dt)
     }
 }
 
-bool BackgroundEntity::handleEvent(const ProjectilePositionEvent & event)
+bool BackgroundEntity::handleEvent(const ProjectilePositionEvent& /*event*/)
 {
     return false;
 }

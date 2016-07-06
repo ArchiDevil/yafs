@@ -20,9 +20,10 @@ void Entity::Hide()
 
 void Entity::Move(double x, double y)
 {
+    x, y;
 }
 
-bool Entity::handleEvent(const ProjectilePositionEvent & event)
+bool Entity::handleEvent(const ProjectilePositionEvent& /*event*/)
 {
     return true;
 }
@@ -32,7 +33,7 @@ const MathLib::vec2f Entity::GetPosition() const
     return position;
 }
 
-bool Entity::CalculateCollision(const Entity & ent) const
+bool Entity::CalculateCollision(const Entity& ent) const
 {
     auto isCollision = false;
 

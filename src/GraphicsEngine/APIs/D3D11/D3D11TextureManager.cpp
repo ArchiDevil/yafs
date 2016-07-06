@@ -212,11 +212,9 @@ ITexturePtr D3D11TextureManager::CreateTextureArray(const std::vector<std::wstri
         return nullptr;
     }
 
-    ID3D11ShaderResourceView * SRW;
+    ID3D11ShaderResourceView * SRW = nullptr;
 
     const size_t elems = names.size();
-
-    HRESULT hr = S_OK;
 
     std::vector<DirectX::TexMetadata> metadatas;
     //check here info
@@ -234,12 +232,9 @@ ITexturePtr D3D11TextureManager::CreateTextureArray(const std::vector<std::wstri
         size_t prevWidth = metadatas[0].width;
         size_t prevHeight = metadatas[0].height;
         for (size_t i = 1; i < metadatas.size(); ++i)
-        {
             if (metadatas[i].width != prevWidth || metadatas[i].height != prevHeight)
-            {
                 LOG_FATAL_ERROR("Unable to create texture array from textures without the same size");
-            }
-        }
+
     }
 
     ID3D11Texture2D** srcTex = new ID3D11Texture2D *[elems];

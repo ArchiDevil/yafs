@@ -234,7 +234,7 @@ void ShiftEngine::ISceneNode::MatrixNotifyChilds()
     }
 }
 
-void ShiftEngine::ISceneNode::OnUpdate(double dt)
+void ShiftEngine::ISceneNode::OnUpdate(double)
 {
 }
 

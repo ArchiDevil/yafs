@@ -42,7 +42,7 @@ bool GameState::initState()
 
 bool GameState::update(double dt)
 {
-    ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
+    // ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 
     // for example
     static double totalTime = 0.0;
@@ -117,9 +117,9 @@ void GameState::onResume()
 
 void GameState::ProcessInput(double dt)
 {
+    dt;
+
     InputEngine & inputEngine = InputEngine::GetInstance();
-    ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
-    ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
     inputEngine.GetKeys();
     auto mouseInfo = inputEngine.GetMouseInfo();
 
@@ -155,7 +155,7 @@ bool GameState::handleEvent(const InputEvent & event)
     switch (event.type)
     {
     case InputEventType::MouseDown:
-        MouseInfo & mouseInfo = InputEngine::GetInstance().GetMouseInfo();
+        MouseInfo mouseInfo = InputEngine::GetInstance().GetMouseInfo();
 
         GoingHome::GetGamePtr()->player.lock()->Shoot(
             MathLib::vec2f((float)mouseInfo.absoluteX, (float)mouseInfo.absoluteY));

@@ -41,7 +41,7 @@ public:
     LightSceneNode& operator=(LightSceneNode && ref) = delete;
 
 private:
-    MathLib::vec3f color = {1.0f, 1.0f, 1.0};
+    MathLib::vec3f lightColor = {1.0f, 1.0f, 1.0};
     const LightNodeType type;
 
     //for directional light source type
@@ -50,7 +50,7 @@ private:
     //for point light source type
     float radius = 100.0f;
 
-    bool active = true;
+    bool isActive = true;
 };
 
 }

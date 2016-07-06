@@ -113,6 +113,6 @@ private:
     DIMOUSESTATE curMouseBuffer;
     DIMOUSESTATE preMouseBuffer;
 
-    HWND hWnd;
+    HWND hwnd;
 
 };

@@ -338,11 +338,9 @@ void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & curre
     {
         // this is 3x3 matrix and this requires 
         // padding (16 bytes alignment) for HLSL shader
-        float firstRow[3];
-        float padding1;
-        float secondRow[3];
-        float padding2;
-        float thirdRow[3];
+        alignas(16) float firstRow[3];
+        alignas(16) float secondRow[3];
+        alignas(16) float thirdRow[3];
     };
 
     if (!spriteProgram || !spriteMesh)
