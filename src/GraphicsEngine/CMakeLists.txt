@@ -29,7 +29,6 @@ set(SRC FontManager.cpp
 
 if(${RENDERER} STREQUAL D3D11_RENDER)
     set(DXSDK_LIBS  d3d11.lib
-                    d3dx11.lib
                     d3dcompiler.lib
                     dxguid.lib
                     dinput8.lib

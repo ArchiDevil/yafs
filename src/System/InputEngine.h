@@ -139,7 +139,7 @@ private:
     DIMOUSESTATE curMouseBuffer;
     DIMOUSESTATE preMouseBuffer;
 
-    HWND hWnd;
+    HWND hwnd;
 
     XboxController controllerBuffer;
 };

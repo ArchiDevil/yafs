@@ -4,7 +4,7 @@ InputEngine::InputEngine()
     : mouse(nullptr)
     , keyboard(nullptr)
     , di(nullptr)
-    , hWnd(0)
+    , hwnd(0)
 {
 }
 
@@ -22,7 +22,7 @@ bool InputEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
     controllerBuffer = XboxController(1); // Create the first player
 
-    this->hWnd = hWnd;
+    this->hwnd = hWnd;
 
     if (FAILED(DirectInput8Create(hInstance,    //инстанция окна, откуда забираем кнопки
         DIRECTINPUT_VERSION,                    //всегда передаем такой параметр
@@ -82,7 +82,7 @@ MouseInfo InputEngine::GetMouseInfo() const
     POINT pt2;
     GetCursorPos(&pt);
     pt2 = pt;
-    ScreenToClient(hWnd, &pt2);
+    ScreenToClient(hwnd, &pt2);
     MouseInfo out(curMouseBuffer.lX, curMouseBuffer.lY, curMouseBuffer.lZ, pt.x, pt.y, pt2.x, pt2.y);
     return out;
 }

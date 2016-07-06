@@ -22,5 +22,6 @@ bool Enemy::handleEvent(const ProjectilePositionEvent & event)
 
 void Enemy::Update(double dt)
 {
+    dt;
     SetSpritePosition();
 }

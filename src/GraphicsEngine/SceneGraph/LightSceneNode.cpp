@@ -8,25 +8,25 @@ using namespace MathLib;
 
 LightSceneNode::LightSceneNode(SceneGraph * sceneGraph, LightNodeType _type, const vec3f & _color)
     : ISceneNode(sceneGraph)
-    , color(_color)
+    , lightColor(_color)
     , type(_type)
 {
 }
 
 void LightSceneNode::PushToRQ(RenderQueue & rq)
 {
-    if (active)
+    if (isActive)
         rq.AddLightNode(this);
 }
 
 void LightSceneNode::SetColor(const vec3f & color)
 {
-    this->color = color;
+    this->lightColor = color;
 }
 
 vec3f LightSceneNode::GetColor() const
 {
-    return color;
+    return lightColor;
 }
 
 LightNodeType LightSceneNode::GetType() const
@@ -56,12 +56,12 @@ void LightSceneNode::SetDirection(const vec3f & val)
 
 void LightSceneNode::SetActive(bool active)
 {
-    this->active = active;
+    this->isActive = active;
 }
 
 bool LightSceneNode::IsActive() const
 {
-    return active;
+    return isActive;
 }
 
 void LightSceneNode::KillSelf()

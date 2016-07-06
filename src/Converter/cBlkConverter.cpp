@@ -197,16 +197,16 @@ bool cBlkConverter::Convert(std::ifstream & in, std::vector<Vertex> & vertices, 
     return true;
 }
 
-void cBlkConverter::SetSize(unsigned int x_size, unsigned int y_size, unsigned int z_size)
+void cBlkConverter::SetSize(unsigned int _x_size, unsigned int _y_size, unsigned int _z_size)
 {
-    this->x_size = x_size;
-    this->y_size = y_size;
-    this->z_size = z_size;
+    this->x_size = _x_size;
+    this->y_size = _y_size;
+    this->z_size = _z_size;
 }
 
-void cBlkConverter::SetData(std::unique_ptr<Block[]> && data)
+void cBlkConverter::SetData(std::unique_ptr<Block[]> && _data)
 {
-    this->data = std::move(data);
+    this->data = std::move(_data);
 }
 
 const cBlkConverter::Block* cBlkConverter::GetBlock(unsigned x, unsigned y, unsigned z) const

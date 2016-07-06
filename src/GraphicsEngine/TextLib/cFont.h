@@ -7,6 +7,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <cstdint>
 
 #include "../ITexture.h"
 
@@ -17,53 +18,34 @@ struct sChar
 {
     //this code taken from tutorial about BMFont
     //clean 16 bytes
-    unsigned short x = 0, y = 0;
-    unsigned short Width = 0, Height = 0;
-    short XOffset = 0;
-    unsigned short YOffset = 0;
-    unsigned short XAdvance = 0;
-    unsigned short Page = 0;
+    uint16_t x = 0, y = 0;
+    uint16_t Width = 0, Height = 0;
+    int16_t XOffset = 0;
+    uint16_t YOffset = 0;
+    uint16_t XAdvance = 0;
+    uint16_t Page = 0;
 };
 
 class cFont
 {
 public:
-    bool Initialize(const std::wstring & filename, ShiftEngine::ITexturePtr _tp)
+    cFont(const std::wstring& filename, ShiftEngine::ITexturePtr tp)
+        : filename(filename)
+        , tp(tp)
     {
-        tp = _tp;
         std::ifstream in;
         in.open(filename);
         if (!in || in.fail())
-            return false;
-        LoadFont(in);
-        return true;
-    }
+            throw std::runtime_error("Unable to find font file");
 
-    inline sChar * GetCharacterPtr(unsigned char code)
-    {
-        return &data[code];
-    }
-
-    ShiftEngine::ITexturePtr GetTexturePtr()
-    {
-        return tp;
-    }
-
-    unsigned short LineHeight = 0;
-    unsigned short Base = 0;
-    unsigned short Width = 0;
-    unsigned short Height = 0;
-
-private:
-    void LoadFont(std::ifstream & stream)
-    {
         std::string Line;
         std::string Read, Key, Value;
         std::size_t i;
-        while (!stream.eof())
+
+        while (!in.eof())
         {
             std::stringstream LineStream;
-            std::getline(stream, Line);
+            std::getline(in, Line);
             LineStream << Line;
 
             //read the line's type
@@ -131,10 +113,26 @@ private:
         }
     }
 
-    ShiftEngine::ITexturePtr tp = nullptr;
-    std::string filename = "";
+    inline sChar * GetCharacterPtr(unsigned char code)
+    {
+        return &data[code];
+    }
 
-    unsigned short Pages = 0;
+    ShiftEngine::ITexturePtr GetTexturePtr()
+    {
+        return tp;
+    }
+
+    uint16_t LineHeight = 0;
+    uint16_t Base = 0;
+    uint16_t Width = 0;
+    uint16_t Height = 0;
+
+private:
+    ShiftEngine::ITexturePtr tp = nullptr;
+    std::wstring filename = L"";
+
+    uint16_t Pages = 0;
     sChar data[256];    //for non-unicode characters
 
 };

@@ -70,9 +70,15 @@ void FontManager::LoadFonts()
 
     while (fontNamesIterator != fontsNames.end())
     {
-        cFont * font = new cFont;
-        if (!font->Initialize(pPaths.FontsPath + *fontNamesIterator, pCntMng->LoadTexture(L"fonts\\" + *textureNamesIterator)))
+        cFont * font = nullptr;
+        try
+        {
+            font = new cFont(pPaths.FontsPath + *fontNamesIterator, pCntMng->LoadTexture(L"fonts\\" + *textureNamesIterator));
+        }
+        catch (const std::exception&)
+        {
             LOG_ERROR("Unable to load font: ", utils::narrow(*fontNamesIterator));
+        }
         Fonts[::utils::extract_name(*fontNamesIterator)].reset(font);
         ++textureNamesIterator;
         ++fontNamesIterator;

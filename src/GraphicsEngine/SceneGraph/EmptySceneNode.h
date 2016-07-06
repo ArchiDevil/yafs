@@ -17,11 +17,11 @@ public:
     ~EmptySceneNode() = default;
 
 protected:
-    void PushToRQ(RenderQueue & rq) override
+    void PushToRQ(RenderQueue&) override
     {
     }
 
-    CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const override
+    CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode&) const override
     {
         return CameraFrustum::CullingStatus::CS_In;
     }

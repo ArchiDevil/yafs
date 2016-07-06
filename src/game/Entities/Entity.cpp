@@ -25,9 +25,10 @@ void Entity::Hide()
 
 void Entity::Move(double x, double y)
 {
+    x, y;
 }
 
-bool Entity::handleEvent(const ProjectilePositionEvent & event)
+bool Entity::handleEvent(const ProjectilePositionEvent& /*event*/)
 {
     return true;
 }
