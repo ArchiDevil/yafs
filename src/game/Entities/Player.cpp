@@ -26,8 +26,7 @@ bool Player::handleEvent(const ProjectilePositionEvent & event)
 
 void Player::Shoot(const MathLib::vec2f & targetPosition)
 {
-    auto vec = MathLib::normalize<float>(targetPosition - position);
-
+    auto vec = MathLib::normalize(targetPosition - position);
     GoingHome::GetGamePtr()->entityMgr->CreateProjectile(position, vec);
 }
 
