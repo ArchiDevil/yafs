@@ -47,7 +47,7 @@ bool GoingHomeApplication::Initialize()
     path.MaterialsPath = settingsLoader.GetWString("MaterialsPath");
 
     // Graphics engine initialization
-    if (!ShiftEngine::InitEngine(settings, path, GetHWND(), ShiftEngine::SceneGraphType::SGT_QuadTree))
+    if (!ShiftEngine::InitEngine(settings, path, GetHWND(), ShiftEngine::SceneGraphType::SGT_Plain))
         LOG_FATAL_ERROR("Unable to inititalize graphics engine");
     else
         LOG_INFO("Graphics engine has been initialized");
