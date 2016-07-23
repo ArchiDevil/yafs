@@ -22,6 +22,6 @@ void Projectile::Update(double dt)
     
     if (lifetime > 3)
     {
-        Die();
+        Kill();
     }
 }

@@ -9,19 +9,6 @@ void EntityManager::AddEntity(const std::shared_ptr<Entity> & ent)
     entities.push_back(ent);
 }
 
-void EntityManager::RemoveEntity(const std::shared_ptr<Entity> & ent)
-{
-    auto count = entities.size();
-    for (size_t i = 0; i < count; ++i)
-    {
-        if (entities[i] == ent)
-        {
-            EraseEntityFromList(entities[i]);
-            break;
-        }
-    }
-}
-
 void EntityManager::UpdateAllEntities(double dt)
 {
     for (auto it = entities.begin(); it != entities.end(); ++it)
@@ -30,12 +17,9 @@ void EntityManager::UpdateAllEntities(double dt)
         if ((*it)->IsDead())
         {
             if (it + 1 == entities.end())
-            {
-                EraseEntityFromList(*it);
-                break;
-            }
+                return RemoveEntity(*it);
 
-            EraseEntityFromList(*it);
+            RemoveEntity(*it);
             if (it != entities.begin())
                 --it;
         }
@@ -70,7 +54,7 @@ std::shared_ptr<BackgroundEntity> EntityManager::CreateBackgroundEntity(ShiftEng
     return entity;
 }
 
-void EntityManager::EraseEntityFromList(std::shared_ptr<Entity> & ent)
+void EntityManager::RemoveEntity(std::shared_ptr<Entity> & ent)
 {
     std::swap(ent, entities.back());
     entities.pop_back();

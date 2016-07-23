@@ -36,12 +36,12 @@ const MathLib::vec2f Entity::GetPosition() const
     return position;
 }
 
-bool Entity::IsDead()
+bool Entity::IsDead() const
 {
     return isToDelete;
 }
 
-void Entity::Die()
+void Entity::Kill()
 {
     isToDelete = true;
 }

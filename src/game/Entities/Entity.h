@@ -24,8 +24,9 @@ public:
     bool handleEvent(const ProjectilePositionEvent & event) override;;
 
     const MathLib::vec2f GetPosition() const;
-    bool IsDead();
-    void Die();
+    bool IsDead() const;
+    void Kill();
+
 protected:
     bool CalculateCollision(const Entity & ent) const;
     void SetSpritePosition();

@@ -14,8 +14,8 @@ bool Enemy::handleEvent(const ProjectilePositionEvent & event)
 {
     if (CalculateCollision(*event.projectile))
     {
-        Die();
-        event.projectile->Die();
+        Kill();
+        event.projectile->Kill();
     }
     return true;
 }
