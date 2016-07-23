@@ -39,3 +39,32 @@ public:
 protected:
     notifier<T> * cur_notifier;
 };
+
+template<typename T>
+class scoped_subscriber
+{
+public:
+    scoped_subscriber(notifier<T> * notifier, observer<T> * observer)
+        : notifier(notifier)
+        , observer(observer)
+    {
+        if (observer)
+            observer->subscribe(notifier);
+    }
+
+    ~scoped_subscriber()
+    {
+        if (observer)
+            observer->unsubscribe(notifier);
+    }
+
+    scoped_subscriber(const scoped_subscriber&) = delete;
+    scoped_subscriber(scoped_subscriber&&) = delete;
+    scoped_subscriber& operator=(const scoped_subscriber&) = delete;
+    scoped_subscriber& operator=(scoped_subscriber&&) = delete;
+
+private:
+    notifier<T> * notifier = nullptr;
+    observer<T> * observer = nullptr;
+
+};

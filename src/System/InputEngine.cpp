@@ -20,6 +20,8 @@ InputEngine::~InputEngine()
 
 bool InputEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
+    controllerBuffer = XboxController(1); // Create the first player
+
     this->hwnd = hWnd;
 
     if (FAILED(DirectInput8Create(hInstance,    //инстанция окна, откуда забираем кнопки
@@ -70,6 +72,8 @@ void InputEngine::GetKeys()
         if (!curKeyBuffer[i] && preKeyBuffer[i])
             notifyAll(InputEvent(InputEventType::KeyUp, i));
     }
+
+    UpdateControllerState();
 }
 
 MouseInfo InputEngine::GetMouseInfo() const
@@ -124,3 +128,46 @@ bool InputEngine::handleEvent(const SystemKeyMessage & keyEvent)
     return true;
 
 }
+
+bool InputEngine::IsControllerConnected() const
+{
+    return controllerBuffer.isConnected;
+}
+
+void InputEngine::VibrateController(WORD leftSpeed, WORD rightSpeed) const
+{
+    XINPUT_VIBRATION vibration;
+    ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
+
+    vibration.wLeftMotorSpeed = leftSpeed;
+    vibration.wRightMotorSpeed = rightSpeed;
+    XInputSetState(controllerBuffer.userIndex, &vibration);
+}
+
+bool InputEngine::IsControllerKeyDown(int key) const
+{
+    if (controllerBuffer.isConnected && (controllerBuffer.curState.Gamepad.wButtons & key))
+        return true;
+    return false;
+}
+
+bool InputEngine::IsControllerKeyUp(int key) const
+{
+    if (controllerBuffer.isConnected && !(controllerBuffer.curState.Gamepad.wButtons & key)
+        && (controllerBuffer.preState.Gamepad.wButtons & key))
+        return true;
+    return false;
+}
+
+void InputEngine::UpdateControllerState()
+{
+    controllerBuffer.preState = controllerBuffer.curState;
+
+    ZeroMemory(&controllerBuffer.curState, sizeof(XINPUT_STATE));
+    auto res = XInputGetState(controllerBuffer.userIndex, &controllerBuffer.curState);
+    if (res == ERROR_SUCCESS)
+        controllerBuffer.isConnected = true;
+    else
+        controllerBuffer.isConnected = false;
+}
+

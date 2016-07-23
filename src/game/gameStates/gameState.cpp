@@ -58,6 +58,8 @@ bool GameState::update(double dt)
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);
 
+    GoingHome::GetGamePtr()->entityMgr->UpdateAllEntities(dt);
+
     return true;
 }
 
@@ -129,6 +131,18 @@ void GameState::ProcessInput(double dt)
     if (inputEngine.IsKeyUp(DIK_V))
         switchWireframe();
 
+    static bool click = false;
+    if (inputEngine.IsMouseDown(LButton) && !click)
+    {
+        auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
+        click = true;
+        float x = (float)mouseInfo.clientX - settings.screenWidth / 2;
+        float y = settings.screenHeight / 2 - (float)mouseInfo.clientY;
+        GoingHome::GetGamePtr()->player->Shoot({x, y});
+    }
+    if (inputEngine.IsMouseUp(LButton))
+        click = false;
+
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
     //bool guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);
 
@@ -148,18 +162,12 @@ void GameState::ProcessInput(double dt)
     //    return;
 }
 
-bool GameState::handleEvent(const InputEvent & event)
+bool GameState::handleEvent(const InputEvent& /*event*/)
 {
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
 
-    switch (event.type)
-    {
-    case InputEventType::MouseDown:
-        MouseInfo mouseInfo = InputEngine::GetInstance().GetMouseInfo();
-
-        GoingHome::GetGamePtr()->player.lock()->Shoot(
-            MathLib::vec2f((float)mouseInfo.absoluteX, (float)mouseInfo.absoluteY));
-        break;
+    //switch (event.type)
+    //{
     //    // there will be always DirectInput keys in first two handlers
     //case InputEventType::KeyDown:
     //    inputManager.injectKeyPress((MyGUI::KeyCode::Enum)event.key);
@@ -172,7 +180,7 @@ bool GameState::handleEvent(const InputEvent & event)
     //case InputEventType::SystemKey:
     //    inputManager.injectKeyPress((MyGUI::KeyCode::Enum)InputConverter::VirtualKeyToScanCode(event.key), event.key);
     //    break;
-    }
+    //}
 
     return true;
 }

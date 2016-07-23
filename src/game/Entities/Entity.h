@@ -14,7 +14,7 @@ class Entity
 public:
     Entity(const MathLib::vec2f & position,
            ShiftEngine::SpriteSceneNode * sprite);
-    virtual ~Entity() = default;
+    virtual ~Entity();
 
     virtual void Update(double dt) = 0;
     virtual void Show();
@@ -24,7 +24,9 @@ public:
     bool handleEvent(const ProjectilePositionEvent & event) override;;
 
     const MathLib::vec2f GetPosition() const;
-    bool IsToDelete() { return isToDelete; }
+    bool IsDead() const;
+    void Kill();
+
 protected:
     bool CalculateCollision(const Entity & ent) const;
     void SetSpritePosition();
@@ -40,4 +42,5 @@ protected:
     MathLib::vec2f position;
     bool isToDelete = false;
     std::unique_ptr<ShiftEngine::SpriteSceneNode, sprites_deleter> sprite;
+    scoped_subscriber<ProjectilePositionEvent> projectileSubscriber = {&EntityEventManager::GetInstance(), this};
 };

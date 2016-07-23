@@ -7,7 +7,10 @@ Entity::Entity(const MathLib::vec2f & position,
     , sprite(sprite)
 {
     SetSpritePosition();
-    subscribe(&EntityEventManager::GetInstance());
+}
+
+Entity::~Entity()
+{
 }
 
 void Entity::Show()
@@ -33,7 +36,17 @@ const MathLib::vec2f Entity::GetPosition() const
     return position;
 }
 
-bool Entity::CalculateCollision(const Entity& ent) const
+bool Entity::IsDead() const
+{
+    return isToDelete;
+}
+
+void Entity::Kill()
+{
+    isToDelete = true;
+}
+
+bool Entity::CalculateCollision(const Entity & ent) const
 {
     auto isCollision = false;
 

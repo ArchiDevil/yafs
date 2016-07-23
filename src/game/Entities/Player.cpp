@@ -6,7 +6,7 @@
 #include <cmath>
 #include <GraphicsEngine/ShiftEngine.h>
 
-const std::wstring textureName = L"player";
+const std::wstring textureName = L"sprite.png";
 
 Player::Player(const MathLib::vec2f & position) 
     : Entity(position, nullptr)//ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
@@ -16,14 +16,17 @@ Player::Player(const MathLib::vec2f & position)
 bool Player::handleEvent(const ProjectilePositionEvent & event)
 {
     if (CalculateCollision(*event.projectile))
-        isToDelete = true;
+    {
+        Kill();
+        event.projectile->Kill();
+    }
+
     return true;
 }
 
 void Player::Shoot(const MathLib::vec2f & targetPosition)
 {
-    auto vec = MathLib::normalize<float>(targetPosition - position);
-
+    auto vec = MathLib::normalize(targetPosition - position);
     GoingHome::GetGamePtr()->entityMgr->CreateProjectile(position, vec);
 }
 

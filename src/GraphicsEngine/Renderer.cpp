@@ -334,7 +334,7 @@ size_t Renderer::GetFPS() const
 
 void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & currentCamera)
 {
-    struct alignas(16) textureMatrixWithPadding
+    struct textureMatrixWithPadding
     {
         // this is 3x3 matrix and this requires 
         // padding (16 bytes alignment) for HLSL shader
@@ -350,6 +350,8 @@ void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & curre
     GetContextManager()->SetRasterizerState(RasterizerState::NoCulling);
     currentState.shaderChanges++;
     currentState.currentProgram = spriteProgram;
+    currentState.shaderChanged = true;
+
     for (auto spriteLayerPair : sprites)
     {
         for (const SpriteSceneNode* sprite : spriteLayerPair.second)
@@ -381,11 +383,12 @@ void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & curre
 
             spriteProgram->SetMatrixConstantByName("TextureMatrix", (float*)&texMatrix);
             currentState.matricesBindings++;
-            spriteProgram->SetTextureByName("Texture", texture);
+            spriteProgram->SetTextureByIndex(0, texture); // there is only one texture for sprites
             currentState.textureBindings++;
             spriteProgram->SetVectorConstantByName("MaskColor", maskColor.ptr());
             currentState.uniformsBindings++;
-            spriteProgram->Apply(true);
+            spriteProgram->Apply(currentState.shaderChanged);
+            currentState.shaderChanged = false;
             currentState.polygonsCount += GetContextManager()->DrawMesh(spriteMesh);
             currentState.drawCalls++;
         }

@@ -23,7 +23,7 @@ public:
 
 private:
     void AddEntity(const std::shared_ptr<Entity> & ent);
-    void RemoveEntity(const std::shared_ptr<Entity> & ent);
+    void RemoveEntity(std::shared_ptr<Entity> & ent);
 
     std::vector<std::shared_ptr<Entity>> entities;
     std::shared_ptr<EntityFactory> factory = std::make_shared<EntityFactory>();
