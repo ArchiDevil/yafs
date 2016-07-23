@@ -48,7 +48,7 @@ bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettin
 
     DXGI_SWAP_CHAIN_DESC desc;
     ZeroMemory(&desc, sizeof(DXGI_SWAP_CHAIN_DESC));
-    desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;                        //формат буферов
+    desc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;                   //формат буферов
     desc.BufferDesc.Height = engineSettings.screenHeight;                       //высота
     desc.BufferDesc.Width = engineSettings.screenWidth;                         //ширина
     desc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;                    //масштабирование?
