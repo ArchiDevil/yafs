@@ -19,6 +19,9 @@ void Projectile::Update(double dt)
     SetSpritePosition();
 
     EntityEventManager::GetInstance().notifyAll(ProjectilePositionEvent(this));
+
+    float overallIntensity = 1.0f - lifetime / 3.0;
+    sprite->SetMaskColor({overallIntensity, overallIntensity, overallIntensity, 1.0f});
     
     if (lifetime > 3)
     {

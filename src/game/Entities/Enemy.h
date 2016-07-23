@@ -8,7 +8,7 @@ class Enemy : public Entity
 {
 public:
     Enemy(const MathLib::vec2f & position);
-    virtual ~Enemy() { }
+    virtual ~Enemy() = default;
     bool handleEvent(const ProjectilePositionEvent & event) override;
     void Update(double dt) override;
 
