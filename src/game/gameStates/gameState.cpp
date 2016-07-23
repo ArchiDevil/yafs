@@ -138,7 +138,7 @@ void GameState::ProcessInput(double dt)
         click = true;
         float x = (float)mouseInfo.clientX - settings.screenWidth / 2;
         float y = settings.screenHeight / 2 - (float)mouseInfo.clientY;
-        GoingHome::GetGamePtr()->player.lock()->Shoot({x, y});
+        GoingHome::GetGamePtr()->player->Shoot({x, y});
     }
     if (inputEngine.IsMouseUp(LButton))
         click = false;

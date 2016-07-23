@@ -13,7 +13,7 @@ struct Game final : public IManager
     Game();
     ~Game() = default;
 
-    std::weak_ptr<Player> player;
+    Player* player = nullptr;
     std::unique_ptr<EntityManager> entityMgr = nullptr;
     std::unique_ptr<BackgroundManager> backgroundMgr = nullptr;
     // std::unique_ptr<GameEventHandler> gameEventHandler = nullptr;

@@ -33,7 +33,7 @@ void BackgroundManager::Update(double dt)
     float cos_val = cosf((float)time) * 0.7f;
 
     // need to take player position
-    MathLib::vec2f playerPosition = GoingHome::GetGamePtr()->player.lock()->GetPosition();
+    MathLib::vec2f playerPosition = GoingHome::GetGamePtr()->player->GetPosition();
     for (int i = 1; i < 4; ++i)
     {
         // invert position of background layer simulating movement to the different direction of player
