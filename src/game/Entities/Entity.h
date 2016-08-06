@@ -41,6 +41,6 @@ protected:
 
     MathLib::vec2f position;
     bool isToDelete = false;
-    std::unique_ptr<ShiftEngine::SpriteSceneNode, sprites_deleter> sprite;
+    std::unique_ptr<ShiftEngine::SpriteSceneNode, sprites_deleter> sprite = nullptr;
     scoped_subscriber<ProjectilePositionEvent> projectileSubscriber = {&EntityEventManager::GetInstance(), this};
 };

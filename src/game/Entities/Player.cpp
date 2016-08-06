@@ -6,10 +6,10 @@
 #include <cmath>
 #include <GraphicsEngine/ShiftEngine.h>
 
-const std::wstring textureName = L"sprite.png";
+const std::wstring playerTextureName = L"player_sprite.png";
 
 Player::Player(const MathLib::vec2f & position) 
-    : Entity(position, nullptr)//ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
+    : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(playerTextureName))
 {
 }
 
@@ -30,8 +30,13 @@ void Player::Shoot(const MathLib::vec2f & targetPosition)
     GoingHome::GetGamePtr()->entityMgr->CreateProjectile(position, vec);
 }
 
+void Player::SetMoveVelocity(const MathLib::vec2f & velocity)
+{
+    moveVelocity = velocity;
+}
+
 void Player::Update(double dt)
 {
-    dt;
+    position += moveVelocity * dt;
     SetSpritePosition();
 }

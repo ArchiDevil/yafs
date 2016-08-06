@@ -143,6 +143,26 @@ void GameState::ProcessInput(double dt)
     if (inputEngine.IsMouseUp(LButton))
         click = false;
 
+    float xVelocity = 0.0f, yVelocity = 0.0f;
+    if (inputEngine.IsKeyDown(DIK_W))
+    {
+        yVelocity = 1.0f;
+    }
+    else if (inputEngine.IsKeyDown(DIK_S))
+    {
+        yVelocity = -1.0f;
+    }
+
+    if (inputEngine.IsKeyDown(DIK_A))
+    {
+        xVelocity = -1.0f;
+    }
+    else if (inputEngine.IsKeyDown(DIK_D))
+    {
+        xVelocity = 1.0f;
+    }
+    GoingHome::GetGamePtr()->player->SetMoveVelocity({xVelocity, yVelocity});
+
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
     //bool guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);
 
