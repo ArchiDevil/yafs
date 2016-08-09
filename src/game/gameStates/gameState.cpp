@@ -7,6 +7,8 @@
 
 using namespace MathLib;
 
+std::shared_ptr<Enemy> testEnemy = nullptr;
+
 GameState::GameState(IniWorker * iw/*, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform*/)
     : iniLoader(iw)
     //, guiModule(guiModule)
@@ -35,6 +37,10 @@ bool GameState::initState()
 
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
+    // just for example, let's create some enemies
+    testEnemy = GoingHome::GetGamePtr()->GetEntityMgr()->CreateEnemy({1.0f, 1.0f});
+    testEnemy->MoveTo({0.0f, 0.0f});
+
     LOG_INFO("End of game state initializing");
 
     return true;
@@ -48,7 +54,7 @@ bool GameState::update(double dt)
     static double totalTime = 0.0;
     totalTime += dt;
 
-    GoingHome::GetGamePtr()->backgroundMgr->Update(dt);
+    GoingHome::GetGamePtr()->GetBackgroundMgr()->Update(dt);
 
     // pScene->GetActiveCamera()->SetLocalPosition({(float)totalTime, 0.0f, 0.0f});
     
@@ -58,7 +64,7 @@ bool GameState::update(double dt)
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);
 
-    GoingHome::GetGamePtr()->entityMgr->UpdateAllEntities(dt);
+    GoingHome::GetGamePtr()->GetEntityMgr()->UpdateAllEntities(dt);
 
     return true;
 }
@@ -109,7 +115,9 @@ bool GameState::render(double dt)
 }
 
 void GameState::onKill()
-{}
+{
+    GoingHome::TerminateGame();
+}
 
 void GameState::onSuspend()
 {}
@@ -138,7 +146,7 @@ void GameState::ProcessInput(double dt)
         click = true;
         float x = (float)mouseInfo.clientX - settings.screenWidth / 2;
         float y = settings.screenHeight / 2 - (float)mouseInfo.clientY;
-        GoingHome::GetGamePtr()->player->Shoot({x, y});
+        GoingHome::GetGamePtr()->GetPlayerPtr()->Shoot({x, y});
     }
     if (inputEngine.IsMouseUp(LButton))
         click = false;
@@ -161,7 +169,7 @@ void GameState::ProcessInput(double dt)
     {
         xVelocity = 1.0f;
     }
-    GoingHome::GetGamePtr()->player->SetMoveVelocity({xVelocity, yVelocity});
+    GoingHome::GetGamePtr()->GetPlayerPtr()->SetMoveVelocity({xVelocity, yVelocity});
 
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
     //bool guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);

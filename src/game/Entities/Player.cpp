@@ -27,7 +27,7 @@ bool Player::handleEvent(const ProjectilePositionEvent & event)
 void Player::Shoot(const MathLib::vec2f & targetPosition)
 {
     auto vec = MathLib::normalize(targetPosition - position);
-    GoingHome::GetGamePtr()->entityMgr->CreateProjectile(position, vec);
+    GoingHome::GetGamePtr()->GetEntityMgr()->CreateProjectile(position, vec);
 }
 
 void Player::SetMoveVelocity(const MathLib::vec2f & velocity)
@@ -38,5 +38,5 @@ void Player::SetMoveVelocity(const MathLib::vec2f & velocity)
 void Player::Update(double dt)
 {
     position += moveVelocity * dt;
-    SetSpritePosition();
+    UpdateGraphicsSpritePosition();
 }
