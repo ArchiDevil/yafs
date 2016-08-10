@@ -48,7 +48,7 @@ bool GameState::initState()
 
 bool GameState::update(double dt)
 {
-    // ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
+    ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 
     // for example
     static double totalTime = 0.0;
@@ -56,11 +56,9 @@ bool GameState::update(double dt)
 
     GoingHome::GetGamePtr()->GetBackgroundMgr()->Update(dt);
 
-    // pScene->GetActiveCamera()->SetLocalPosition({(float)totalTime, 0.0f, 0.0f});
+    auto playerPosition = GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition();
+    pScene->GetActiveCamera()->SetLocalPosition({playerPosition.x, playerPosition.y, 0.0f});
     
-    // doesn't work somehow :(
-    // pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle<float>({0.0f, 1.0f, 0.0f}, totalTime / 1000.0f));
-
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);
 
@@ -76,7 +74,7 @@ bool GameState::render(double dt)
     ShiftEngine::Renderer * pRenderer = ShiftEngine::GetRenderer();
 
 #if defined (DEBUG) || (_DEBUG)
-    const int infoSize = 6;
+    const int infoSize = 7;
     std::ostringstream di[infoSize];
 
     di[0] << "FPS: " << pRenderer->GetFPS();
@@ -85,6 +83,7 @@ bool GameState::render(double dt)
     di[3] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
     di[4] << "Texture bindings: " << pRenderer->GetTextureBindings();
     di[5] << "Draw calls: " << pRenderer->GetDrawCalls();
+    di[6] << "Player position: " << GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition().x << " " << GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition().y;
 #else
     const int infoSize = 1;
     std::ostringstream di[infoSize];
