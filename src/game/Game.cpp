@@ -5,12 +5,30 @@
 //#include "GameEventHandler.h"
 //#include "UI/gameHud.h"
 
+namespace GoingHome
+{
+
 Game::Game()
 {
     entityMgr.reset(new EntityManager());
-    player = entityMgr->CreatePlayer(MathLib::vec2f(0.0, 0.0)).get();
+    player = entityMgr->CreatePlayer({}).get();
     backgroundMgr.reset(new BackgroundManager(entityMgr.get()));
     //gameEventHandler.reset(new GameEventHandler());
+}
+
+Player * Game::GetPlayerPtr()
+{
+    return player;
+}
+
+EntityManager * Game::GetEntityMgr()
+{
+    return entityMgr.get();
+}
+
+BackgroundManager * Game::GetBackgroundMgr()
+{
+    return backgroundMgr.get();
 }
 
 static Game * GamePtr = nullptr;
@@ -30,4 +48,6 @@ void GoingHome::TerminateGame()
 Game * GoingHome::GetGamePtr()
 {
     return GamePtr;
+}
+
 }

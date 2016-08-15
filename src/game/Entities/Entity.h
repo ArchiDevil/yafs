@@ -19,7 +19,6 @@ public:
     virtual void Update(double dt) = 0;
     virtual void Show();
     virtual void Hide();
-    virtual void Move(double x, double y);
 
     bool handleEvent(const ProjectilePositionEvent & event) override;;
 
@@ -29,7 +28,7 @@ public:
 
 protected:
     bool CalculateCollision(const Entity & ent) const;
-    void SetSpritePosition();
+    void UpdateGraphicsSpritePosition();
 
     struct sprites_deleter
     {
@@ -41,6 +40,6 @@ protected:
 
     MathLib::vec2f position;
     bool isToDelete = false;
-    std::unique_ptr<ShiftEngine::SpriteSceneNode, sprites_deleter> sprite;
+    std::unique_ptr<ShiftEngine::SpriteSceneNode, sprites_deleter> sprite = nullptr;
     scoped_subscriber<ProjectilePositionEvent> projectileSubscriber = {&EntityEventManager::GetInstance(), this};
 };

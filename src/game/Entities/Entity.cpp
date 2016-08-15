@@ -6,7 +6,7 @@ Entity::Entity(const MathLib::vec2f & position,
     : position(position)
     , sprite(sprite)
 {
-    SetSpritePosition();
+    UpdateGraphicsSpritePosition();
 }
 
 Entity::~Entity()
@@ -19,11 +19,6 @@ void Entity::Show()
 
 void Entity::Hide()
 {
-}
-
-void Entity::Move(double x, double y)
-{
-    x, y;
 }
 
 bool Entity::handleEvent(const ProjectilePositionEvent& /*event*/)
@@ -57,8 +52,8 @@ bool Entity::CalculateCollision(const Entity & ent) const
     return isCollision;
 }
 
-void Entity::SetSpritePosition()
+void Entity::UpdateGraphicsSpritePosition()
 {
     if (sprite)
-        sprite->SetLocalPosition(MathLib::vec3f(position.x, position.y, 0.0));
+        sprite->SetLocalPosition({position.x, position.y, 0.0});
 }

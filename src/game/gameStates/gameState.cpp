@@ -7,6 +7,8 @@
 
 using namespace MathLib;
 
+std::shared_ptr<Enemy> testEnemy = nullptr;
+
 GameState::GameState(IniWorker * iw/*, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform*/)
     : iniLoader(iw)
     //, guiModule(guiModule)
@@ -35,6 +37,10 @@ bool GameState::initState()
 
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
+    // just for example, let's create some enemies
+    testEnemy = GoingHome::GetGamePtr()->GetEntityMgr()->CreateEnemy({1.0f, 1.0f});
+    testEnemy->MoveTo({0.0f, 0.0f});
+
     LOG_INFO("End of game state initializing");
 
     return true;
@@ -42,23 +48,21 @@ bool GameState::initState()
 
 bool GameState::update(double dt)
 {
-    // ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
+    ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
 
     // for example
     static double totalTime = 0.0;
     totalTime += dt;
 
-    GoingHome::GetGamePtr()->backgroundMgr->Update(dt);
+    GoingHome::GetGamePtr()->GetBackgroundMgr()->Update(dt);
 
-    // pScene->GetActiveCamera()->SetLocalPosition({(float)totalTime, 0.0f, 0.0f});
+    auto playerPosition = GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition();
+    pScene->GetActiveCamera()->SetLocalPosition({playerPosition.x, playerPosition.y, 0.0f});
     
-    // doesn't work somehow :(
-    // pScene->GetActiveCamera()->RotateByQuaternion(MathLib::quaternionFromVecAngle<float>({0.0f, 1.0f, 0.0f}, totalTime / 1000.0f));
-
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);
 
-    GoingHome::GetGamePtr()->entityMgr->UpdateAllEntities(dt);
+    GoingHome::GetGamePtr()->GetEntityMgr()->UpdateAllEntities(dt);
 
     return true;
 }
@@ -70,7 +74,7 @@ bool GameState::render(double dt)
     ShiftEngine::Renderer * pRenderer = ShiftEngine::GetRenderer();
 
 #if defined (DEBUG) || (_DEBUG)
-    const int infoSize = 6;
+    const int infoSize = 7;
     std::ostringstream di[infoSize];
 
     di[0] << "FPS: " << pRenderer->GetFPS();
@@ -79,6 +83,7 @@ bool GameState::render(double dt)
     di[3] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
     di[4] << "Texture bindings: " << pRenderer->GetTextureBindings();
     di[5] << "Draw calls: " << pRenderer->GetDrawCalls();
+    di[6] << "Player position: " << GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition().x << " " << GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition().y;
 #else
     const int infoSize = 1;
     std::ostringstream di[infoSize];
@@ -109,7 +114,9 @@ bool GameState::render(double dt)
 }
 
 void GameState::onKill()
-{}
+{
+    GoingHome::TerminateGame();
+}
 
 void GameState::onSuspend()
 {}
@@ -138,10 +145,30 @@ void GameState::ProcessInput(double dt)
         click = true;
         float x = (float)mouseInfo.clientX - settings.screenWidth / 2;
         float y = settings.screenHeight / 2 - (float)mouseInfo.clientY;
-        GoingHome::GetGamePtr()->player->Shoot({x, y});
+        GoingHome::GetGamePtr()->GetPlayerPtr()->Shoot({x, y});
     }
     if (inputEngine.IsMouseUp(LButton))
         click = false;
+
+    float xVelocity = 0.0f, yVelocity = 0.0f;
+    if (inputEngine.IsKeyDown(DIK_W))
+    {
+        yVelocity = 1.0f;
+    }
+    else if (inputEngine.IsKeyDown(DIK_S))
+    {
+        yVelocity = -1.0f;
+    }
+
+    if (inputEngine.IsKeyDown(DIK_A))
+    {
+        xVelocity = -1.0f;
+    }
+    else if (inputEngine.IsKeyDown(DIK_D))
+    {
+        xVelocity = 1.0f;
+    }
+    GoingHome::GetGamePtr()->GetPlayerPtr()->SetMoveVelocity({xVelocity, yVelocity});
 
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
     //bool guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);

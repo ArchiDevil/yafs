@@ -8,23 +8,29 @@
 
 #include <memory>
 
-struct Game final : public IManager
+namespace GoingHome
 {
+
+class Game final : public IManager
+{
+public:
     Game();
     ~Game() = default;
 
+    Player* GetPlayerPtr();
+    EntityManager* GetEntityMgr();
+    BackgroundManager* GetBackgroundMgr();
+
+private:
     Player* player = nullptr;
     std::unique_ptr<EntityManager> entityMgr = nullptr;
     std::unique_ptr<BackgroundManager> backgroundMgr = nullptr;
     // std::unique_ptr<GameEventHandler> gameEventHandler = nullptr;
     // std::unique_ptr<GameHUD> gameHud = nullptr;
-
 };
 
-namespace GoingHome
-{
-    void CreateGame();
-    void TerminateGame();
+void CreateGame();
+void TerminateGame();
+Game * GetGamePtr();
 
-    Game * GetGamePtr();
 }
