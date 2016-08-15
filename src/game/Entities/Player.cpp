@@ -15,6 +15,9 @@ Player::Player(const MathLib::vec2f & position)
 
 bool Player::handleEvent(const ProjectilePositionEvent & event)
 {
+    if (event.projectile->GetProducer() == this)
+        return false;
+
     if (CalculateCollision(*event.projectile))
     {
         Kill();
@@ -27,7 +30,7 @@ bool Player::handleEvent(const ProjectilePositionEvent & event)
 void Player::Shoot(const MathLib::vec2f & targetPosition)
 {
     auto vec = MathLib::normalize(targetPosition - position);
-    GoingHome::GetGamePtr()->GetEntityMgr()->CreateProjectile(position, vec);
+    GoingHome::GetGamePtr()->GetEntityMgr()->CreateProjectile(position, vec, this);
 }
 
 void Player::SetMoveVelocity(const MathLib::vec2f & velocity)

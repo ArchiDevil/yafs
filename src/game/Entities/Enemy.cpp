@@ -13,6 +13,9 @@ Enemy::Enemy(const MathLib::vec2f & position)
 
 bool Enemy::handleEvent(const ProjectilePositionEvent & event)
 {
+    if (event.projectile->GetProducer() == this)
+        return false;
+
     if (CalculateCollision(*event.projectile))
     {
         Kill();

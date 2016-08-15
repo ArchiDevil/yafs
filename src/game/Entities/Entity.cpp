@@ -6,6 +6,9 @@ Entity::Entity(const MathLib::vec2f & position,
     : position(position)
     , sprite(sprite)
 {
+    if (!sprite)
+        throw std::runtime_error("sprite == nullptr");
+
     UpdateGraphicsSpritePosition();
 }
 
@@ -43,17 +46,15 @@ void Entity::Kill()
 
 bool Entity::CalculateCollision(const Entity & ent) const
 {
-    auto isCollision = false;
+    float radius = std::max({sprite->GetLocalScale().x, sprite->GetLocalScale().y, sprite->GetLocalScale().z});
 
-    if (MathLib::isEqual(ent.GetPosition().x, position.x) &&
-        MathLib::isEqual(ent.GetPosition().y, position.y)) // TODO Add Range support
-        isCollision = true;
+    if (MathLib::distance(ent.GetPosition(), position) < radius) // then it is collided
+        return true;
 
-    return isCollision;
+    return false;
 }
 
 void Entity::UpdateGraphicsSpritePosition()
 {
-    if (sprite)
-        sprite->SetLocalPosition({position.x, position.y, 0.0});
+    sprite->SetLocalPosition({position.x, position.y, 0.0});
 }

@@ -138,6 +138,8 @@ void GameState::ProcessInput(double dt)
     if (inputEngine.IsKeyUp(DIK_V))
         switchWireframe();
 
+    Player* player = GoingHome::GetGamePtr()->GetPlayerPtr();
+
     static bool click = false;
     if (inputEngine.IsMouseDown(LButton) && !click)
     {
@@ -145,7 +147,7 @@ void GameState::ProcessInput(double dt)
         click = true;
         float x = (float)mouseInfo.clientX - settings.screenWidth / 2;
         float y = settings.screenHeight / 2 - (float)mouseInfo.clientY;
-        GoingHome::GetGamePtr()->GetPlayerPtr()->Shoot({x, y});
+        player->Shoot({x, y});
     }
     if (inputEngine.IsMouseUp(LButton))
         click = false;
@@ -168,7 +170,7 @@ void GameState::ProcessInput(double dt)
     {
         xVelocity = 1.0f;
     }
-    GoingHome::GetGamePtr()->GetPlayerPtr()->SetMoveVelocity({xVelocity, yVelocity});
+    player->SetMoveVelocity({xVelocity, yVelocity});
 
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
     //bool guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);
