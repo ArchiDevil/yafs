@@ -7,7 +7,7 @@
 
 using namespace MathLib;
 
-std::shared_ptr<Enemy> testEnemy = nullptr;
+Enemy* testEnemy = nullptr;
 
 GameState::GameState(IniWorker * iw/*, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform*/)
     : iniLoader(iw)
@@ -38,7 +38,7 @@ bool GameState::initState()
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
     // just for example, let's create some enemies
-    testEnemy = GoingHome::GetGamePtr()->GetEntityMgr()->CreateEnemy({1.0f, 1.0f});
+    testEnemy = GoingHome::GetGamePtr()->GetEntityMgr()->CreateEnemy({1.0f, 1.0f}).get();
     testEnemy->MoveTo({0.0f, 0.0f});
 
     LOG_INFO("End of game state initializing");

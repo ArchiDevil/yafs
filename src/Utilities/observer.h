@@ -9,11 +9,19 @@ template<typename T>
 class notifier
 {
 public:
-    notifier() {}
-    virtual ~notifier() {}
+    notifier() = default;
+    virtual ~notifier() = default;
 
-    void add_observer(observer<T> * obs) { observers.push_back(obs); }
-    void remove_observer(observer<T> * obs) { observers.remove(obs); }
+    void add_observer(observer<T> * obs)
+    {
+        observers.push_back(obs);
+    }
+
+    void remove_observer(observer<T> * obs)
+    {
+        observers.remove(obs);
+    }
+
     virtual void notifyAll(const T& ev)
     {
         for (auto * object : observers)
@@ -28,16 +36,24 @@ template<typename T>
 class observer
 {
 public:
-    observer() : cur_notifier(nullptr) {}
-    virtual ~observer() {}
+    observer() = default;
+    virtual ~observer() = default;
 
-    void subscribe(notifier<T> * notifier) { if (notifier) notifier->add_observer(this); }
-    void unsubscribe(notifier<T> * notifier) { if (notifier) notifier->remove_observer(this); }
+    void subscribe(notifier<T> * notifier)
+    {
+        if (notifier)
+            notifier->add_observer(this);
+    }
+    void unsubscribe(notifier<T> * notifier)
+    {
+        if (notifier)
+            notifier->remove_observer(this);
+    }
 
     virtual bool handleEvent(const T & event) = 0;
 
 protected:
-    notifier<T> * cur_notifier;
+    notifier<T> * cur_notifier = nullptr;
 };
 
 template<typename T>
