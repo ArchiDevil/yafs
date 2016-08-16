@@ -40,9 +40,9 @@ std::shared_ptr<Enemy> EntityManager::CreateEnemy(const vec2f & position)
     return entity;
 }
 
-std::shared_ptr<Projectile> EntityManager::CreateProjectile(const vec2f & position, const vec2f & speed)
+std::shared_ptr<Projectile> EntityManager::CreateProjectile(const vec2f & position, const vec2f & speed, Entity* producer)
 {
-    auto entity = factory->CreateEntity<Projectile>(position, speed);
+    auto entity = factory->CreateEntity<Projectile>(position, speed, producer);
     AddEntity(entity);
     return entity;
 }

@@ -14,7 +14,7 @@ class BackgroundManager : public IManager
 {
 public:
     BackgroundManager(EntityManager *entityMgr);
-    ~BackgroundManager();
+    ~BackgroundManager() = default;
 
     void Update(double dt);
 

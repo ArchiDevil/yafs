@@ -19,12 +19,6 @@ BackgroundManager::BackgroundManager(EntityManager *entityMgr)
     }
 }
 
-BackgroundManager::~BackgroundManager()
-{
-    for (auto layer : layers)
-        layer->KillSelf();
-}
-
 void BackgroundManager::Update(double dt)
 {
     static double time = 0.0;
