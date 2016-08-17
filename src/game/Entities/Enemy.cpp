@@ -6,9 +6,11 @@
 const std::wstring textureName = L"enemy_sprite.png";
 constexpr float MOVE_EPS = 0.05f;
 
-Enemy::Enemy(const MathLib::vec2f & position)
+Enemy::Enemy(const MathLib::vec2f & position, float health)
     : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
+    , health(health)
 {
+    sprite->SetLocalScale(0.5f);
 }
 
 bool Enemy::handleEvent(const ProjectilePositionEvent & event)
@@ -18,8 +20,11 @@ bool Enemy::handleEvent(const ProjectilePositionEvent & event)
 
     if (CalculateCollision(*event.projectile))
     {
-        Kill();
+        health -= event.projectile->GetDamage();
         event.projectile->Kill();
+
+        if (health <= 0)
+            Kill();
     }
     return true;
 }

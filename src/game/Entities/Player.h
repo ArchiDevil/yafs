@@ -8,7 +8,7 @@ class Player
     : public Entity
 {
 public:
-    Player(const MathLib::vec2f & position);
+    Player(const MathLib::vec2f & position, float health);
     virtual ~Player() = default;
 
     bool handleEvent(const ProjectilePositionEvent & event) override;
@@ -19,5 +19,6 @@ public:
 
 private:
     MathLib::vec2f moveVelocity = {};
+    float health = 1.0f;
 
 };

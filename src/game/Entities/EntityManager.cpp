@@ -26,28 +26,35 @@ void EntityManager::UpdateAllEntities(double dt)
     }
 }
 
-std::shared_ptr<Player> EntityManager::CreatePlayer(const vec2f & position)
+std::shared_ptr<Player> EntityManager::CreatePlayer(const MathLib::vec2f & position,
+                                                    float health)
 {
-    auto entity = factory->CreateEntity<Player>(position);
+    auto entity = factory->CreateEntity<Player>(position, health);
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<Enemy> EntityManager::CreateEnemy(const vec2f & position)
+std::shared_ptr<Enemy> EntityManager::CreateEnemy(const MathLib::vec2f & position,
+                                                  float health)
 {
-    auto entity = factory->CreateEntity<Enemy>(position);
+    auto entity = factory->CreateEntity<Enemy>(position, health);
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<Projectile> EntityManager::CreateProjectile(const vec2f & position, const vec2f & speed, Entity* producer)
+std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f & position,
+                                                            const MathLib::vec2f & speed,
+                                                            float damage,
+                                                            double lifetime,
+                                                            Entity* producer)
 {
-    auto entity = factory->CreateEntity<Projectile>(position, speed, producer);
+    auto entity = factory->CreateEntity<Projectile>(position, speed, damage, lifetime, producer);
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<BackgroundEntity> EntityManager::CreateBackgroundEntity(ShiftEngine::SpriteSceneNode *sprite, int layer)
+std::shared_ptr<BackgroundEntity> EntityManager::CreateBackgroundEntity(ShiftEngine::SpriteSceneNode *sprite,
+                                                                        int layer)
 {
     auto entity = factory->CreateEntity<BackgroundEntity>(sprite, layer);
     AddEntity(entity);
