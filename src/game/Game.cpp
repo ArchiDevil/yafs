@@ -11,7 +11,7 @@ namespace GoingHome
 Game::Game()
 {
     entityMgr.reset(new EntityManager());
-    player = entityMgr->CreatePlayer({}).get();
+    player = entityMgr->CreatePlayer({}, 10.0f).get();
     backgroundMgr.reset(new BackgroundManager(entityMgr.get()));
     //gameEventHandler.reset(new GameEventHandler());
 }

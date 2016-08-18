@@ -38,7 +38,7 @@ bool GameState::initState()
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
     // just for example, let's create some enemies
-    testEnemy = GoingHome::GetGamePtr()->GetEntityMgr()->CreateEnemy({1.0f, 1.0f}).get();
+    testEnemy = GoingHome::GetGamePtr()->GetEntityMgr()->CreateEnemy({1.0f, 1.0f}, 2.0f).get();
     testEnemy->MoveTo({0.0f, 0.0f});
 
     LOG_INFO("End of game state initializing");
