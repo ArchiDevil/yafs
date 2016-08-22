@@ -6,10 +6,14 @@
 #include <cmath>
 #include <GraphicsEngine/ShiftEngine.h>
 
+using namespace MathLib;
+using namespace GoingHome;
+using namespace ShiftEngine;
+
 const std::wstring playerTextureName = L"player_sprite.png";
 
-Player::Player(const MathLib::vec2f & position, float health)
-    : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(playerTextureName))
+Player::Player(const vec2f & position, float health)
+    : Entity(position, GetSceneGraph()->AddSpriteNode(playerTextureName))
     , health(health)
 {
 }
@@ -32,13 +36,29 @@ bool Player::handleEvent(const ProjectilePositionEvent & event)
     return true;
 }
 
-void Player::Shoot(const MathLib::vec2f & targetPosition)
+// TODO: use direction here
+void Player::Shoot(const vec2f & targetPosition)
 {
-    auto vec = MathLib::normalize(targetPosition - position);
-    GoingHome::GetGamePtr()->GetEntityMgr()->CreateProjectile(position, vec * 2.0f, 1.0f, 3.0, this);
+    auto direction = normalize(targetPosition - position);
+    float angleFactor = (float)(rand() % 30 - 15) / 100.0f;
+    direction = vec2Transform(direction, matrixRotationZ(angleFactor));
+    GetGamePtr()->GetEntityMgr()->CreateProjectile(position, direction * 2.0f, 1.0f, 3.0, this);
 }
 
-void Player::SetMoveVelocity(const MathLib::vec2f & velocity)
+void Player::ShootAlternative(const MathLib::vec2f & targetPosition)
+{
+    auto direction = normalize(targetPosition - position);
+
+    for (float i = -0.15f; i < 0.25f; i += 0.15f)
+    {
+        auto new_direction = vec2Transform(direction, matrixRotationZ(i));
+        
+        // TODO: fix and use direction instead of shoot position
+        Shoot(position + new_direction);
+    }
+}
+
+void Player::SetMoveVelocity(const vec2f & velocity)
 {
     moveVelocity = velocity;
 }

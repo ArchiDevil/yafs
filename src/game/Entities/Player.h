@@ -14,7 +14,7 @@ public:
     bool handleEvent(const ProjectilePositionEvent & event) override;
     void Update(double dt) override;
     void Shoot(const MathLib::vec2f & targetPosition);
-
+    void ShootAlternative(const MathLib::vec2f & targetPosition);
     void SetMoveVelocity(const MathLib::vec2f &velocity);
 
 private:
