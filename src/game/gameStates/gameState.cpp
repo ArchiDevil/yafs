@@ -32,8 +32,8 @@ bool GameState::initState()
 
     ShiftEngine::CameraSceneNode * pCamera = pScene->AddCameraSceneNode(ShiftEngine::CameraViewType::Orthographic);
     pCamera->SetLocalPosition({0.0f, 0.0f, 0.0f});
-    pCamera->SetScreenWidth(1024.0f / 600.0f * 4.0f);
-    pCamera->SetScreenHeight(600.0f / 600.0f * 4.0f);
+    pCamera->SetScreenWidth(1024.0f / 600.0f * 6.0f);
+    pCamera->SetScreenHeight(600.0f / 600.0f * 6.0f);
 
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
@@ -129,6 +129,8 @@ void GameState::ProcessInput(double dt)
     dt;
 
     InputEngine & inputEngine = InputEngine::GetInstance();
+    auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
+
     inputEngine.GetKeys();
     auto mouseInfo = inputEngine.GetMouseInfo();
 
@@ -140,17 +142,27 @@ void GameState::ProcessInput(double dt)
 
     Player* player = GoingHome::GetGamePtr()->GetPlayerPtr();
 
-    static bool click = false;
-    if (inputEngine.IsMouseDown(LButton) && !click)
+    float x = (float)mouseInfo.clientX - settings.screenWidth / 2;
+    float y = settings.screenHeight / 2 - (float)mouseInfo.clientY;
+
+    static bool lm_click = false;
+    if (inputEngine.IsMouseDown(LButton) && !lm_click)
     {
-        auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
-        click = true;
-        float x = (float)mouseInfo.clientX - settings.screenWidth / 2;
-        float y = settings.screenHeight / 2 - (float)mouseInfo.clientY;
+        lm_click = true;
         player->Shoot({x, y});
     }
     if (inputEngine.IsMouseUp(LButton))
-        click = false;
+        lm_click = false;
+
+    static bool rm_click = false;
+    if (inputEngine.IsMouseDown(RButton) && !rm_click)
+    {
+        rm_click = true;
+        player->ShootAlternative({x, y});
+    }
+    if (inputEngine.IsMouseUp(RButton))
+        rm_click = false;
+
 
     float xVelocity = 0.0f, yVelocity = 0.0f;
     if (inputEngine.IsKeyDown(DIK_W))
