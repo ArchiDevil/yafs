@@ -4,9 +4,9 @@
 
 #include <GraphicsEngine/SceneGraph/SpriteSceneNode.h>
 #include <MathLib/math.h>
-#include <memory>
-#include <string>
 #include <Utilities/observer.h>
+
+#include <memory>
 
 class Entity
     : public observer <ProjectilePositionEvent>
@@ -20,7 +20,7 @@ public:
     virtual void Show();
     virtual void Hide();
 
-    bool handleEvent(const ProjectilePositionEvent & event) override;;
+    bool handleEvent(const ProjectilePositionEvent & event) override;
 
     const MathLib::vec2f GetPosition() const;
     bool IsDead() const;

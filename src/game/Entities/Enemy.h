@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Entity.h"
+#include "LiveEntity.h"
 
 #include <MathLib/math.h>
 
-class Enemy : public Entity
+class Enemy : public LiveEntity
 {
     enum class EnemyState
     {
@@ -15,13 +15,11 @@ class Enemy : public Entity
 public:
     Enemy(const MathLib::vec2f & position, float health);
     virtual ~Enemy() = default;
-    bool handleEvent(const ProjectilePositionEvent & event) override;
     void Update(double dt) override;
     void MoveTo(const MathLib::vec2f & target);
 
 private:
     MathLib::vec2f movePosition;
     EnemyState state = EnemyState::Waiting;
-    float health = 1.0f;
 
 };
