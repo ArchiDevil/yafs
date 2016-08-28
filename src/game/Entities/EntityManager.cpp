@@ -13,8 +13,10 @@ void EntityManager::UpdateAllEntities(double dt)
 {
     for (auto it = entities.begin(); it != entities.end(); ++it)
     {
-        (*it)->Update(dt);
-        if ((*it)->IsDead())
+        if (!(*it)->IsDead())
+            (*it)->Update(dt);
+
+        if ((*it)->IsDead() && (*it).use_count() == 1)
         {
             if (it + 1 == entities.end())
                 return RemoveEntity(*it);
