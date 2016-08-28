@@ -23,6 +23,7 @@ set(LS  Entities/BackgroundEntity.cpp
         Entities/EntityEventManager.cpp
         Entities/EntityFactory.cpp
         Entities/EntityManager.cpp
+        Entities/LiveEntity.cpp
         Entities/Player.cpp
         Entities/Projectile.cpp)
 source_group("Source Files\\Entities" FILES ${LS})
@@ -34,6 +35,7 @@ set(LS  Entities/BackgroundEntity.h
         Entities/EntityEventManager.h
         Entities/EntityFactory.h
         Entities/EntityManager.h
+        Entities/LiveEntity.h
         Entities/Player.h
         Entities/Projectile.h)
 source_group("Header Files\\Entities" FILES ${LS})

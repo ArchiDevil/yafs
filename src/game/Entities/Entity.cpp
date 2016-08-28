@@ -1,6 +1,8 @@
 #include "Entity.h"
 #include "EntityManager.h"
 
+#include <string>
+
 Entity::Entity(const MathLib::vec2f & position,
                ShiftEngine::SpriteSceneNode * sprite)
     : position(position)
