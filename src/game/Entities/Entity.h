@@ -17,8 +17,6 @@ public:
     virtual ~Entity();
 
     virtual void Update(double dt) = 0;
-    virtual void Show();
-    virtual void Hide();
 
     bool handleEvent(const ProjectilePositionEvent & event) override;;
 

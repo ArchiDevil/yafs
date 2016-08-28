@@ -16,14 +16,6 @@ Entity::~Entity()
 {
 }
 
-void Entity::Show()
-{
-}
-
-void Entity::Hide()
-{
-}
-
 bool Entity::handleEvent(const ProjectilePositionEvent& /*event*/)
 {
     return true;
