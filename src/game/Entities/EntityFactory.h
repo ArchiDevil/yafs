@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Projectile.h"
 #include "BackgroundEntity.h"
+#include "ExperiencePoint.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <MathLib/math.h>
