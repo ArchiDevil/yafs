@@ -5,6 +5,8 @@
 
 #include <DirectXTex.h>
 
+#include <array>
+
 using namespace ShiftEngine;
 
 D3D11TextureManager::D3D11TextureManager(CComPtr<ID3D11Device> device, CComPtr<ID3D11DeviceContext> pDeviceContext, const std::wstring & texturesPath)
@@ -26,31 +28,51 @@ ITexturePtr D3D11TextureManager::CreateTexture2D(const std::wstring & FileName)
     }
     else
     {
-        ID3D11ShaderResourceView * shaderResource = nullptr;
-        ID3D11Texture2D * textureResource = nullptr;
+        CComPtr<ID3D11ShaderResourceView> shaderResource = nullptr;
+        CComPtr<ID3D11Texture2D> textureResource = nullptr;
         DirectX::TexMetadata metadata;
         DirectX::ScratchImage image;
-        if (FAILED(DirectX::LoadFromWICFile(innerName.c_str(), 0, &metadata, image)))
+
+        HRESULT hr = DirectX::LoadFromWICFile(innerName.c_str(), 0, &metadata, image);
+
+        if (FAILED(hr))
         {
-            LOG_ERROR("Unable to load file: ", utils::narrow(FileName));
+            LOG_ERROR("Unable to load file: ", utils::narrow(FileName), ", error code: ", hr);
             return GetErrorTexture();
         }
 
-        if (FAILED(DirectX::CreateTexture(pDevice, image.GetImage(0, 0, 0), 1, metadata, (ID3D11Resource**)&textureResource)))
+        hr = DirectX::CreateTextureEx(pDevice,
+                                      image.GetImage(0, 0, 0),
+                                      1,
+                                      metadata,
+                                      D3D11_USAGE_DEFAULT,
+                                      D3D11_BIND_SHADER_RESOURCE,
+                                      0,
+                                      0,
+                                      true,
+                                      (ID3D11Resource**)&textureResource);
+
+        if (FAILED(hr))
         {
-            LOG_ERROR("Unable to create texture from file: ", utils::narrow(FileName));
+            LOG_ERROR("Unable to create texture from file: ", utils::narrow(FileName), ", error code: ", hr);
             return GetErrorTexture();
         }
+        
+        // getting sRGB format from loaded texture
+        D3D11_TEXTURE2D_DESC desc = {};
+        textureResource->GetDesc(&desc);
 
         D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
-        viewDesc.Format = metadata.format;
+        viewDesc.Format = desc.Format;
         viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
         viewDesc.Texture2D.MostDetailedMip = 0;
-        viewDesc.Texture2D.MipLevels = metadata.mipLevels;
+        viewDesc.Texture2D.MipLevels = desc.MipLevels;
 
-        if (FAILED(pDevice->CreateShaderResourceView(textureResource, &viewDesc, &shaderResource)))
+        hr = pDevice->CreateShaderResourceView(textureResource, &viewDesc, &shaderResource);
+
+        if (FAILED(hr))
         {
-            LOG_ERROR("Unable to create ShaderResourceView");
+            LOG_ERROR("Unable to create ShaderResourceView, error code: ", hr);
             return GetErrorTexture();
         }
 
@@ -77,16 +99,18 @@ ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const std::wstring &
         return nullptr;
     }
 
-    std::vector<std::wstring> items = {posX, negX, posY, negY, posZ, negZ};
-    ID3D11ShaderResourceView * SRW;
-    const size_t elems = 6;
+    static const size_t elemsCount = 6;
+    std::array<std::wstring, elemsCount> textureNames = {posX, negX, posY, negY, posZ, negZ};
 
     std::vector<DirectX::TexMetadata> metadatas;
-    for (size_t i = 0; i < elems; ++i)
+    for (size_t i = 0; i < elemsCount; ++i)
     {
         DirectX::TexMetadata ii;
-        if (FAILED(DirectX::GetMetadataFromWICFile((texturesPath + items[i]).c_str(), 0, ii)))
-            LOG_ERROR("Unable to get image info for: ", utils::narrow(items[i]));
+
+        HRESULT hr = DirectX::GetMetadataFromWICFile((texturesPath + textureNames[i]).c_str(), 0, ii);
+
+        if (FAILED(hr))
+            LOG_ERROR("Unable to get image info for: ", utils::narrow(textureNames[i]), ", error code: ", hr);
 
         metadatas.push_back(ii);
     }
@@ -105,43 +129,44 @@ ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const std::wstring &
         }
     }
 
-    ID3D11Texture2D** srcTex = new ID3D11Texture2D *[elems];
+    std::array<CComPtr<ID3D11Texture2D>, elemsCount> srcTex = {};
 
-    for (size_t i = 0; i < elems; ++i)
+    for (size_t i = 0; i < elemsCount; ++i)
     {
         bool error = false;
         DirectX::ScratchImage image;
-        if (FAILED(DirectX::LoadFromWICFile((texturesPath + items[i]).c_str(), 0, &metadatas[i], image)))
-            error = true;
+        HRESULT hr = DirectX::LoadFromWICFile((texturesPath + textureNames[i]).c_str(), 0, &metadatas[i], image);
 
-        if (FAILED(DirectX::CreateTexture(pDevice, image.GetImage(0, 0, 0), 1, metadatas[i], (ID3D11Resource**)&srcTex[i])))
+        if (FAILED(hr))
+        {
             error = true;
+            LOG_ERROR("Unable to load file: ", utils::narrow(textureNames[i]), ", error code: ", hr);
+        }
+
+        hr = DirectX::CreateTextureEx(pDevice, 
+                                      image.GetImage(0, 0, 0), 
+                                      1, 
+                                      metadatas[i], 
+                                      D3D11_USAGE_DEFAULT,
+                                      D3D11_BIND_SHADER_RESOURCE,
+                                      0,
+                                      0,
+                                      true, 
+                                      (ID3D11Resource**)&srcTex[i]);
+
+        if (FAILED(hr))
+        {
+            error = true;
+            LOG_ERROR("Unable to create texture from file: ", utils::narrow(textureNames[i]), ", error code: ", hr);
+        }
 
         if (error)
         {
-            LOG_ERROR("Unable to load texture in cubemap: ", utils::narrow(items[i]));
+            LOG_ERROR("Unable to load texture in cubemap: ", utils::narrow(textureNames[i]));
 
-            D3D11_TEXTURE2D_DESC desc;
-            desc.ArraySize = 1;
-            desc.BindFlags = 0;
-            desc.CPUAccessFlags = NULL;
-            desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            desc.Height = metadatas[0].height;
-            desc.Width = metadatas[0].width;
-            desc.MipLevels = 0;
-            desc.MiscFlags = NULL;
-            desc.SampleDesc.Count = 1;
-            desc.SampleDesc.Quality = 0;
-            desc.Usage = D3D11_USAGE_STAGING;
-            //HACK: crappy code!
-            std::vector<uint32_t> textureData(metadatas[0].height * metadatas[0].width);
-            for (size_t j = 0; j < metadatas[0].height * metadatas[0].width; ++j)
-            {
-                textureData[j] = 0xffff00ff;
-            }
-            D3D11_SUBRESOURCE_DATA data;
-            data.pSysMem = textureData.data();
-            pDevice->CreateTexture2D(&desc, &data, &srcTex[i]);
+            CComPtr<ID3D11Resource> resource = nullptr;
+            errorTexture->texture->GetResource(&resource);
+            resource->QueryInterface<ID3D11Texture2D>(&(srcTex[i]));
         }
     }
 
@@ -152,8 +177,8 @@ ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const std::wstring &
     texArrayDesc.Width = texElementDesc.Width;
     texArrayDesc.Height = texElementDesc.Height;
     texArrayDesc.MipLevels = texElementDesc.MipLevels;
-    texArrayDesc.ArraySize = elems;
-    texArrayDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    texArrayDesc.ArraySize = elemsCount;
+    texArrayDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
     texArrayDesc.SampleDesc.Count = 1;
     texArrayDesc.SampleDesc.Quality = 0;
     texArrayDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -161,15 +186,15 @@ ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const std::wstring &
     texArrayDesc.CPUAccessFlags = 0;
     texArrayDesc.MiscFlags = 0;
 
-    ID3D11Texture2D* texArray = nullptr;
+    CComPtr<ID3D11Texture2D> texArray = nullptr;
     if (FAILED(pDevice->CreateTexture2D(&texArrayDesc, 0, &texArray)))
     {
-        LOG_ERROR("Unable to create Cubemap!");
+        LOG_ERROR("Unable to create cubemap texture");
         return nullptr;
     }
 
     // for each texture element...
-    for (size_t i = 0; i < elems; ++i)
+    for (size_t i = 0; i < elemsCount; ++i)
     {
         // for each mipmap level...
         for (UINT j = 0; j < texElementDesc.MipLevels; ++j)
@@ -188,39 +213,30 @@ ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const std::wstring &
     viewDesc.Texture2DArray.MostDetailedMip = 0;
     viewDesc.Texture2DArray.MipLevels = texArrayDesc.MipLevels;
     viewDesc.Texture2DArray.FirstArraySlice = 0;
-    viewDesc.Texture2DArray.ArraySize = elems;
+    viewDesc.Texture2DArray.ArraySize = elemsCount;
 
-    if (FAILED(pDevice->CreateShaderResourceView(texArray, &viewDesc, &SRW)))
+    CComPtr<ID3D11ShaderResourceView> view = nullptr;
+    if (FAILED(pDevice->CreateShaderResourceView(texArray, &viewDesc, &view)))
         LOG_FATAL_ERROR("Unable to create ShaderResourceView");
 
-    auto texturePtr = std::make_shared<D3D11Texture>(pDeviceContext, texElementDesc.Width, texElementDesc.Height, TextureType::TextureCubemap, SRW);
+    auto texturePtr = std::make_shared<D3D11Texture>(pDeviceContext, texElementDesc.Width, texElementDesc.Height, TextureType::TextureCubemap, view);
     textures[superString] = texturePtr;
     return texturePtr;
 }
 
 ITexturePtr D3D11TextureManager::CreateTextureArray(const std::vector<std::wstring> & names)
 {
-    std::wstring superString = L"";
-    for (auto & elem : names)
-    {
-        superString += elem;
-    }
-
     if (names.size() < 2)
     {
         LOG_ERROR("Unable to load texture array with texture count < 2");
         return nullptr;
     }
 
-    ID3D11ShaderResourceView * SRW;
-
-    const size_t elems = names.size();
-
-    HRESULT hr = S_OK;
+    const size_t elemsCount = names.size();
 
     std::vector<DirectX::TexMetadata> metadatas;
     //check here info
-    for (size_t i = 0; i < elems; ++i)
+    for (size_t i = 0; i < elemsCount; ++i)
     {
         DirectX::TexMetadata ii;
         if (FAILED(DirectX::GetMetadataFromWICFile((texturesPath + names[i]).c_str(), 0, ii)))
@@ -234,51 +250,40 @@ ITexturePtr D3D11TextureManager::CreateTextureArray(const std::vector<std::wstri
         size_t prevWidth = metadatas[0].width;
         size_t prevHeight = metadatas[0].height;
         for (size_t i = 1; i < metadatas.size(); ++i)
-        {
             if (metadatas[i].width != prevWidth || metadatas[i].height != prevHeight)
-            {
                 LOG_FATAL_ERROR("Unable to create texture array from textures without the same size");
-            }
-        }
+
     }
 
-    ID3D11Texture2D** srcTex = new ID3D11Texture2D *[elems];
+    std::vector<CComPtr<ID3D11Texture2D>> srcTex(elemsCount);
 
-    for (size_t i = 0; i < elems; ++i)
+    for (size_t i = 0; i < elemsCount; ++i)
     {
         bool error = false;
         DirectX::ScratchImage image;
         if (FAILED(DirectX::LoadFromWICFile((texturesPath + names[i]).c_str(), 0, &metadatas[i], image)))
             error = true;
 
-        if (FAILED(DirectX::CreateTexture(pDevice, image.GetImage(0, 0, 0), 1, metadatas[i], (ID3D11Resource**)&srcTex[i])))
+        if (FAILED(DirectX::CreateTextureEx(pDevice, 
+                                            image.GetImage(0, 0, 0),
+                                            1, 
+                                            metadatas[i], 
+                                            D3D11_USAGE_DEFAULT,
+                                            D3D11_BIND_SHADER_RESOURCE,
+                                            0,
+                                            0,
+                                            true, 
+                                            (ID3D11Resource**)&srcTex[i])))
             error = true;
 
         if (error)
         {
             LOG_ERROR("Unable to load texture in texture array: ", utils::narrow(names[i]));
 
-            D3D11_TEXTURE2D_DESC desc;
-            desc.ArraySize = 1;
-            desc.BindFlags = 0;
-            desc.CPUAccessFlags = NULL;
-            desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            desc.Height = metadatas[0].height;
-            desc.Width = metadatas[0].width;
-            desc.MipLevels = 0;
-            desc.MiscFlags = NULL;
-            desc.SampleDesc.Count = 1;
-            desc.SampleDesc.Quality = 0;
-            desc.Usage = D3D11_USAGE_STAGING;
-            //HACK: crappy code!
-            std::vector<uint32_t> textureData(metadatas[0].height * metadatas[0].width);
-            for (size_t j = 0; j < metadatas[0].height * metadatas[0].width; ++j)
-            {
-                textureData[j] = 0xffff00ff;
-            }
-            D3D11_SUBRESOURCE_DATA data;
-            data.pSysMem = textureData.data();
-            pDevice->CreateTexture2D(&desc, &data, &srcTex[i]);
+            // leakzzz
+            CComPtr<ID3D11Resource> resource = nullptr;
+            errorTexture->texture->GetResource(&resource);
+            resource->QueryInterface<ID3D11Texture2D>(&(srcTex[i]));
         }
     }
 
@@ -290,8 +295,8 @@ ITexturePtr D3D11TextureManager::CreateTextureArray(const std::vector<std::wstri
     texArrayDesc.Width = texElementDesc.Width;
     texArrayDesc.Height = texElementDesc.Height;
     texArrayDesc.MipLevels = texElementDesc.MipLevels;
-    texArrayDesc.ArraySize = elems;
-    texArrayDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    texArrayDesc.ArraySize = elemsCount;
+    texArrayDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
     texArrayDesc.SampleDesc.Count = 1;
     texArrayDesc.SampleDesc.Quality = 0;
     texArrayDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -299,12 +304,12 @@ ITexturePtr D3D11TextureManager::CreateTextureArray(const std::vector<std::wstri
     texArrayDesc.CPUAccessFlags = 0;
     texArrayDesc.MiscFlags = 0;
 
-    ID3D11Texture2D* texArray = nullptr;
+    CComPtr<ID3D11Texture2D> texArray = nullptr;
     if (FAILED(pDevice->CreateTexture2D(&texArrayDesc, 0, &texArray)))
         LOG_ERROR("Unable to create TextureArray!");
 
     // for each texture element...
-    for (size_t i = 0; i < elems; ++i)
+    for (size_t i = 0; i < elemsCount; ++i)
     {
         // for each mipmap level...
         for (UINT j = 0; j < texElementDesc.MipLevels; ++j)
@@ -323,12 +328,18 @@ ITexturePtr D3D11TextureManager::CreateTextureArray(const std::vector<std::wstri
     viewDesc.Texture2DArray.MostDetailedMip = 0;
     viewDesc.Texture2DArray.MipLevels = texArrayDesc.MipLevels;
     viewDesc.Texture2DArray.FirstArraySlice = 0;
-    viewDesc.Texture2DArray.ArraySize = elems;
+    viewDesc.Texture2DArray.ArraySize = elemsCount;
 
-    if (FAILED(pDevice->CreateShaderResourceView(texArray, &viewDesc, &SRW)))
+    CComPtr<ID3D11ShaderResourceView> view = nullptr;
+    if (FAILED(pDevice->CreateShaderResourceView(texArray, &viewDesc, &view)))
         LOG_FATAL_ERROR("Unable to create ShaderResourceView");
 
-    auto texturePtr = std::make_shared<D3D11Texture>(pDeviceContext, texElementDesc.Width, texElementDesc.Height, TextureType::Texture2DArray, SRW);
+    auto texturePtr = std::make_shared<D3D11Texture>(pDeviceContext, texElementDesc.Width, texElementDesc.Height, TextureType::Texture2DArray, view);
+
+    std::wstring superString = L"";
+    for (auto & elem : names)
+        superString += elem;
+
     textures[superString] = texturePtr;
     return texturePtr;
 }
@@ -356,12 +367,12 @@ void D3D11TextureManager::CreateErrorTexture()
     //trying to create texture procedurally
     const unsigned int width = 256;
     const unsigned int height = 256;
-    ID3D11Texture2D * texture = nullptr;
+    CComPtr<ID3D11Texture2D> texture = nullptr;
     D3D11_TEXTURE2D_DESC description;
     description.ArraySize = 1;
     description.BindFlags = D3D11_BIND_SHADER_RESOURCE;
     description.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    description.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    description.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
     description.Height = height;
     description.Width = width;
     description.MipLevels = 1;
@@ -375,10 +386,7 @@ void D3D11TextureManager::CreateErrorTexture()
 
     D3D11_MAPPED_SUBRESOURCE mappedTexture;
     if (FAILED(pDeviceContext->Map(texture, D3D11CalcSubresource(0, 0, 1), D3D11_MAP_WRITE_DISCARD, NULL, &mappedTexture)))
-    {
-        texture->Release();
         LOG_FATAL_ERROR("Unable to create error texture");
-    }
 
     uint8_t * pTexels = (uint8_t*)mappedTexture.pData;
     for (UINT row = 0; row < height; row++)
@@ -414,11 +422,10 @@ void D3D11TextureManager::CreateErrorTexture()
     srDesc.Texture2D.MostDetailedMip = 0;
     srDesc.Texture2D.MipLevels = 1;
 
-    ID3D11ShaderResourceView *pShaderResView = NULL;
+    CComPtr<ID3D11ShaderResourceView> pShaderResView = nullptr;
+
     if (FAILED(pDevice->CreateShaderResourceView(texture, &srDesc, &pShaderResView)))
         LOG_FATAL_ERROR("Unable to create error texture");
-
-    texture->Release();
 
     errorTexture = std::make_shared<D3D11Texture>(pDeviceContext, width, height, TextureType::Texture2D, pShaderResView);
 }

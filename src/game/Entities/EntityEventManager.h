@@ -8,12 +8,12 @@ class Projectile;
 
 struct ProjectilePositionEvent
 {
-    ProjectilePositionEvent(const Projectile * projectile)
+    ProjectilePositionEvent(Projectile * projectile)
         : projectile(projectile)
     {
     }
 
-    const Projectile * const projectile;
+    Projectile * projectile;
 };
 
 class EntityEventManager

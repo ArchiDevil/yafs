@@ -1,13 +1,23 @@
 #include "Entity.h"
 #include "EntityManager.h"
 
+#include <string>
+
 Entity::Entity(const MathLib::vec2f & position,
                ShiftEngine::SpriteSceneNode * sprite)
     : position(position)
     , sprite(sprite)
 {
-    SetSpritePosition();
-    subscribe(&EntityEventManager::GetInstance());
+    if (!sprite)
+        throw std::runtime_error("sprite == nullptr");
+
+    sprite->SetDrawingMode(ShiftEngine::SpriteSceneNode::SpriteDrawingMode::Additive);
+
+    UpdateGraphicsSpritePosition();
+}
+
+Entity::~Entity()
+{
 }
 
 void Entity::Show()
@@ -18,11 +28,7 @@ void Entity::Hide()
 {
 }
 
-void Entity::Move(double x, double y)
-{
-}
-
-bool Entity::handleEvent(const ProjectilePositionEvent & event)
+bool Entity::handleEvent(const ProjectilePositionEvent& /*event*/)
 {
     return true;
 }
@@ -32,19 +38,27 @@ const MathLib::vec2f Entity::GetPosition() const
     return position;
 }
 
-bool Entity::CalculateCollision(const Entity & ent) const
+bool Entity::IsDead() const
 {
-    auto isCollision = false;
-
-    if (MathLib::isEqual(ent.GetPosition().x, position.x) &&
-        MathLib::isEqual(ent.GetPosition().y, position.y)) // TODO Add Range support
-        isCollision = true;
-
-    return isCollision;
+    return isToDelete;
 }
 
-void Entity::SetSpritePosition()
+void Entity::Kill()
 {
-    if (sprite)
-        sprite->SetLocalPosition(MathLib::vec3f(position.x, position.y, 0.0));
+    isToDelete = true;
+}
+
+bool Entity::CalculateCollision(const Entity & ent) const
+{
+    float radius = std::max({sprite->GetLocalScale().x, sprite->GetLocalScale().y, sprite->GetLocalScale().z});
+
+    if (MathLib::distance(ent.GetPosition(), position) < radius) // then it is collided
+        return true;
+
+    return false;
+}
+
+void Entity::UpdateGraphicsSpritePosition()
+{
+    sprite->SetLocalPosition({position.x, position.y, 0.0});
 }

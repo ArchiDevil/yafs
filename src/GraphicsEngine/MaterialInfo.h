@@ -53,7 +53,7 @@ public:
 
 private:
     TextureType type;
-    std::vector<std::string> maps;
+    std::vector<std::string> materialMaps;
 };
 
 class MaterialInfo

@@ -3,6 +3,7 @@
 #include <Windows.h>
 
 #define DIRECTINPUT_VERSION 0x0800
+#include <XInput.h>
 #include <dinput.h>
 
 #include <Utilities/ut.h>
@@ -77,6 +78,24 @@ struct MouseInfo
     };
 };
 
+struct XboxController 
+{
+    XboxController()
+        : userIndex(0)
+        , isConnected(false)
+    {}
+
+    XboxController(int playerNumber)
+        : userIndex(playerNumber - 1)
+        , isConnected(false)
+    {}
+
+    XINPUT_STATE curState;
+    XINPUT_STATE preState;
+    int userIndex;
+    bool isConnected;
+};
+
 class InputEngine
     : public singleton < InputEngine >
     , public notifier < InputEvent >
@@ -97,9 +116,16 @@ public:
     bool IsKeyUp(unsigned char Key) const;
     MouseInfo GetMouseInfo() const;
 
+    bool IsControllerConnected() const;
+    void VibrateController(WORD leftSpeed, WORD rightSpeed) const;
+    bool IsControllerKeyDown(int key) const;
+    bool IsControllerKeyUp(int key) const;
+
     bool handleEvent(const SystemKeyMessage & keyEvent) override;
 
 private:
+    void UpdateControllerState();
+
     IDirectInput8 * di; //DirectInput указатель
     IDirectInputDevice8 * keyboard;
     IDirectInputDevice8 * mouse;
@@ -113,6 +139,7 @@ private:
     DIMOUSESTATE curMouseBuffer;
     DIMOUSESTATE preMouseBuffer;
 
-    HWND hWnd;
+    HWND hwnd;
 
+    XboxController controllerBuffer;
 };

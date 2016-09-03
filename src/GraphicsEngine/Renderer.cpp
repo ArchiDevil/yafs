@@ -334,15 +334,13 @@ size_t Renderer::GetFPS() const
 
 void Renderer::drawSprites(SpritesVault & sprites, CameraSceneNode & currentCamera)
 {
-    struct alignas(16) textureMatrixWithPadding
+    struct textureMatrixWithPadding
     {
         // this is 3x3 matrix and this requires 
         // padding (16 bytes alignment) for HLSL shader
-        float firstRow[3];
-        float padding1;
-        float secondRow[3];
-        float padding2;
-        float thirdRow[3];
+        alignas(16) float firstRow[3];
+        alignas(16) float secondRow[3];
+        alignas(16) float thirdRow[3];
     };
 
     auto spriteSortFunctor = [] (SpriteSceneNode* left, SpriteSceneNode* right) { return left->GetDrawingMode() < right->GetDrawingMode(); };
@@ -355,6 +353,8 @@ void Renderer::drawSprites(SpritesVault & sprites, CameraSceneNode & currentCame
     contextMgr->SetRasterizerState(RasterizerState::NoCulling);
     currentState.shaderChanges++;
     currentState.currentProgram = spriteProgram;
+    currentState.shaderChanged = true;
+
     for (auto& spriteLayerPair : sprites)
     {
         std::sort(spriteLayerPair.second.begin(), spriteLayerPair.second.end(), spriteSortFunctor);
@@ -392,12 +392,13 @@ void Renderer::drawSprites(SpritesVault & sprites, CameraSceneNode & currentCame
 
             spriteProgram->SetMatrixConstantByName("TextureMatrix", (float*)&texMatrix);
             currentState.matricesBindings++;
-            spriteProgram->SetTextureByName("Texture", texture);
+            spriteProgram->SetTextureByIndex(0, texture); // there is only one texture for sprites
             currentState.textureBindings++;
             spriteProgram->SetVectorConstantByName("MaskColor", maskColor.ptr());
             currentState.uniformsBindings++;
-            spriteProgram->Apply(true);
-            currentState.polygonsCount += contextMgr->DrawMesh(spriteMesh);
+            spriteProgram->Apply(currentState.shaderChanged);
+            currentState.shaderChanged = false;
+            currentState.polygonsCount += GetContextManager()->DrawMesh(spriteMesh);
             currentState.drawCalls++;
         }
     }

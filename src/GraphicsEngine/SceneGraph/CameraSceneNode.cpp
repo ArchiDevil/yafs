@@ -140,6 +140,7 @@ void CameraSceneNode::RebuildProjMatrix()
                                                 screenWidth / screenHeight, // screen rate
                                                 zNear,
                                                 zFar);
+        break;
     case CameraViewType::Orthographic:
         matProj = matrixOrthoLH<float>(screenWidth, screenHeight, zFar, zNear);
         break;

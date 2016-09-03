@@ -2,54 +2,53 @@
 
 #include <algorithm>
 
+using namespace MathLib;
+
 void EntityManager::AddEntity(const std::shared_ptr<Entity> & ent)
 {
     entities.push_back(ent);
 }
 
-void EntityManager::RemoveEntity(const std::shared_ptr<Entity> & ent)
-{
-    auto count = entities.size();
-    for (size_t i = 0; i < count; ++i)
-    {
-        if (entities[i] == ent)
-        {
-            std::swap(entities[i], entities.back());
-            entities.pop_back();
-            break;
-        }
-    }
-}
-
 void EntityManager::UpdateAllEntities(double dt)
 {
-    for (auto &ent : entities)
+    for (auto it = entities.begin(); it != entities.end(); ++it)
     {
-        ent->Update(dt);
-        if (ent->IsToDelete())
+        (*it)->Update(dt);
+        if ((*it)->IsDead())
         {
-            RemoveEntity(ent);
+            if (it + 1 == entities.end())
+                return RemoveEntity(*it);
+
+            RemoveEntity(*it);
+            if (it != entities.begin())
+                --it;
         }
     }
 }
 
-std::shared_ptr<Player> EntityManager::CreatePlayer(MathLib::vec2f & position)
+std::shared_ptr<Player> EntityManager::CreatePlayer(const MathLib::vec2f & position,
+                                                    float health)
 {
-    auto entity = factory->CreateEntity<Player>(position);
+    auto entity = factory->CreateEntity<Player>(position, health);
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<Enemy> EntityManager::CreateEnemy(MathLib::vec2f & position)
+std::shared_ptr<Enemy> EntityManager::CreateEnemy(const MathLib::vec2f & position,
+                                                  float health)
 {
-    auto entity = factory->CreateEntity<Enemy>(position);
+    auto entity = factory->CreateEntity<Enemy>(position, health);
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<Projectile> EntityManager::CreateProjectile(MathLib::vec2f & position, MathLib::vec2f & speed)
+std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f & position,
+                                                            const MathLib::vec2f & speed,
+                                                            float damage,
+                                                            double lifetime,
+                                                            Entity* producer)
 {
-    auto entity = factory->CreateEntity<Projectile>(position, speed);
+    auto entity = factory->CreateEntity<Projectile>(position, speed, damage, lifetime, producer);
     AddEntity(entity);
     return entity;
 }
@@ -59,4 +58,10 @@ std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftE
     auto entity = factory->CreateEntity<BackgroundBlinker>(sprite);
     AddEntity(entity);
     return entity;
+}
+
+void EntityManager::RemoveEntity(std::shared_ptr<Entity> & ent)
+{
+    std::swap(ent, entities.back());
+    entities.pop_back();
 }

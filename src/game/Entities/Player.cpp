@@ -6,28 +6,37 @@
 #include <cmath>
 #include <GraphicsEngine/ShiftEngine.h>
 
-const std::wstring textureName = L"player";
+using namespace MathLib;
+using namespace GoingHome;
+using namespace ShiftEngine;
 
-Player::Player(const MathLib::vec2f & position) 
-    : Entity(position, nullptr)//ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
+const std::wstring playerTextureName = L"player_sprite.png";
+
+Player::Player(const vec2f & position, float health)
+    : LiveEntity(position, health, playerTextureName)
 {
 }
 
-bool Player::handleEvent(const ProjectilePositionEvent & event)
+void Player::ShootAlternative(const MathLib::vec2f & targetPosition)
 {
-    if (CalculateCollision(*event.projectile))
-        isToDelete = true;
-    return true;
+    auto direction = normalize(targetPosition - position);
+
+    for (float i = -0.15f; i < 0.25f; i += 0.15f)
+    {
+        auto new_direction = vec2Transform(direction, matrixRotationZ(i));
+        
+        // TODO: fix and use direction instead of shoot position
+        Shoot(position + new_direction);
+    }
 }
 
-void Player::Shoot(const MathLib::vec2f & targetPosition)
+void Player::SetMoveVelocity(const vec2f & velocity)
 {
-    auto vec = MathLib::normalize<float>(targetPosition - position);
-
-    GoingHome::GetGamePtr()->entityMgr->CreateProjectile(position, vec);
+    moveVelocity = velocity;
 }
 
 void Player::Update(double dt)
 {
-    SetSpritePosition();
+    position += moveVelocity * dt;
+    UpdateGraphicsSpritePosition();
 }

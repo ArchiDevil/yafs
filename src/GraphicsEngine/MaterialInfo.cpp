@@ -112,7 +112,7 @@ TextureType MaterialTextureDescription::GetType() const
 
 const std::vector<std::string> & MaterialTextureDescription::GetMaps() const
 {
-    return maps;
+    return materialMaps;
 }
 
 bool MaterialTextureDescription::operator==(const MaterialTextureDescription & ref) const
@@ -120,17 +120,17 @@ bool MaterialTextureDescription::operator==(const MaterialTextureDescription & r
     if (this->type != ref.type)
         return false;
 
-    if (this->maps.size() != ref.maps.size())
+    if (this->materialMaps.size() != ref.materialMaps.size())
         return false;
 
-    for (unsigned int i = 0; i < maps.size(); i++)
-        if (this->maps[i] != ref.maps[i])
+    for (unsigned int i = 0; i < materialMaps.size(); i++)
+        if (this->materialMaps[i] != ref.materialMaps[i])
             return false;
 
     return true;
 }
 
-void MaterialTextureDescription::SetMaps(const std::vector<std::string> & maps)
+void MaterialTextureDescription::SetMaps(const std::vector<std::string>& maps)
 {
-    this->maps = maps;
+    this->materialMaps = maps;
 }

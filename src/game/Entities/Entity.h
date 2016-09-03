@@ -4,9 +4,9 @@
 
 #include <GraphicsEngine/SceneGraph/SpriteSceneNode.h>
 #include <MathLib/math.h>
-#include <memory>
-#include <string>
 #include <Utilities/observer.h>
+
+#include <memory>
 
 class Entity
     : public observer <ProjectilePositionEvent>
@@ -14,20 +14,21 @@ class Entity
 public:
     Entity(const MathLib::vec2f & position,
            ShiftEngine::SpriteSceneNode * sprite);
-    virtual ~Entity() = default;
+    virtual ~Entity();
 
     virtual void Update(double dt) = 0;
     virtual void Show();
     virtual void Hide();
-    virtual void Move(double x, double y);
 
-    bool handleEvent(const ProjectilePositionEvent & event) override;;
+    bool handleEvent(const ProjectilePositionEvent & event) override;
 
     const MathLib::vec2f GetPosition() const;
-    bool IsToDelete() { return isToDelete; }
+    bool IsDead() const;
+    void Kill();
+
 protected:
     bool CalculateCollision(const Entity & ent) const;
-    void SetSpritePosition();
+    void UpdateGraphicsSpritePosition();
 
     struct sprites_deleter
     {
@@ -39,5 +40,7 @@ protected:
 
     MathLib::vec2f position;
     bool isToDelete = false;
-    std::unique_ptr<ShiftEngine::SpriteSceneNode, sprites_deleter> sprite;
+    std::unique_ptr<ShiftEngine::SpriteSceneNode, sprites_deleter> sprite = nullptr;
+    scoped_subscriber<ProjectilePositionEvent> projectileSubscriber = {&EntityEventManager::GetInstance(), this};
+
 };

@@ -316,7 +316,7 @@ matrix<T, 4> matrixLookAtLH(const vec3<T> & eye, const vec3<T> & at, const vec3<
     out[0][0] = xaxis.x;            out[0][1] = yaxis.x;            out[0][2] = zaxis.x;            out[0][3] = 0;
     out[1][0] = xaxis.y;            out[1][1] = yaxis.y;            out[1][2] = zaxis.y;            out[1][3] = 0;
     out[2][0] = xaxis.z;            out[2][1] = yaxis.z;            out[2][2] = zaxis.z;            out[2][3] = 0;
-    out[3][0] = dot(xaxis, eye);    out[3][1] = dot(yaxis, eye);    out[3][2] = dot(zaxis, eye);    out[3][3] = 1;
+    out[3][0] = -dot(xaxis, eye);   out[3][1] = -dot(yaxis, eye);   out[3][2] = -dot(zaxis, eye);   out[3][3] = 1;
     return out;
 }
 

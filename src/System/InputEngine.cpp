@@ -4,7 +4,7 @@ InputEngine::InputEngine()
     : mouse(nullptr)
     , keyboard(nullptr)
     , di(nullptr)
-    , hWnd(0)
+    , hwnd(0)
 {
 }
 
@@ -20,7 +20,9 @@ InputEngine::~InputEngine()
 
 bool InputEngine::Initialize(HWND hWnd, HINSTANCE hInstance)
 {
-    this->hWnd = hWnd;
+    controllerBuffer = XboxController(1); // Create the first player
+
+    this->hwnd = hWnd;
 
     if (FAILED(DirectInput8Create(hInstance,    //инстанция окна, откуда забираем кнопки
         DIRECTINPUT_VERSION,                    //всегда передаем такой параметр
@@ -70,6 +72,8 @@ void InputEngine::GetKeys()
         if (!curKeyBuffer[i] && preKeyBuffer[i])
             notifyAll(InputEvent(InputEventType::KeyUp, i));
     }
+
+    UpdateControllerState();
 }
 
 MouseInfo InputEngine::GetMouseInfo() const
@@ -78,7 +82,7 @@ MouseInfo InputEngine::GetMouseInfo() const
     POINT pt2;
     GetCursorPos(&pt);
     pt2 = pt;
-    ScreenToClient(hWnd, &pt2);
+    ScreenToClient(hwnd, &pt2);
     MouseInfo out(curMouseBuffer.lX, curMouseBuffer.lY, curMouseBuffer.lZ, pt.x, pt.y, pt2.x, pt2.y);
     return out;
 }
@@ -124,3 +128,46 @@ bool InputEngine::handleEvent(const SystemKeyMessage & keyEvent)
     return true;
 
 }
+
+bool InputEngine::IsControllerConnected() const
+{
+    return controllerBuffer.isConnected;
+}
+
+void InputEngine::VibrateController(WORD leftSpeed, WORD rightSpeed) const
+{
+    XINPUT_VIBRATION vibration;
+    ZeroMemory(&vibration, sizeof(XINPUT_VIBRATION));
+
+    vibration.wLeftMotorSpeed = leftSpeed;
+    vibration.wRightMotorSpeed = rightSpeed;
+    XInputSetState(controllerBuffer.userIndex, &vibration);
+}
+
+bool InputEngine::IsControllerKeyDown(int key) const
+{
+    if (controllerBuffer.isConnected && (controllerBuffer.curState.Gamepad.wButtons & key))
+        return true;
+    return false;
+}
+
+bool InputEngine::IsControllerKeyUp(int key) const
+{
+    if (controllerBuffer.isConnected && !(controllerBuffer.curState.Gamepad.wButtons & key)
+        && (controllerBuffer.preState.Gamepad.wButtons & key))
+        return true;
+    return false;
+}
+
+void InputEngine::UpdateControllerState()
+{
+    controllerBuffer.preState = controllerBuffer.curState;
+
+    ZeroMemory(&controllerBuffer.curState, sizeof(XINPUT_STATE));
+    auto res = XInputGetState(controllerBuffer.userIndex, &controllerBuffer.curState);
+    if (res == ERROR_SUCCESS)
+        controllerBuffer.isConnected = true;
+    else
+        controllerBuffer.isConnected = false;
+}
+

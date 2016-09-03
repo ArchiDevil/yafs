@@ -3,21 +3,33 @@
 
 #include <GraphicsEngine/ShiftEngine.h>
 
-const std::wstring textureName = L"enemy";
+const std::wstring enemyTextureName = L"enemy_sprite.png";
+constexpr float MOVE_EPS = 0.05f;
 
-Enemy::Enemy(const MathLib::vec2f & position)
-    : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
+Enemy::Enemy(const MathLib::vec2f & position, float health)
+    : LiveEntity(position, health, enemyTextureName)
 {
-}
-
-bool Enemy::handleEvent(const ProjectilePositionEvent & event)
-{
-    if (CalculateCollision(*event.projectile))
-        isToDelete = true;
-    return true;
+    sprite->SetLocalScale(0.5f);
 }
 
 void Enemy::Update(double dt)
 {
-    SetSpritePosition();
+    if (state == EnemyState::Moving)
+    {
+        MathLib::vec2f direction = MathLib::normalize(movePosition - Entity::position);
+        Entity::position += direction * dt; //* speed;
+        UpdateGraphicsSpritePosition();
+
+        MathLib::vec2f diff = movePosition - Entity::position;
+        if (abs(diff.x) < MOVE_EPS && abs(diff.y) < MOVE_EPS)
+        {
+            state = EnemyState::Waiting;
+        }
+    }
+}
+
+void Enemy::MoveTo(const MathLib::vec2f & target)
+{
+    state = EnemyState::Moving;
+    movePosition = target;
 }
