@@ -1,6 +1,6 @@
 #pragma once
 
-#include <d3d11.h>
+#include <d3d11_1.h>
 #include <atlbase.h>
 
 #include "D3D11DepthStencil.h"
@@ -18,6 +18,7 @@ struct D3D11Context
     CComPtr<ID3D11Device>               Device = nullptr;
     CComPtr<ID3D11DeviceContext>        DeviceContext = nullptr;
     CComPtr<IDXGISwapChain>             SwapChain = nullptr;
+    CComPtr<ID3DUserDefinedAnnotation>  UserAnnotationsHandler = nullptr;
 
     std::unique_ptr<D3D11RenderTarget>  DefaultRT = std::make_unique<D3D11RenderTarget>(nullptr, nullptr);
     std::unique_ptr<D3D11DepthStencil>  DefaultDS = std::make_unique<D3D11DepthStencil>(nullptr, nullptr);

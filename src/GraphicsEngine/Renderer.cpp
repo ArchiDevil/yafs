@@ -45,6 +45,8 @@ void Renderer::drawSky(RenderQueue &rq)
     SkySceneNode * skyNode = rq.GetActiveSky();
     if (skyNode)
     {
+        GetContextManager()->SetUserDebugEventBegin(L"Sky drawing");
+
         currentState.shaderChanges++;
         auto pos = rq.GetActiveCamera()->GetWorldPosition();
         skyNode->SetLocalPosition(MathLib::vec3f(pos.x, pos.y, pos.z));
@@ -60,6 +62,8 @@ void Renderer::drawSky(RenderQueue &rq)
         currentState.currentProgram->Apply(true);
         currentState.polygonsCount += skyNode->Render();
         currentState.drawCalls++;
+
+        GetContextManager()->SetUserDebugEventEnd();
     }
 }
 
@@ -84,6 +88,8 @@ void Renderer::Process(RenderQueue &rq)
     std::sort(renderVec.begin(), renderVec.end(), sortFunctor);
 
     GetContextManager()->SetZState(true);
+
+    GetContextManager()->SetUserDebugEventBegin(L"Objects drawing");
 
     for (auto iter = renderVec.begin(); iter != renderVec.end(); ++iter)
     {
@@ -132,6 +138,8 @@ void Renderer::Process(RenderQueue &rq)
 
         currentState.shaderChanged = false;
     }
+
+    GetContextManager()->SetUserDebugEventEnd();
 
     drawSprites(rq.GetSpriteNodes(), *rq.GetActiveCamera());
 }
@@ -352,6 +360,8 @@ void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & curre
     currentState.currentProgram = spriteProgram;
     currentState.shaderChanged = true;
 
+    GetContextManager()->SetUserDebugEventBegin(L"Sprites drawing");
+
     for (auto spriteLayerPair : sprites)
     {
         for (const SpriteSceneNode* sprite : spriteLayerPair.second)
@@ -393,6 +403,8 @@ void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & curre
             currentState.drawCalls++;
         }
     }
+
+    GetContextManager()->SetUserDebugEventEnd();
 }
 
 void Renderer::loadSpritesPrerequisites()

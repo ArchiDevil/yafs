@@ -34,6 +34,27 @@ D3D11ContextManager::D3D11ContextManager(HWND hwnd)
 ShiftEngine::D3D11ContextManager::~D3D11ContextManager()
 {}
 
+void ShiftEngine::D3D11ContextManager::SetUserDebugMarker(const std::wstring & markerName)
+{
+#if defined DEBUG || _DEBUG
+    graphicsContext.UserAnnotationsHandler->SetMarker(markerName.c_str());
+#endif
+}
+
+void ShiftEngine::D3D11ContextManager::SetUserDebugEventBegin(const std::wstring & markerName)
+{
+#if defined DEBUG || _DEBUG
+    graphicsContext.UserAnnotationsHandler->BeginEvent(markerName.c_str());
+#endif
+}
+
+void ShiftEngine::D3D11ContextManager::SetUserDebugEventEnd()
+{
+#if defined DEBUG || _DEBUG
+    graphicsContext.UserAnnotationsHandler->EndEvent();
+#endif
+}
+
 bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettings _Paths)
 {
     engineSettings = _Settings;
@@ -214,12 +235,16 @@ std::wstring D3D11ContextManager::GetGPUDescription()
 
 void D3D11ContextManager::BeginScene()
 {
+    SetUserDebugEventBegin(L"RTs clear");
     graphicsContext.ClearDefaultRenderTarget();
+    SetUserDebugEventEnd();
 }
 
 void D3D11ContextManager::EndScene()
 {
+    SetUserDebugEventBegin(L"Text drawing");
     fontManager->DrawBatchedText();
+    SetUserDebugEventEnd();
 
     if (engineSettings.screenRate > 0)
         graphicsContext.SwapChain->Present(1, 0);

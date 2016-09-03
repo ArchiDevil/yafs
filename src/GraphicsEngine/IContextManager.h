@@ -34,6 +34,9 @@ public:
     virtual void                            BeginScene() = 0;
     virtual void                            EndScene() = 0;
     virtual void                            ResetPipeline() = 0;
+    virtual void                            SetUserDebugMarker(const std::wstring & markerName) = 0;
+    virtual void                            SetUserDebugEventBegin(const std::wstring & markerName) = 0;
+    virtual void                            SetUserDebugEventEnd() = 0;
     virtual ITexturePtr                     LoadTexture(const std::wstring & FileName) = 0;
     virtual MaterialPtr                     LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName) = 0;
     virtual IProgramPtr                     LoadShader(const std::wstring & FileName) = 0;
