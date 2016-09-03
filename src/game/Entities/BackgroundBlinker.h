@@ -14,11 +14,13 @@ public:
     BackgroundBlinker(ShiftEngine::SpriteSceneNode *sprite);
     virtual void Update(double dt) override;
 
+    void SetBlinkPeriod(float period);
+
 protected:
-    float blinkingPeriod = 0.0f;
-    float blinkingPhase = 0.0f;
-    float blinkingOpacityInterval = 0.3f;
-    float blinkingOpacityOffset = 0.05f;
+    float blinkPeriod = 0.0f;
+    float blinkPhase = 0.0f;
+    float blinkOpacityInterval = 0.3f;
+    float blinkOpacityOffset = 0.05f;
     double time = 0.0;
 
 };

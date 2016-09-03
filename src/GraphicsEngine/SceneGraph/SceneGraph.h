@@ -46,9 +46,9 @@ public:
     MeshSceneNode * AddMeshNode(const std::wstring & meshFileName, const Material * mat); //tries to load mesh with meshLoader
     MeshSceneNode * AddMeshNode(IMeshDataPtr dataPtr, const Material * mat);
     SpriteSceneNode * AddSpriteNode(const std::wstring & textureName,
+                                    int spriteLayer = 0,
                                     const MathLib::vec2f & leftTopTextureCoords = {0.0f, 0.0f},
-                                    const MathLib::vec2f & rightBottomTextureCoords = {1.0f, 1.0f},
-                                    int spriteLayer = 0);
+                                    const MathLib::vec2f & rightBottomTextureCoords = {1.0f, 1.0f});
     AnimatedSpriteSceneNode * AddAnimatedSpriteNode(const std::wstring & textureName,
                                                     int spriteLayer = 0);
     EmptySceneNode * AddEmptyNode();
