@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Projectile.h"
 #include "BackgroundBlinker.h"
+#include "BackgroundWanderer.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <MathLib/math.h>

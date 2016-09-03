@@ -11,14 +11,7 @@ BackgroundBlinker::BackgroundBlinker(ShiftEngine::SpriteSceneNode *sprite)
 
 void BackgroundBlinker::Update(double dt)
 {
-    static double time = 0.0;
     time += dt;
-
-    float opacity = std::sinf((float)time * blinkingPeriod + blinkingPhase) / 2.0f * 0.3f + 0.05f;
+    float opacity = std::sinf((float)time * blinkingPeriod + blinkingPhase) / 2.0f * blinkingOpacityInterval + blinkingOpacityOffset;
     sprite->SetMaskColor({1.0f, 1.0f, 1.0f, opacity});
-}
-
-bool BackgroundBlinker::handleEvent(const ProjectilePositionEvent & event)
-{
-    return false;
 }

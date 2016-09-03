@@ -12,12 +12,13 @@ class BackgroundBlinker
 {
 public:
     BackgroundBlinker(ShiftEngine::SpriteSceneNode *sprite);
-
     virtual void Update(double dt) override;
-    virtual bool handleEvent(const ProjectilePositionEvent & event) override;
 
-private:
+protected:
     float blinkingPeriod = 0.0f;
     float blinkingPhase = 0.0f;
+    float blinkingOpacityInterval = 0.3f;
+    float blinkingOpacityOffset = 0.05f;
+    double time = 0.0;
 
 };

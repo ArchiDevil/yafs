@@ -18,6 +18,7 @@ source_group("Header Files\\Game States" FILES ${LS})
 list(APPEND SRC ${LS})
 
 set(LS  Entities/BackgroundBlinker.cpp
+        Entities/BackgroundWanderer.cpp
         Entities/Enemy.cpp
         Entities/Entity.cpp
         Entities/EntityEventManager.cpp
@@ -30,6 +31,7 @@ source_group("Source Files\\Entities" FILES ${LS})
 list(APPEND SRC ${LS})
 
 set(LS  Entities/BackgroundBlinker.h
+        Entities/BackgroundWanderer.h
         Entities/Enemy.h
         Entities/Entity.h
         Entities/EntityEventManager.h

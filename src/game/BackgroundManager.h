@@ -19,6 +19,6 @@ public:
     void Update(double dt);
 
 private:
-    std::vector<ShiftEngine::EmptySceneNode*> layers;
+    std::vector<ShiftEngine::EmptySceneNode*> backgroundLayers;
 
 };

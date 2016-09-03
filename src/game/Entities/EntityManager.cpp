@@ -60,6 +60,13 @@ std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftE
     return entity;
 }
 
+std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode *sprite)
+{
+    auto entity = factory->CreateEntity<BackgroundWanderer>(sprite);
+    AddEntity(entity);
+    return entity;
+}
+
 void EntityManager::RemoveEntity(std::shared_ptr<Entity> & ent)
 {
     std::swap(ent, entities.back());
