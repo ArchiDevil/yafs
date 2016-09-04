@@ -18,14 +18,6 @@ Entity::~Entity()
 {
 }
 
-void Entity::Show()
-{
-}
-
-void Entity::Hide()
-{
-}
-
 bool Entity::handleEvent(const ProjectilePositionEvent& /*event*/)
 {
     return true;
@@ -49,6 +41,7 @@ bool Entity::IsDead() const
 void Entity::Kill()
 {
     isToDelete = true;
+    sprite.reset();
 }
 
 bool Entity::CalculateCollision(const Entity & ent) const

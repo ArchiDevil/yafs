@@ -18,8 +18,6 @@ public:
     virtual ~Entity();
 
     virtual void Update(double dt) = 0;
-    virtual void Show();
-    virtual void Hide();
 
     bool observer<ProjectilePositionEvent>::handleEvent(const ProjectilePositionEvent & event) override;
     bool observer<ExperiencePointPositionEvent>::handleEvent(const ExperiencePointPositionEvent & event) override;
