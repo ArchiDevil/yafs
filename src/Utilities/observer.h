@@ -25,7 +25,8 @@ public:
     virtual void notifyAll(const T& ev)
     {
         for (auto * object : observers)
-            object->handleEvent(ev);
+            if (!object->handleEvent(ev))
+                break;
     }
 
 protected:

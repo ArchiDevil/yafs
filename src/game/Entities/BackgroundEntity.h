@@ -15,7 +15,6 @@ public:
     BackgroundEntity(ShiftEngine::SpriteSceneNode *sprite, int layer);
 
     virtual void Update(double dt) override;
-    virtual bool handleEvent(const ProjectilePositionEvent & event) override;
 
 private:
     const int layer = 0;

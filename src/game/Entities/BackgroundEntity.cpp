@@ -25,8 +25,3 @@ void BackgroundEntity::Update(double /*dt*/)
         break;
     }
 }
-
-bool BackgroundEntity::handleEvent(const ProjectilePositionEvent& /*event*/)
-{
-    return false;
-}

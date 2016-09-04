@@ -31,6 +31,11 @@ bool Entity::handleEvent(const ProjectilePositionEvent& /*event*/)
     return true;
 }
 
+bool Entity::handleEvent(const ExperiencePointPositionEvent& /*event*/)
+{
+    return true;
+}
+
 const MathLib::vec2f Entity::GetPosition() const
 {
     return position;
