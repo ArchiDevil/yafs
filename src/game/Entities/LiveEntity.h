@@ -11,6 +11,7 @@ public:
     bool observer<ProjectilePositionEvent>::handleEvent(const ProjectilePositionEvent & event) override;
     bool observer<ExperiencePointPositionEvent>::handleEvent(const ExperiencePointPositionEvent & event) override;
     void Shoot(const MathLib::vec2f & targetPosition);
+    int GetExperienceCount();
 
 protected:
     float health = 1.0f;

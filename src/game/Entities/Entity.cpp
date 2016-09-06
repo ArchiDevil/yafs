@@ -44,6 +44,8 @@ void Entity::Kill()
 {
     isToDelete = true;
     sprite.reset();
+    observer<ProjectilePositionEvent>::unsubscribe(&EntityEventManager::GetInstance());
+    observer<ExperiencePointPositionEvent>::unsubscribe(&EntityEventManager::GetInstance());
 }
 
 bool Entity::CalculateCollision(const Entity & ent) const
