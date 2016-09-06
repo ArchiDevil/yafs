@@ -24,6 +24,7 @@ set(LS  Entities/BackgroundBlinker.cpp
         Entities/EntityEventManager.cpp
         Entities/EntityFactory.cpp
         Entities/EntityManager.cpp
+        Entities/ExperiencePoint.cpp
         Entities/LiveEntity.cpp
         Entities/Player.cpp
         Entities/Projectile.cpp)
@@ -37,6 +38,7 @@ set(LS  Entities/BackgroundBlinker.h
         Entities/EntityEventManager.h
         Entities/EntityFactory.h
         Entities/EntityManager.h
+        Entities/ExperiencePoint.h
         Entities/LiveEntity.h
         Entities/Player.h
         Entities/Projectile.h)

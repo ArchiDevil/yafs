@@ -6,8 +6,8 @@
 const std::wstring enemyTextureName = L"enemy_sprite.png";
 constexpr float MOVE_EPS = 0.05f;
 
-Enemy::Enemy(const MathLib::vec2f & position, float health)
-    : LiveEntity(position, health, enemyTextureName)
+Enemy::Enemy(const MathLib::vec2f & position, float health, int expCount)
+    : LiveEntity(position, health, enemyTextureName, expCount)
 {
     sprite->SetLocalScale(0.5f);
 }

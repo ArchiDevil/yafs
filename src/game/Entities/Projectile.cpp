@@ -18,19 +18,20 @@ Projectile::Projectile(const MathLib::vec2f & position, const MathLib::vec2f & s
 void Projectile::Update(double dt)
 {
     remainingTime -= dt;
+    if (remainingTime < 0.0)
+    {
+        Kill();
+        return;
+    }
 
     position += speed * dt;
     UpdateGraphicsSpritePosition();
 
-    EntityEventManager::GetInstance().notifyAll(ProjectilePositionEvent(this));
-
     float overallIntensity = (float)remainingTime / 3.0f;
     sprite->SetMaskColor({overallIntensity, overallIntensity, overallIntensity, 1.0f});
 
-    if (remainingTime < 0.0)
-    {
-        Kill();
-    }
+    ((notifier<ProjectilePositionEvent>)EntityEventManager::GetInstance())
+        .notifyAll(ProjectilePositionEvent(this));
 }
 
 Entity* Projectile::GetProducer() const

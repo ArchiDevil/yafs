@@ -36,6 +36,10 @@ void D3D11Context::ClearDefaultRenderTarget()
 
 HRESULT D3D11Context::CreateStates()
 {
+    HRESULT hr = DeviceContext->QueryInterface(&UserAnnotationsHandler);
+    if (FAILED(hr))
+        return hr;
+
     D3D11_BLEND_DESC bdDescNormal;
     ZeroMemory(&bdDescNormal, sizeof(D3D11_BLEND_DESC));
     for (int i = 0; i < 8; ++i)
@@ -48,7 +52,7 @@ HRESULT D3D11Context::CreateStates()
 
         bdDescNormal.RenderTarget[i].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
     }
-    HRESULT hr = Device->CreateBlendState(&bdDescNormal, &bsNormal);
+    hr = Device->CreateBlendState(&bdDescNormal, &bsNormal);
     if (FAILED(hr))
         return hr;
 

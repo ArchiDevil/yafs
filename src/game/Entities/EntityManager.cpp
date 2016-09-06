@@ -6,15 +6,24 @@ using namespace MathLib;
 
 void EntityManager::AddEntity(const std::shared_ptr<Entity> & ent)
 {
-    entities.push_back(ent);
+    entitiesToAdd.push_back(ent);
 }
 
 void EntityManager::UpdateAllEntities(double dt)
 {
+    if (entitiesToAdd.size() > 0)
+    {
+        for (auto it = entitiesToAdd.begin(); it != entitiesToAdd.end(); ++it)
+            entities.push_back(*it);
+        entitiesToAdd.clear();
+    }
+
     for (auto it = entities.begin(); it != entities.end(); ++it)
     {
-        (*it)->Update(dt);
-        if ((*it)->IsDead())
+        if (!(*it)->IsDead())
+            (*it)->Update(dt);
+
+        if ((*it)->IsDead() && (*it).use_count() == 1)
         {
             if (it + 1 == entities.end())
                 return RemoveEntity(*it);
@@ -35,9 +44,10 @@ std::shared_ptr<Player> EntityManager::CreatePlayer(const MathLib::vec2f & posit
 }
 
 std::shared_ptr<Enemy> EntityManager::CreateEnemy(const MathLib::vec2f & position,
-                                                  float health)
+                                                  float health,
+                                                  int expCount)
 {
-    auto entity = factory->CreateEntity<Enemy>(position, health);
+    auto entity = factory->CreateEntity<Enemy>(position, health, expCount);
     AddEntity(entity);
     return entity;
 }
@@ -63,6 +73,13 @@ std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftE
 std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode *sprite)
 {
     auto entity = factory->CreateEntity<BackgroundWanderer>(sprite);
+    AddEntity(entity);
+    return entity;
+}
+
+std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(const MathLib::vec2f & position, int expCount)
+{
+    auto entity = factory->CreateEntity<ExperiencePoint>(position, expCount);
     AddEntity(entity);
     return entity;
 }

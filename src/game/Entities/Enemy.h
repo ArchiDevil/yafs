@@ -13,7 +13,7 @@ class Enemy : public LiveEntity
     };
 
 public:
-    Enemy(const MathLib::vec2f & position, float health);
+    Enemy(const MathLib::vec2f & position, float health, int expCount);
     virtual ~Enemy() = default;
     void Update(double dt) override;
     void MoveTo(const MathLib::vec2f & target);

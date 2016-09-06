@@ -34,6 +34,9 @@ public:
     void                                BeginScene() override;
     void                                EndScene() override;
     void                                ResetPipeline() override;
+    void                                SetUserDebugMarker(const std::wstring & markerName) override;
+    void                                SetUserDebugEventBegin(const std::wstring & markerName) override;
+    void                                SetUserDebugEventEnd() override;
     ITexturePtr                         LoadTexture(const std::wstring & FileName) override;
     MaterialPtr                         LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName) override;
     IProgramPtr                         LoadShader(const std::wstring & FileName) override;
