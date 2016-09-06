@@ -35,6 +35,5 @@ VS_O VS(VS_I Input)
 
 float4 PS(VS_O Input) : SV_TARGET
 {
-    //return float4(Input.Texcoord.x, Input.Texcoord.y, 0.0, 1.0);
     return MaskColor * Texture.Sample(SS, Input.Texcoord);
 };

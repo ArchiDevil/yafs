@@ -72,9 +72,9 @@ MeshSceneNode * SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const Material * m
 }
 
 SpriteSceneNode * SceneGraph::AddSpriteNode(const std::wstring & textureName,
+                                            int spriteLayer/* = 0*/,
                                             const MathLib::vec2f & leftTopTextureCoords/* = {0.0f, 0.0f}*/,
-                                            const MathLib::vec2f & rightBottomTextureCoords/* = {1.0f, 1.0f}*/,
-                                            int spriteLayer/* = 0*/)
+                                            const MathLib::vec2f & rightBottomTextureCoords/* = {1.0f, 1.0f}*/)
 {
     CreateSpriteRequisites();
 

@@ -110,3 +110,13 @@ int SpriteSceneNode::GetRenderingLayer() const
 {
     return layer;
 }
+
+void ShiftEngine::SpriteSceneNode::SetDrawingMode(SpriteDrawingMode mode)
+{
+    drawingMode = mode;
+}
+
+SpriteSceneNode::SpriteDrawingMode SpriteSceneNode::GetDrawingMode() const
+{
+    return drawingMode;
+}

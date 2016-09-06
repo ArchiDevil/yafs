@@ -11,6 +11,8 @@ Entity::Entity(const MathLib::vec2f & position,
     if (!sprite)
         throw std::runtime_error("sprite == nullptr");
 
+    sprite->SetDrawingMode(ShiftEngine::SpriteSceneNode::SpriteDrawingMode::Additive);
+
     UpdateGraphicsSpritePosition();
 }
 

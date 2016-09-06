@@ -78,7 +78,7 @@ private:
     void bindCustomUniforms(MeshSceneNode * currentNode, const RenderQueue & list);
 
     void drawSky(RenderQueue &rq);
-    void drawSprites(const SpritesVault & sprites, CameraSceneNode & currentCamera);
+    void drawSprites(SpritesVault & sprites, CameraSceneNode & currentCamera);
     void bindLights(const LightsVector & lv, unsigned int startIndex, unsigned int count, Material * matPtr);
 
     void loadSpritesPrerequisites();

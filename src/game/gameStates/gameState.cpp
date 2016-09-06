@@ -55,6 +55,7 @@ bool GameState::update(double dt)
     totalTime += dt;
 
     GoingHome::GetGamePtr()->GetBackgroundMgr()->Update(dt);
+    GoingHome::GetGamePtr()->GetEntityMgr()->UpdateAllEntities(dt);
 
     auto playerPosition = GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition();
     pScene->GetActiveCamera()->SetLocalPosition({playerPosition.x, playerPosition.y, 0.0f});
