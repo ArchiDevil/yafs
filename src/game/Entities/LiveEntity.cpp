@@ -55,3 +55,8 @@ void LiveEntity::Shoot(const vec2f & targetPosition)
     direction = vec2Transform(direction, matrixRotationZ(angleFactor));
     GetGamePtr()->GetEntityMgr()->CreateProjectile(position, direction * 2.0f, 1.0f, 3.0, this);
 }
+
+int LiveEntity::GetExperienceCount()
+{
+    return experienceCount;
+}
