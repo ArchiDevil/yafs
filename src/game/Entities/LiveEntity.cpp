@@ -65,3 +65,8 @@ void LiveEntity::SetTargetDirection(const MathLib::vec2f & val)
 {
     targetDirection = val;
 }
+
+int LiveEntity::GetExperienceCount()
+{
+    return experienceCount;
+}

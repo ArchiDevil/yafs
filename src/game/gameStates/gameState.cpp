@@ -57,6 +57,7 @@ bool GameState::update(double dt)
     totalTime += dt;
 
     GoingHome::GetGamePtr()->GetBackgroundMgr()->Update(dt);
+    GoingHome::GetGamePtr()->GetEntityMgr()->UpdateAllEntities(dt);
 
     auto playerPosition = GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition();
     pScene->GetActiveCamera()->SetLocalPosition({playerPosition.x, playerPosition.y, 0.0f});
@@ -107,6 +108,12 @@ bool GameState::render(double dt)
 
     for (int i = 0; i < infoSize; i++)
         pFntMgr->DrawTextTL(di[i].str(), 5.0f, 5.0f + i * 16.0f);
+
+    std::ostringstream experienceCount;
+    experienceCount << "Experience: " << GoingHome::GetGamePtr()->GetPlayerPtr()->GetExperienceCount();
+    pFntMgr->DrawTextTL(experienceCount.str(),
+        pCtxMgr->GetEngineSettings().screenWidth - 160.0f,
+        pCtxMgr->GetEngineSettings().screenHeight - 40.0f);
 
     //guiPlatform->getRenderManagerPtr()->drawOneFrame();
 

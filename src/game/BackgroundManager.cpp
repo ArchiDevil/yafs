@@ -7,15 +7,37 @@ using namespace ShiftEngine;
 BackgroundManager::BackgroundManager(EntityManager *entityMgr)
 {
     auto* sceneGraph = GetSceneGraph();
-    for (int i = 1; i < 4; ++i)
+    for (int i = 0; i < 3; ++i)
+        backgroundLayers.push_back(sceneGraph->AddEmptyNode());
+
+    for (int i = 0; i < 50; ++i)
     {
-        layers.push_back(sceneGraph->AddEmptyNode());
-        //FIXME: this sprite image only for example, needed to be fixed
-        SpriteSceneNode *sprite = sceneGraph->AddSpriteNode(L"sprite.png", {{}, {}}, {1.0, 1.0}, i);
-        sprite->SetLocalScale((4 - i) * 0.5f);
-        sprite->SetMaskColor({1.0f / i, 1.0f / i, 1.0f / i, 1.0f});
-        layers.back()->AddChild(sprite);
-        entityMgr->CreateBackgroundEntity(sprite, i);
+        SpriteSceneNode *sprite = sceneGraph->AddSpriteNode(L"cloud.png", 3);
+        sprite->SetDrawingMode(SpriteSceneNode::SpriteDrawingMode::Additive);
+        sprite->SetLocalScale(std::rand() % 330 / 100.0f + 0.7f);
+        sprite->SetLocalPosition({float(std::rand() % 800) / 100.0f - 4.0f, float(std::rand() % 600) / 100.0f - 3.0f, 0.0f});
+        backgroundLayers[2]->AddChild(sprite);
+        entityMgr->CreateBackgroundBlinker(sprite);
+    }
+
+    for (int i = 0; i < 25; ++i)
+    {
+        SpriteSceneNode *sprite = sceneGraph->AddSpriteNode(L"enemy_sprite.png", 2);
+        sprite->SetDrawingMode(SpriteSceneNode::SpriteDrawingMode::Additive);
+        sprite->SetLocalPosition({float(std::rand() % 800) / 100.0f - 4.0f, float(std::rand() % 600) / 100.0f - 3.0f, 0.0f});
+        sprite->SetLocalScale(0.3f);
+        backgroundLayers[1]->AddChild(sprite);
+        entityMgr->CreateBackgroundBlinker(sprite)->SetBlinkPeriod(0.1f);
+    }
+
+    for (int i = 0; i < 5; ++i)
+    {
+        SpriteSceneNode *sprite = sceneGraph->AddSpriteNode(L"enemy_sprite.png", 1);
+        sprite->SetDrawingMode(SpriteSceneNode::SpriteDrawingMode::Additive);
+        sprite->SetLocalPosition({float(std::rand() % 800) / 100.0f - 4.0f, float(std::rand() % 600) / 100.0f - 3.0f, 0.0f});
+        sprite->SetLocalScale(0.2f);
+        backgroundLayers[0]->AddChild(sprite);
+        entityMgr->CreateBackgroundWanderer(sprite);
     }
 }
 
@@ -23,15 +45,12 @@ void BackgroundManager::Update(double dt)
 {
     static double time = 0.0;
     time += dt;
-    float sin_val = sinf((float)time) * 0.7f;
-    float cos_val = cosf((float)time) * 0.7f;
 
     // need to take player position
     MathLib::vec2f playerPosition = GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition();
-    for (int i = 1; i < 4; ++i)
+    for (int i = 0; i < 3; ++i)
     {
-        // invert position of background layer simulating movement to the different direction of player
-        float k = 1.0f / i;
-        layers[i - 1]->SetLocalPosition({/*playerPosition.x*/sin_val * k, /*playerPosition.y*/cos_val * k, 0.0f});
+        float k = (i + 2.0f) / 4.0f;
+        backgroundLayers[i]->SetLocalPosition({playerPosition.x * k, playerPosition.y * k, 0.0f});
     }
 }

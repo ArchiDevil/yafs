@@ -340,7 +340,7 @@ size_t Renderer::GetFPS() const
     return FPS;
 }
 
-void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & currentCamera)
+void Renderer::drawSprites(SpritesVault & sprites, CameraSceneNode & currentCamera)
 {
     struct textureMatrixWithPadding
     {
@@ -351,19 +351,25 @@ void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & curre
         alignas(16) float thirdRow[3];
     };
 
+    auto spriteSortFunctor = [] (SpriteSceneNode* left, SpriteSceneNode* right) { return left->GetDrawingMode() < right->GetDrawingMode(); };
+    IContextManager* contextMgr = GetContextManager();
+
     if (!spriteProgram || !spriteMesh)
         loadSpritesPrerequisites();
 
-    GetContextManager()->SetZState(true);
-    GetContextManager()->SetRasterizerState(RasterizerState::NoCulling);
+    contextMgr->SetZState(true);
+    contextMgr->SetRasterizerState(RasterizerState::NoCulling);
     currentState.shaderChanges++;
     currentState.currentProgram = spriteProgram;
     currentState.shaderChanged = true;
 
     GetContextManager()->SetUserDebugEventBegin(L"Sprites drawing");
 
-    for (auto spriteLayerPair : sprites)
+    for (auto& spriteLayerPair : sprites)
     {
+        std::sort(spriteLayerPair.second.begin(), spriteLayerPair.second.end(), spriteSortFunctor);
+        contextMgr->SetBlendingState(BlendingState::AlphaEnabled);
+
         for (const SpriteSceneNode* sprite : spriteLayerPair.second)
         {
             if (!sprite)
@@ -371,6 +377,9 @@ void Renderer::drawSprites(const SpritesVault & sprites, CameraSceneNode & curre
                 LOG_ERROR("Empty sprite node in render queue");
                 continue;
             }
+
+            if (contextMgr->GetBlendingState() == BlendingState::AlphaEnabled && sprite->GetDrawingMode() == SpriteSceneNode::SpriteDrawingMode::Additive)
+                contextMgr->SetBlendingState(BlendingState::Additive);
 
             const ITexturePtr & texture = sprite->GetTexture();
 

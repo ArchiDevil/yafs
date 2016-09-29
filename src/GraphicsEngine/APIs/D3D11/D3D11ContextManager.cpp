@@ -38,6 +38,8 @@ void ShiftEngine::D3D11ContextManager::SetUserDebugMarker(const std::wstring & m
 {
 #if defined DEBUG || _DEBUG
     graphicsContext.UserAnnotationsHandler->SetMarker(markerName.c_str());
+#else
+    markerName;
 #endif
 }
 
@@ -45,6 +47,8 @@ void ShiftEngine::D3D11ContextManager::SetUserDebugEventBegin(const std::wstring
 {
 #if defined DEBUG || _DEBUG
     graphicsContext.UserAnnotationsHandler->BeginEvent(markerName.c_str());
+#else
+    markerName;
 #endif
 }
 
@@ -163,6 +167,11 @@ bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettin
     vp.MaxDepth = 1.0f;
 
     graphicsContext.DeviceContext->RSSetViewports(1, &vp);
+
+#if defined DEBUG || defined _DEBUG
+    if(FAILED(graphicsContext.CreateAnnotationsHandler()))
+        LOG_FATAL_ERROR("Unable to annotations handler for renderer");
+#endif
 
     if (FAILED(graphicsContext.CreateStates()))
         LOG_FATAL_ERROR("Unable to create states for renderer");

@@ -14,6 +14,7 @@ struct D3D11Context
     ~D3D11Context();
     void ClearDefaultRenderTarget();
     HRESULT CreateStates();
+    HRESULT CreateAnnotationsHandler();
 
     CComPtr<ID3D11Device>               Device = nullptr;
     CComPtr<ID3D11DeviceContext>        DeviceContext = nullptr;

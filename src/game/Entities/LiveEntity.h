@@ -13,6 +13,7 @@ public:
     void            Shoot(const MathLib::vec2f & direction);
     MathLib::vec2f  GetTargetDirection() const;
     void            SetTargetDirection(const MathLib::vec2f & val);
+    int             GetExperienceCount();
 
 protected:
     float           health = 1.0f;

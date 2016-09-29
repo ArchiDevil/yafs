@@ -11,6 +11,8 @@ Entity::Entity(const MathLib::vec2f & position,
     if (!sprite)
         throw std::runtime_error("sprite == nullptr");
 
+    sprite->SetDrawingMode(ShiftEngine::SpriteSceneNode::SpriteDrawingMode::Additive);
+
     UpdateGraphicsSpritePosition();
 }
 
@@ -42,6 +44,8 @@ void Entity::Kill()
 {
     isToDelete = true;
     sprite.reset();
+    observer<ProjectilePositionEvent>::unsubscribe(&EntityEventManager::GetInstance());
+    observer<ExperiencePointPositionEvent>::unsubscribe(&EntityEventManager::GetInstance());
 }
 
 bool Entity::CalculateCollision(const Entity & ent) const

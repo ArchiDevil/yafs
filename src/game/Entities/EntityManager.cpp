@@ -63,10 +63,16 @@ std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f
     return entity;
 }
 
-std::shared_ptr<BackgroundEntity> EntityManager::CreateBackgroundEntity(ShiftEngine::SpriteSceneNode *sprite,
-                                                                        int layer)
+std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode *sprite)
 {
-    auto entity = factory->CreateEntity<BackgroundEntity>(sprite, layer);
+    auto entity = factory->CreateEntity<BackgroundBlinker>(sprite);
+    AddEntity(entity);
+    return entity;
+}
+
+std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode *sprite)
+{
+    auto entity = factory->CreateEntity<BackgroundWanderer>(sprite);
     AddEntity(entity);
     return entity;
 }
