@@ -48,12 +48,22 @@ bool LiveEntity::handleEvent(const ExperiencePointPositionEvent & event)
 }
 
 // TODO: use direction here
-void LiveEntity::Shoot(const vec2f & targetPosition)
+void LiveEntity::Shoot(const vec2f & direction)
 {
-    auto direction = normalize(targetPosition - position);
+    vec2f dir = direction;
     float angleFactor = (float)(rand() % 30 - 15) / 100.0f;
-    direction = vec2Transform(direction, matrixRotationZ(angleFactor));
-    GetGamePtr()->GetEntityMgr()->CreateProjectile(position, direction * 2.0f, 1.0f, 3.0, this);
+    dir = vec2Transform(dir, matrixRotationZ(angleFactor));
+    GetGamePtr()->GetEntityMgr()->CreateProjectile(position, dir * 2.0f, 1.0f, 3.0, this);
+}
+
+MathLib::vec2f LiveEntity::GetTargetDirection() const
+{
+    return targetDirection;
+}
+
+void LiveEntity::SetTargetDirection(const MathLib::vec2f & val)
+{
+    targetDirection = val;
 }
 
 int LiveEntity::GetExperienceCount()

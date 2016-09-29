@@ -12,7 +12,7 @@ public:
     virtual ~Player() = default;
 
     void Update(double dt) override;
-    void ShootAlternative(const MathLib::vec2f & targetPosition);
+    void ShootAlternative(const MathLib::vec2f & direction);
     void SetMoveVelocity(const MathLib::vec2f &velocity);
 
 private:

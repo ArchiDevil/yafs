@@ -17,17 +17,10 @@ Player::Player(const vec2f & position, float health)
 {
 }
 
-void Player::ShootAlternative(const MathLib::vec2f & targetPosition)
+void Player::ShootAlternative(const MathLib::vec2f & direction)
 {
-    auto direction = normalize(targetPosition - position);
-
     for (float i = -0.15f; i < 0.25f; i += 0.15f)
-    {
-        auto new_direction = vec2Transform(direction, matrixRotationZ(i));
-        
-        // TODO: fix and use direction instead of shoot position
-        Shoot(position + new_direction);
-    }
+        Shoot(vec2Transform(direction, matrixRotationZ(i)));
 }
 
 void Player::SetMoveVelocity(const vec2f & velocity)
