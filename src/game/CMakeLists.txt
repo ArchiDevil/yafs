@@ -7,14 +7,30 @@ set(SRC BackgroundManager.cpp
         GoingHomeApplication.h
         main.cpp)
 
-set(LS  gameStates/gameState.cpp
-        gameStates/MainMenuState.cpp)
-source_group("Source Files\\Game States" FILES ${LS})
+set(LS  AI/AIBase.cpp
+        AI/AISmallSpirit.cpp)
+source_group("Source Files\\AI" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  gameStates/gameState.h
-        gameStates/MainMenuState.h)
-source_group("Header Files\\Game States" FILES ${LS})
+set(LS  AI/AIBase.h
+        AI/AISmallSpirit.h)
+source_group("Header Files\\AI" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  AI/Actions/AIAction.cpp
+        AI/Actions/AIActionDodge.cpp
+        AI/Actions/AIActionEscape.cpp
+        AI/Actions/AIActionPursuit.cpp
+        AI/Actions/AIActionShoot.cpp)
+source_group("Source Files\\AI\\Actions" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  AI/Actions/AIAction.h
+        AI/Actions/AIActionDodge.h
+        AI/Actions/AIActionEscape.h
+        AI/Actions/AIActionPursuit.h
+        AI/Actions/AIActionShoot.h)
+source_group("Header Files\\AI\\Actions" FILES ${LS})
 list(APPEND SRC ${LS})
 
 set(LS  Entities/BackgroundBlinker.cpp
@@ -43,6 +59,16 @@ set(LS  Entities/BackgroundBlinker.h
         Entities/Player.h
         Entities/Projectile.h)
 source_group("Header Files\\Entities" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  gameStates/gameState.cpp
+        gameStates/MainMenuState.cpp)
+source_group("Source Files\\Game States" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  gameStates/gameState.h
+        gameStates/MainMenuState.h)
+source_group("Header Files\\Game States" FILES ${LS})
 list(APPEND SRC ${LS})
 
 include_directories(../../3rdparty/jsoncpp/include)

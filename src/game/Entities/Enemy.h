@@ -8,8 +8,9 @@ class Enemy : public LiveEntity
 {
     enum class EnemyState
     {
-        Waiting,
-        Moving
+        Standing,
+        Moving,
+        Attacking
     };
 
 public:
@@ -20,6 +21,6 @@ public:
 
 private:
     MathLib::vec2f movePosition;
-    EnemyState state = EnemyState::Waiting;
+    EnemyState state = EnemyState::Standing;
 
 };

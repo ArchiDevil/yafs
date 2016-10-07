@@ -23,12 +23,14 @@ public:
     std::shared_ptr<BackgroundBlinker> CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode *sprite);
     std::shared_ptr<BackgroundWanderer> CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode *sprite);
 
+    const std::vector<std::shared_ptr<Entity>> GetLiveEntities();
 private:
     void AddEntity(const std::shared_ptr<Entity> & ent);
     void RemoveEntity(std::shared_ptr<Entity> & ent);
 
     std::vector<std::shared_ptr<Entity>> entities;
     std::vector<std::shared_ptr<Entity>> entitiesToAdd;
+    std::vector<std::shared_ptr<Entity>> liveEntities;
     std::shared_ptr<EntityFactory> factory = std::make_shared<EntityFactory>();
 
 };

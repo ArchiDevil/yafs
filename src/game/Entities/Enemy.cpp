@@ -23,7 +23,7 @@ void Enemy::Update(double dt)
         MathLib::vec2f diff = movePosition - Entity::position;
         if (abs(diff.x) < MOVE_EPS && abs(diff.y) < MOVE_EPS)
         {
-            state = EnemyState::Waiting;
+            state = EnemyState::Standing;
         }
     }
 }

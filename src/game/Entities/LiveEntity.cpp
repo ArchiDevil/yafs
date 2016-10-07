@@ -8,10 +8,12 @@ using namespace MathLib;
 using namespace GoingHome;
 using namespace ShiftEngine;
 
-LiveEntity::LiveEntity(const vec2f & position, float health, const std::wstring & textureName, int expCount)
+LiveEntity::LiveEntity(const vec2f & position, float health, const std::wstring & textureName, int expCount, Fraction fract)
     : Entity(position, GetSceneGraph()->AddSpriteNode(textureName))
+    , maxHealth(health)
     , health(health)
     , experienceCount(expCount)
+    , fraction(fract)
 {
 }
 
@@ -60,3 +62,19 @@ int LiveEntity::GetExperienceCount()
 {
     return experienceCount;
 }
+
+float LiveEntity::GetMaxHealth()
+{
+    return maxHealth;
+}
+
+float LiveEntity::GetHealth()
+{
+    return health;
+}
+
+LiveEntity::Fraction LiveEntity::GetFraction()
+{
+    return fraction;
+}
+

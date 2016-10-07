@@ -14,7 +14,11 @@ void EntityManager::UpdateAllEntities(double dt)
     if (entitiesToAdd.size() > 0)
     {
         for (auto it = entitiesToAdd.begin(); it != entitiesToAdd.end(); ++it)
+        {
             entities.push_back(*it);
+            if (dynamic_cast<LiveEntity *>(it->get()))
+                liveEntities.push_back(*it);
+        }
         entitiesToAdd.clear();
     }
 
@@ -23,14 +27,18 @@ void EntityManager::UpdateAllEntities(double dt)
         if (!(*it)->IsDead())
             (*it)->Update(dt);
 
-        if ((*it)->IsDead() && (*it).use_count() == 1)
+        if ((*it)->IsDead())
         {
-            if (it + 1 == entities.end())
-                return RemoveEntity(*it);
+            if ((*it).use_count() == 1 ||
+                (dynamic_cast<LiveEntity *>(it->get()) && (*it).use_count() == 2))
+            {
+                if (it + 1 == entities.end())
+                    return RemoveEntity(*it);
 
-            RemoveEntity(*it);
-            if (it != entities.begin())
-                --it;
+                RemoveEntity(*it);
+                if (it != entities.begin())
+                    --it;
+            }
         }
     }
 }
@@ -86,6 +94,18 @@ std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(const Math
 
 void EntityManager::RemoveEntity(std::shared_ptr<Entity> & ent)
 {
+
+    if (dynamic_cast<LiveEntity *>(ent.get()))
+    {
+        std::swap(ent, liveEntities.back());
+        liveEntities.pop_back();
+    }
+
     std::swap(ent, entities.back());
     entities.pop_back();
+}
+
+std::vector<std::shared_ptr<Entity>> EntityManager::GetLiveEntities()
+{
+    return liveEntities;
 }
