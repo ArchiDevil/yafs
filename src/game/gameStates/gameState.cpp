@@ -13,10 +13,12 @@ GameState::GameState(IniWorker * iw/*, MyGUI::Gui * guiModule, MyGUI::DirectX11P
     : iniLoader(iw)
     //, guiModule(guiModule)
     //, guiPlatform(guiPlatform)
-{}
+{
+}
 
 GameState::~GameState()
-{}
+{
+}
 
 bool GameState::initState()
 {
@@ -59,7 +61,7 @@ bool GameState::update(double dt)
 
     auto playerPosition = GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition();
     pScene->GetActiveCamera()->SetLocalPosition({playerPosition.x, playerPosition.y, 0.0f});
-    
+
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);
 
@@ -126,10 +128,12 @@ void GameState::onKill()
 }
 
 void GameState::onSuspend()
-{}
+{
+}
 
 void GameState::onResume()
-{}
+{
+}
 
 void GameState::ProcessInput(double dt)
 {
@@ -149,15 +153,18 @@ void GameState::ProcessInput(double dt)
 
     Player* player = GoingHome::GetGamePtr()->GetPlayerPtr();
 
-    float x = (float)mouseInfo.clientX - settings.screenWidth / 2;
-    float y = settings.screenHeight / 2 - (float)mouseInfo.clientY;
+    const float x = (float)mouseInfo.clientX - settings.screenWidth / 2;
+    const float y = settings.screenHeight / 2 - (float)mouseInfo.clientY;
+
+    player->SetTargetDirection({x, y});
 
     static bool lm_click = false;
     if (inputEngine.IsMouseDown(LButton) && !lm_click)
     {
         lm_click = true;
-        player->Shoot({x, y});
+        player->Shoot(MathLib::normalize(player->GetTargetDirection() - player->GetPosition()));
     }
+
     if (inputEngine.IsMouseUp(LButton))
         lm_click = false;
 
@@ -165,11 +172,11 @@ void GameState::ProcessInput(double dt)
     if (inputEngine.IsMouseDown(RButton) && !rm_click)
     {
         rm_click = true;
-        player->ShootAlternative({x, y});
+        player->ShootAlternative(MathLib::normalize(player->GetTargetDirection() - player->GetPosition()));
     }
+
     if (inputEngine.IsMouseUp(RButton))
         rm_click = false;
-
 
     float xVelocity = 0.0f, yVelocity = 0.0f;
     if (inputEngine.IsKeyDown(DIK_W))
