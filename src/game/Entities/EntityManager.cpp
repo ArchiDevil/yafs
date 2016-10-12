@@ -4,8 +4,8 @@
 
 using namespace MathLib;
 
-template<typename T1, typename T2>
-void EntityManager::AddEntity(const std::shared_ptr<T1> & ent, std::vector<std::shared_ptr<T2>> list)
+template<typename T>
+void EntityManager::AddEntity(const std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list)
 {
     list.push_back(ent);
 }
@@ -68,7 +68,7 @@ std::shared_ptr<Player> EntityManager::CreatePlayer(const MathLib::vec2f & posit
                                                     float health)
 {
     auto entity = factory->CreateEntity<Player>(position, health);
-    AddEntity(entity, liveEntities);
+    AddEntity((std::shared_ptr<LiveEntity>)entity, liveEntities);
     return entity;
 }
 
@@ -77,7 +77,7 @@ std::shared_ptr<Enemy> EntityManager::CreateEnemy(const MathLib::vec2f & positio
                                                   int expCount)
 {
     auto entity = factory->CreateEntity<Enemy>(position, health, expCount);
-    AddEntity(entity, liveEntities);
+    AddEntity((std::shared_ptr<LiveEntity>)entity, liveEntities);
     return entity;
 }
 
@@ -88,33 +88,33 @@ std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f
                                                             Entity* producer)
 {
     auto entity = factory->CreateEntity<Projectile>(position, speed, damage, lifetime, producer);
-    AddEntity(entity, entities);
+    AddEntity((std::shared_ptr<Entity>)entity, entities);
     return entity;
 }
 
 std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode *sprite)
 {
     auto entity = factory->CreateEntity<BackgroundBlinker>(sprite);
-    AddEntity(entity, entities);
+    AddEntity((std::shared_ptr<Entity>)entity, entities);
     return entity;
 }
 
 std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode *sprite)
 {
     auto entity = factory->CreateEntity<BackgroundWanderer>(sprite);
-    AddEntity(entity, entities);
+    AddEntity((std::shared_ptr<Entity>)entity, entities);
     return entity;
 }
 
 std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(const MathLib::vec2f & position, int expCount)
 {
     auto entity = factory->CreateEntity<ExperiencePoint>(position, expCount);
-    AddEntity(entity, entities);
+    AddEntity((std::shared_ptr<Entity>)entity, entities);
     return entity;
 }
 
 template<typename T>
-void EntityManager::RemoveEntity(std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> list)
+void EntityManager::RemoveEntity(std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list)
 {
     std::swap(ent, list.back());
     list.pop_back();

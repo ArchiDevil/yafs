@@ -25,10 +25,10 @@ public:
 
     const std::vector<std::shared_ptr<LiveEntity>> * GetLiveEntities();
 private:
-    template<typename T1, typename T2>
-    void AddEntity(const std::shared_ptr<T1> & ent, std::vector<std::shared_ptr<T2>> list);
     template<typename T>
-    void RemoveEntity(std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> list);
+    void AddEntity(const std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list);
+    template<typename T>
+    void RemoveEntity(std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list);
 
     std::vector<std::shared_ptr<Entity>> entities;
     std::vector<std::shared_ptr<Entity>> entitiesToAdd;
