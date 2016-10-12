@@ -17,14 +17,14 @@ public:
     bool observer<ProjectilePositionEvent>::handleEvent(const ProjectilePositionEvent & event) override;
     bool observer<ExperiencePointPositionEvent>::handleEvent(const ExperiencePointPositionEvent & event) override;
     void Shoot(const MathLib::vec2f & targetPosition);
-    int GetExperienceCount();
-    float GetMaxHealth();
-    float GetHealth();
-    Fraction GetFraction();
+    const int GetExperienceCount();
+    const float GetMaxHealth();
+    const float GetHealth();
+    const Fraction GetFraction();
 
 protected:
     float maxHealth = 1.0f;
     float health = 1.0f;
     int experienceCount = 0;
-    Fraction fraction;
+    Fraction fraction = FractionEnemy;
 };

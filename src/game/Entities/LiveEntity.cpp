@@ -58,22 +58,22 @@ void LiveEntity::Shoot(const vec2f & targetPosition)
     GetGamePtr()->GetEntityMgr()->CreateProjectile(position, direction * 2.0f, 1.0f, 3.0, this);
 }
 
-int LiveEntity::GetExperienceCount()
+const int LiveEntity::GetExperienceCount()
 {
     return experienceCount;
 }
 
-float LiveEntity::GetMaxHealth()
+const float LiveEntity::GetMaxHealth()
 {
     return maxHealth;
 }
 
-float LiveEntity::GetHealth()
+const float LiveEntity::GetHealth()
 {
     return health;
 }
 
-LiveEntity::Fraction LiveEntity::GetFraction()
+const LiveEntity::Fraction LiveEntity::GetFraction()
 {
     return fraction;
 }

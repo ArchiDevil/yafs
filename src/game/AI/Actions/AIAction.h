@@ -9,5 +9,5 @@ class AIAction
 public:
     AIAction();
     virtual ~AIAction() = default;
-    virtual void Do(std::shared_ptr<LiveEntity> entity) = 0;
+    virtual void Do(LiveEntity & entity) = 0;
 };

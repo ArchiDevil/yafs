@@ -24,5 +24,5 @@ protected:
 public:
     AIBase();
     virtual ~AIBase() = default;
-    virtual void Update(std::shared_ptr<LiveEntity> entity) = 0;
+    virtual void Update(LiveEntity & entity) = 0;
 };

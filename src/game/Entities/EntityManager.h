@@ -23,14 +23,17 @@ public:
     std::shared_ptr<BackgroundBlinker> CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode *sprite);
     std::shared_ptr<BackgroundWanderer> CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode *sprite);
 
-    const std::vector<std::shared_ptr<Entity>> GetLiveEntities();
+    const std::vector<std::shared_ptr<LiveEntity>> * GetLiveEntities();
 private:
-    void AddEntity(const std::shared_ptr<Entity> & ent);
-    void RemoveEntity(std::shared_ptr<Entity> & ent);
+    template<typename T1, typename T2>
+    void AddEntity(const std::shared_ptr<T1> & ent, std::vector<std::shared_ptr<T2>> list);
+    template<typename T>
+    void RemoveEntity(std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> list);
 
     std::vector<std::shared_ptr<Entity>> entities;
     std::vector<std::shared_ptr<Entity>> entitiesToAdd;
-    std::vector<std::shared_ptr<Entity>> liveEntities;
+    std::vector<std::shared_ptr<LiveEntity>> liveEntities;
+    std::vector<std::shared_ptr<LiveEntity>> liveEntitiesToAdd;
     std::shared_ptr<EntityFactory> factory = std::make_shared<EntityFactory>();
 
 };

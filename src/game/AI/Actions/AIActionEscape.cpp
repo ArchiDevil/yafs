@@ -6,7 +6,7 @@ AIActionEscape::AIActionEscape()
 
 }
 
-void AIActionEscape::Do(std::shared_ptr<LiveEntity> entity)
+void AIActionEscape::Do(LiveEntity & entity)
 {
 
 }

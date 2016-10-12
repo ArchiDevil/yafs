@@ -2,12 +2,12 @@
 
 #include "Actions\AIActionEscape.h"
 
-void AISmallSpirit::Update(std::shared_ptr<LiveEntity> entity)
+void AISmallSpirit::Update(LiveEntity & entity)
 {
     switch (currentState)
     {
     case AIBase::AIState::Idle:
-        if (entity->GetHealth() / entity->GetMaxHealth() < 0.2)
+        if (entity.GetHealth() / entity.GetMaxHealth() < 0.2)
         {
             currentAction = std::make_shared<AIActionEscape>();
             currentState = AIBase::AIState::Escape;
