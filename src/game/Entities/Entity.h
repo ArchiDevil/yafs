@@ -23,12 +23,13 @@ public:
     bool observer<ExperiencePointPositionEvent>::handleEvent(const ExperiencePointPositionEvent & event) override;
 
     const MathLib::vec2f GetPosition() const;
+    void SetPosition(MathLib::vec2f & pos);
     bool IsDead() const;
     void Kill();
+    void UpdateGraphicsSpritePosition();
 
 protected:
     bool CalculateCollision(const Entity & ent) const;
-    void UpdateGraphicsSpritePosition();
 
     struct sprites_deleter
     {

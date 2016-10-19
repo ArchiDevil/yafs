@@ -9,5 +9,5 @@ class AIAction
 public:
     AIAction() = default;
     virtual ~AIAction() = default;
-    virtual void Do(LiveEntity * entity) = 0;
+    virtual void Do(double dt, LiveEntity * entity) = 0;
 };

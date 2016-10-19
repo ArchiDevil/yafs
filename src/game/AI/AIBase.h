@@ -24,5 +24,5 @@ protected:
 public:
     AIBase() = default;
     virtual ~AIBase() = default;
-    virtual void Update(LiveEntity * entity) { }
+    virtual void Update(double dt, LiveEntity * entity) { }
 };

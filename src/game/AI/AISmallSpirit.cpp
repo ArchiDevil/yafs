@@ -8,7 +8,7 @@ AISmallSpirit::AISmallSpirit()
 
 }
 
-void AISmallSpirit::Update(LiveEntity * entity)
+void AISmallSpirit::Update(double dt, LiveEntity * entity)
 {
     switch (currentState)
     {
@@ -23,6 +23,6 @@ void AISmallSpirit::Update(LiveEntity * entity)
 
     if (currentAction != nullptr)
     {
-        currentAction->Do(entity);
+        currentAction->Do(dt, entity);
     }
 }
