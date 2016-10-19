@@ -74,9 +74,10 @@ std::shared_ptr<Player> EntityManager::CreatePlayer(const MathLib::vec2f & posit
 
 std::shared_ptr<Enemy> EntityManager::CreateEnemy(const MathLib::vec2f & position,
                                                   float health,
-                                                  int expCount)
+                                                  int expCount,
+                                                  const std::shared_ptr<AIBase> & ai)
 {
-    auto entity = factory->CreateEntity<Enemy>(position, health, expCount);
+    auto entity = factory->CreateEntity<Enemy>(position, health, expCount, ai);
     AddEntity((std::shared_ptr<LiveEntity>)entity, liveEntities);
     return entity;
 }
@@ -123,4 +124,17 @@ void EntityManager::RemoveEntity(std::shared_ptr<T> & ent, std::vector<std::shar
 const std::vector<std::shared_ptr<LiveEntity>> * EntityManager::GetLiveEntities()
 {
     return &liveEntities;
+}
+
+const std::vector<std::shared_ptr<LiveEntity>> * EntityManager::GetHostileLiveEntities(LiveEntity::Fraction fraction)
+{
+    std::vector<std::shared_ptr<LiveEntity>> * hostileEnt = new std::vector<std::shared_ptr<LiveEntity>>();
+
+    for (auto it = liveEntities.begin(); it != liveEntities.end(); ++it)
+    {
+        if ((*it)->GetFraction() != fraction)
+            hostileEnt->push_back(*it);
+    }
+
+    return hostileEnt;
 }

@@ -22,7 +22,7 @@ protected:
     std::shared_ptr<AIAction> currentAction = nullptr;
 
 public:
-    AIBase();
+    AIBase() = default;
     virtual ~AIBase() = default;
-    virtual void Update(LiveEntity & entity) = 0;
+    virtual void Update(LiveEntity * entity) { }
 };

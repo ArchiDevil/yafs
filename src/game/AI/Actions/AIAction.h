@@ -7,7 +7,7 @@
 class AIAction
 {
 public:
-    AIAction();
+    AIAction() = default;
     virtual ~AIAction() = default;
-    virtual void Do(LiveEntity & entity) = 0;
+    virtual void Do(LiveEntity * entity) = 0;
 };

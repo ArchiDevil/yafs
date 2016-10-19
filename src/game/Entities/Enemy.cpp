@@ -6,15 +6,20 @@
 const std::wstring enemyTextureName = L"enemy_sprite.png";
 constexpr float MOVE_EPS = 0.05f;
 
-Enemy::Enemy(const MathLib::vec2f & position, float health, int expCount)
+Enemy::Enemy(const MathLib::vec2f & position, float health, int expCount, const std::shared_ptr<AIBase> & ai)
     : LiveEntity(position, health, enemyTextureName, expCount)
+    , ai(ai)
 {
     sprite->SetLocalScale(0.5f);
 }
 
 void Enemy::Update(double dt)
 {
-    if (state == EnemyState::Moving)
+    if (ai != nullptr)
+    {
+        ai->Update(this);
+    }
+    /*if (state == EnemyState::Moving)
     {
         MathLib::vec2f direction = MathLib::normalize(movePosition - Entity::position);
         Entity::position += direction * dt; //* speed;
@@ -25,7 +30,7 @@ void Enemy::Update(double dt)
         {
             state = EnemyState::Standing;
         }
-    }
+    }*/
 }
 
 void Enemy::MoveTo(const MathLib::vec2f & target)

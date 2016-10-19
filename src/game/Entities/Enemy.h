@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LiveEntity.h"
+#include "../AI/AIBase.h"
 
 #include <MathLib/math.h>
 
@@ -14,7 +15,7 @@ class Enemy : public LiveEntity
     };
 
 public:
-    Enemy(const MathLib::vec2f & position, float health, int expCount);
+    Enemy(const MathLib::vec2f & position, float health, int expCount, const std::shared_ptr<AIBase> & ai);
     virtual ~Enemy() = default;
     void Update(double dt) override;
     void MoveTo(const MathLib::vec2f & target);
@@ -22,5 +23,5 @@ public:
 private:
     MathLib::vec2f movePosition;
     EnemyState state = EnemyState::Standing;
-
+    std::shared_ptr<AIBase> ai = nullptr;
 };
