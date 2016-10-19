@@ -68,7 +68,7 @@ std::shared_ptr<Player> EntityManager::CreatePlayer(const MathLib::vec2f & posit
                                                     float health)
 {
     auto entity = factory->CreateEntity<Player>(position, health);
-    AddEntity((std::shared_ptr<LiveEntity>)entity, liveEntities);
+    AddEntity((std::shared_ptr<LiveEntity>)entity, liveEntitiesToAdd);
     return entity;
 }
 
@@ -78,7 +78,7 @@ std::shared_ptr<Enemy> EntityManager::CreateEnemy(const MathLib::vec2f & positio
                                                   const std::shared_ptr<AIBase> & ai)
 {
     auto entity = factory->CreateEntity<Enemy>(position, health, expCount, ai);
-    AddEntity((std::shared_ptr<LiveEntity>)entity, liveEntities);
+    AddEntity((std::shared_ptr<LiveEntity>)entity, liveEntitiesToAdd);
     return entity;
 }
 
@@ -89,28 +89,28 @@ std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f
                                                             Entity* producer)
 {
     auto entity = factory->CreateEntity<Projectile>(position, speed, damage, lifetime, producer);
-    AddEntity((std::shared_ptr<Entity>)entity, entities);
+    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
     return entity;
 }
 
 std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode *sprite)
 {
     auto entity = factory->CreateEntity<BackgroundBlinker>(sprite);
-    AddEntity((std::shared_ptr<Entity>)entity, entities);
+    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
     return entity;
 }
 
 std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode *sprite)
 {
     auto entity = factory->CreateEntity<BackgroundWanderer>(sprite);
-    AddEntity((std::shared_ptr<Entity>)entity, entities);
+    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
     return entity;
 }
 
 std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(const MathLib::vec2f & position, int expCount)
 {
     auto entity = factory->CreateEntity<ExperiencePoint>(position, expCount);
-    AddEntity((std::shared_ptr<Entity>)entity, entities);
+    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
     return entity;
 }
 
