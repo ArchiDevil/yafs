@@ -1,8 +1,0 @@
-{
-  "id": "campfire",
-  "name": "Campfire",
-  "description": "",
-  "type": "entity",
-  "entity": "campfire",
-  "icon": "campfire.png"
-}
