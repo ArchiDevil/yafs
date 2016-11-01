@@ -5,6 +5,8 @@
 
 #include <cassert>
 
+class LiveEntity;
+
 class ISpellController
 {
 public:
