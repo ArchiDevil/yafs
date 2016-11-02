@@ -46,7 +46,8 @@ bool GameState::initState()
     testEnemy = entityMgrPtr->CreateEnemy({1.0f, 1.0f}, 2.0f, 100).get();
     testEnemy->MoveTo({0.0f, 0.0f});
 
-    playerPtr->SetSpellController(database->GetSpellByName("projectile").CreateSpellController(playerPtr), Player::CS_MainSlot);
+    playerPtr->SetSpellController(database->GetSpellByName("projectile").CreateSpellController(playerPtr),      Player::CS_MainSlot);
+    playerPtr->SetSpellController(database->GetSpellByName("multiprojectile").CreateSpellController(playerPtr), Player::CS_AdditionalSlot);
 
     LOG_INFO("End of game state initializing");
 

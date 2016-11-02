@@ -35,6 +35,15 @@ void SpellsDatabase::LoadSpellsFromFile(const std::string& filename)
                     float energy = arrayElement["energy"];
                     spells[hash] = std::make_unique<ProjectileSpellDescription>(name, cooldown, damage, spread, energy);
                 }
+                else if (type == "multiprojectile")
+                {
+                    float damage = arrayElement["damage"];
+                    float spread = arrayElement["spread"];
+                    unsigned count = arrayElement["count"];
+                    float per_bullet_spread = arrayElement["per-bullet-spread"];
+                    float energy = arrayElement["energy"];
+                    spells[hash] = std::make_unique<MultiProjectileSpellDescription>(name, cooldown, damage, spread, count, per_bullet_spread, energy);
+                }
                 else
                 {
                     throw std::invalid_argument("Wrong type");
