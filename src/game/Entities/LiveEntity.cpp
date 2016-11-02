@@ -47,15 +47,6 @@ bool LiveEntity::handleEvent(const ExperiencePointPositionEvent & event)
     return true;
 }
 
-// TODO: use direction here
-void LiveEntity::Shoot(const vec2f & direction)
-{
-    vec2f dir = direction;
-    float angleFactor = (float)(rand() % 30 - 15) / 100.0f;
-    dir = vec2Transform(dir, matrixRotationZ(angleFactor));
-    GetGamePtr()->GetEntityMgr()->CreateProjectile(position, dir * 2.0f, 1.0f, 3.0, this);
-}
-
 MathLib::vec2f LiveEntity::GetTargetDirection() const
 {
     return targetDirection;
@@ -64,6 +55,35 @@ MathLib::vec2f LiveEntity::GetTargetDirection() const
 void LiveEntity::SetTargetDirection(const MathLib::vec2f & val)
 {
     targetDirection = val;
+}
+
+void LiveEntity::Update(double dt)
+{
+    for (auto& controller : controllers)
+        if (controller)
+            controller->Update(dt);
+}
+
+void LiveEntity::StartSpellInSlot(ControllerSlot slot)
+{
+    if (controllers[slot])
+        controllers[slot]->SpellKeyDown();
+}
+
+void LiveEntity::StopSpellInSlot(ControllerSlot slot)
+{
+    if (controllers[slot])
+        controllers[slot]->SpellKeyUp();
+}
+
+ISpellController* LiveEntity::GetSpellController(ControllerSlot slot) const
+{
+    return controllers[slot].get();
+}
+
+void LiveEntity::SetSpellController(std::unique_ptr<ISpellController> && controller, ControllerSlot slot)
+{
+    controllers[slot] = std::move(controller);
 }
 
 int LiveEntity::GetExperienceCount()

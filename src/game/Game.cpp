@@ -13,6 +13,7 @@ Game::Game()
     entityMgr.reset(new EntityManager());
     player = entityMgr->CreatePlayer({}, 10.0f).get();
     backgroundMgr.reset(new BackgroundManager(entityMgr.get()));
+    spellsDatabase.reset(new SpellsDatabase());
     //gameEventHandler.reset(new GameEventHandler());
 }
 
@@ -29,6 +30,11 @@ EntityManager * Game::GetEntityMgr()
 BackgroundManager * Game::GetBackgroundMgr()
 {
     return backgroundMgr.get();
+}
+
+SpellsDatabase* Game::GetSpellsDatabase()
+{
+    return spellsDatabase.get();
 }
 
 static Game * GamePtr = nullptr;

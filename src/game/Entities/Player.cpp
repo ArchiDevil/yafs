@@ -17,12 +17,6 @@ Player::Player(const vec2f & position, float health)
 {
 }
 
-void Player::ShootAlternative(const MathLib::vec2f & direction)
-{
-    for (float i = -0.15f; i < 0.25f; i += 0.15f)
-        Shoot(vec2Transform(direction, matrixRotationZ(i)));
-}
-
 void Player::SetMoveVelocity(const vec2f & velocity)
 {
     moveVelocity = velocity;

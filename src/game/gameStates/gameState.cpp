@@ -158,25 +158,30 @@ void GameState::ProcessInput(double dt)
 
     player->SetTargetDirection({x, y});
 
-    static bool lm_click = false;
-    if (inputEngine.IsMouseDown(LButton) && !lm_click)
-    {
-        lm_click = true;
-        player->Shoot(MathLib::normalize(player->GetTargetDirection() - player->GetPosition()));
-    }
+    // TODO: we need some handler of this shit
+    if (inputEngine.IsMouseDown(LButton))
+        player->StartSpellInSlot(LiveEntity::CS_MainSlot);
 
     if (inputEngine.IsMouseUp(LButton))
-        lm_click = false;
+        player->StopSpellInSlot(LiveEntity::CS_MainSlot);
 
-    static bool rm_click = false;
-    if (inputEngine.IsMouseDown(RButton) && !rm_click)
-    {
-        rm_click = true;
-        player->ShootAlternative(MathLib::normalize(player->GetTargetDirection() - player->GetPosition()));
-    }
+    if (inputEngine.IsMouseDown(RButton))
+        player->StartSpellInSlot(LiveEntity::CS_AdditionalSlot);
 
     if (inputEngine.IsMouseUp(RButton))
-        rm_click = false;
+        player->StopSpellInSlot(LiveEntity::CS_AdditionalSlot);
+
+    if (inputEngine.IsKeyDown(DIK_E))
+        player->StartSpellInSlot(LiveEntity::CS_MineSlot);
+
+    if (inputEngine.IsKeyUp(DIK_E))
+        player->StopSpellInSlot(LiveEntity::CS_MineSlot);
+
+    if (inputEngine.IsKeyDown(DIK_LSHIFT))
+        player->StartSpellInSlot(LiveEntity::CS_ShieldSlot);
+
+    if (inputEngine.IsKeyUp(DIK_LSHIFT))
+        player->StopSpellInSlot(LiveEntity::CS_ShieldSlot);
 
     float xVelocity = 0.0f, yVelocity = 0.0f;
     if (inputEngine.IsKeyDown(DIK_W))

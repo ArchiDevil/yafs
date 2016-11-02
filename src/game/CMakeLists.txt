@@ -45,6 +45,17 @@ set(LS  Entities/BackgroundBlinker.h
 source_group("Header Files\\Entities" FILES ${LS})
 list(APPEND SRC ${LS})
 
+set(LS  Spells/SpellsDatabase.cpp)
+source_group("Source Files\\Spells" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  Spells/ISpellController.h
+        Spells/ISpellEntity.h
+        Spells/SpellsDatabase.h
+        Spells/SpellsDescription.h)
+source_group("Header Files\\Spells" FILES ${LS})
+list(APPEND SRC ${LS})
+
 include_directories(../../3rdparty/jsoncpp/include)
 
 if(${EX_PLATFORM} EQUAL 64)
