@@ -44,3 +44,15 @@ protected:
     const double cooldown;
 
 };
+
+class ProjectileSpellDescription final : public ISpellDescription
+{
+public:
+    ProjectileSpellDescription(const std::string & name, float cooldown, float damage, float spread, float energy);
+    std::unique_ptr<ISpellController> CreateSpellController(LiveEntity* caster) const override;
+
+private:
+    const float damage = 0.0f;
+    const float spread = 0.0f;
+    const float energy = 0.0f;
+};
