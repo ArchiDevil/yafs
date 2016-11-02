@@ -16,6 +16,8 @@ public:
     SpellsDatabase() = default;
     ~SpellsDatabase() = default;
 
+    void LoadSpellsFromFile(const std::string& filename);
+
     const ISpellDescription& GetSpellByName(const std::string& name) const;
     const ISpellDescription& GetSpellById(uint64_t spellId) const;
 

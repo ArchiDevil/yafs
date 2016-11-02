@@ -14,6 +14,7 @@ Game::Game()
     player = entityMgr->CreatePlayer({}, 10.0f).get();
     backgroundMgr.reset(new BackgroundManager(entityMgr.get()));
     spellsDatabase.reset(new SpellsDatabase());
+    spellsDatabase->LoadSpellsFromFile("resources/gamedata/spells/test_spells.json");
     //gameEventHandler.reset(new GameEventHandler());
 }
 

@@ -44,12 +44,17 @@ set(LS  Entities/BackgroundBlinker.h
 source_group("Header Files\\Entities" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  Spells/SpellsDatabase.cpp)
+set(LS  Spells/SpellControllers.cpp
+        Spells/SpellEntities.cpp
+        Spells/SpellsDatabase.cpp
+        Spells/SpellsDescription.cpp)
 source_group("Source Files\\Spells" FILES ${LS})
 list(APPEND SRC ${LS})
 
 set(LS  Spells/ISpellController.h
         Spells/ISpellEntity.h
+        Spells/SpellControllers.h
+        Spells/SpellEntities.h
         Spells/SpellsDatabase.h
         Spells/SpellsDescription.h)
 source_group("Header Files\\Spells" FILES ${LS})

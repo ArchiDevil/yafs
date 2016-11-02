@@ -2,7 +2,52 @@
 
 #include <Utilities/logger.hpp>
 
+#include <json/json.hpp>
+
 #include <fstream>
+
+using json = nlohmann::json;
+
+void SpellsDatabase::LoadSpellsFromFile(const std::string& filename)
+{
+    std::ifstream stream {filename};
+    if (!stream.is_open())
+        return;
+
+    json jsonDocument = json::parse(stream);
+    for (auto& param : jsonDocument)
+    {
+        for (auto& arrayElement : param)
+        {
+            try
+            {
+                std::string name = arrayElement["name"];
+                std::hash<std::string> nameHasher;
+                uint64_t hash = (uint64_t)nameHasher(name);
+                LOG_INFO("Loading spell: ", name);
+                std::string type = arrayElement["type"];
+                float cooldown = arrayElement["cooldown"];
+
+                if (type == "projectile")
+                {
+                    float damage = arrayElement["damage"];
+                    float spread = arrayElement["spread"];
+                    float energy = arrayElement["energy"];
+                    spells[hash] = std::make_unique<ProjectileSpellDescription>(name, cooldown, damage, spread, energy);
+                }
+                else
+                {
+                    throw std::invalid_argument("Wrong type");
+                }
+            }
+            catch (const std::exception& e)
+            {
+                LOG_ERROR("Exception while loading spell: ", e.what());
+                continue;
+            }
+        }
+    }
+}
 
 const ISpellDescription& SpellsDatabase::GetSpellById(uint64_t spellId) const
 {
