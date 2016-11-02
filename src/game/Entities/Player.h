@@ -4,7 +4,7 @@
 
 #include <MathLib/math.h>
 
-class Player
+class Player final
     : public LiveEntity
 {
 public:

@@ -7,7 +7,9 @@
 
 class ISpellController;
 
-class LiveEntity : public Entity
+class LiveEntity 
+    : public Entity
+    , observer<ExperiencePointPositionEvent>
 {
 public:
     enum ControllerSlot
@@ -44,5 +46,7 @@ protected:
     MathLib::vec2f  targetDirection = {};
 
     std::array<std::unique_ptr<ISpellController>, CS_Count> controllers; // just two controllers
+
+    scoped_subscriber<ExperiencePointPositionEvent> experiencePointSubscriber = {&EntityEventManager::GetInstance(), this};
 
 };

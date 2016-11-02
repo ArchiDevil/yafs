@@ -2,7 +2,8 @@
 
 #include "Entity.h"
 
-class ExperiencePoint : public Entity
+class ExperiencePoint final
+    : public Entity
 {
 
 public:

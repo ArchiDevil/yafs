@@ -56,7 +56,7 @@ std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f
                                                             const MathLib::vec2f & speed,
                                                             float damage,
                                                             double lifetime,
-                                                            Entity* producer)
+                                                            const LiveEntity* producer)
 {
     auto entity = factory->CreateEntity<Projectile>(position, speed, damage, lifetime, producer);
     AddEntity(entity);

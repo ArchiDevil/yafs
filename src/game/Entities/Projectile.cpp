@@ -5,7 +5,7 @@
 
 const std::wstring textureName = L"sprite.png";
 
-Projectile::Projectile(const MathLib::vec2f & position, const MathLib::vec2f & speed, float damage, double lifetime, Entity * producer)
+Projectile::Projectile(const MathLib::vec2f & position, const MathLib::vec2f & speed, float damage, double lifetime, const LiveEntity * producer)
     : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
     , speed(speed)
     , producer(producer)
@@ -34,7 +34,7 @@ void Projectile::Update(double dt)
         .notifyAll(ProjectilePositionEvent(this));
 }
 
-Entity* Projectile::GetProducer() const
+const LiveEntity* Projectile::GetProducer() const
 {
     return producer;
 }

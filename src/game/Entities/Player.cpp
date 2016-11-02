@@ -26,4 +26,5 @@ void Player::Update(double dt)
 {
     position += moveVelocity * dt;
     UpdateGraphicsSpritePosition();
+    LiveEntity::Update(dt);
 }

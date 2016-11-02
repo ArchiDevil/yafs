@@ -1,36 +1,39 @@
 #pragma once
 
 #include <memory>
+
 #include <Utilities/observer.h>
 #include <Utilities/singleton.h>
 
+#include <MathLib/math.h>
+
 class Projectile;
 class ExperiencePoint;
+class LiveEntity;
 
-struct ProjectilePositionEvent
+struct ProjectilePositionEvent final
 {
     ProjectilePositionEvent(Projectile * projectile)
         : projectile(projectile)
     {
     }
 
-    Projectile * projectile;
+    Projectile * projectile = nullptr;
 };
 
-struct ExperiencePointPositionEvent
+struct ExperiencePointPositionEvent final
 {
     ExperiencePointPositionEvent(ExperiencePoint * expPoint)
         : expPoint(expPoint)
     {
     }
 
-    ExperiencePoint * expPoint;
+    ExperiencePoint * expPoint = nullptr;
 };
 
-class EntityEventManager
+class EntityEventManager final
     : public singleton <EntityEventManager>
     , public notifier <ProjectilePositionEvent>
     , public notifier <ExperiencePointPositionEvent>
 {
-
 };

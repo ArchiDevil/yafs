@@ -21,7 +21,6 @@ set(LS  Entities/BackgroundBlinker.cpp
         Entities/BackgroundWanderer.cpp
         Entities/Enemy.cpp
         Entities/Entity.cpp
-        Entities/EntityEventManager.cpp
         Entities/EntityFactory.cpp
         Entities/EntityManager.cpp
         Entities/ExperiencePoint.cpp
@@ -55,8 +54,6 @@ set(LS  Spells/ISpellController.h
         Spells/SpellsDescription.h)
 source_group("Header Files\\Spells" FILES ${LS})
 list(APPEND SRC ${LS})
-
-include_directories(../../3rdparty/jsoncpp/include)
 
 if(${EX_PLATFORM} EQUAL 64)
     link_directories($ENV{DXSDK_DIR}/lib/x64)

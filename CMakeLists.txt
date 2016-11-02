@@ -13,6 +13,7 @@ endif()
 
 set(RootDir ${CMAKE_CURRENT_LIST_DIR}/src)
 include_directories(${RootDir})
+include_directories(${CMAKE_CURRENT_LIST_DIR}/3rdparty)
 set(RENDERER D3D11_RENDER)
 
 option(BUILD_TESTS "Generate projects for tests building" ON)
