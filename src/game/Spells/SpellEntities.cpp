@@ -20,3 +20,19 @@ void ProjectileSpellEntity::Cast(const LiveEntity * caster, const vec2f & direct
     internalDirection = vec2Transform(internalDirection, matrixRotationZ(angleFactor));
     GetGamePtr()->GetEntityMgr()->CreateProjectile(caster->GetPosition(), internalDirection * speed, damage, lifetime, caster);
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+MultiProjectileSpellEntity::MultiProjectileSpellEntity(float angleSpread, float speed, float damage, double lifetime, float spreadValue)
+    : ProjectileSpellEntity(angleSpread, speed, damage, lifetime)
+    , spreadValue(spreadValue)
+{
+}
+
+void MultiProjectileSpellEntity::Cast(const LiveEntity * caster, const MathLib::vec2f & direction)
+{
+    for (float i = -spreadValue; i < spreadValue * 2; i += spreadValue)
+    {
+        ProjectileSpellEntity::Cast(caster, vec2Transform(direction, matrixRotationZ(i)));
+    }
+}

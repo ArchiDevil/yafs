@@ -56,3 +56,17 @@ private:
     const float spread = 0.0f;
     const float energy = 0.0f;
 };
+
+class MultiProjectileSpellDescription final : public ISpellDescription
+{
+public:
+    MultiProjectileSpellDescription(const std::string & name, float cooldown, float damage, float spread, unsigned count, float per_bullet_spread, float energy);
+    std::unique_ptr<ISpellController> CreateSpellController(LiveEntity* caster) const override;
+
+private:
+    const float damage = 0.0f;
+    const float spread = 0.0f;
+    const unsigned count = 0;
+    const float per_bullet_spread = 0.0f;
+    const float energy = 0.0f;
+};

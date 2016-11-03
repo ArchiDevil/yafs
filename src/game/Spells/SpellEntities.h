@@ -20,3 +20,13 @@ protected:
     float damage = 1.0f;
     double lifetime = 3.0;
 };
+
+class MultiProjectileSpellEntity final : public ProjectileSpellEntity
+{
+public:
+    MultiProjectileSpellEntity(float angleSpread, float speed, float damage, double lifetime, float spreadValue);
+    void Cast(const LiveEntity * caster, const MathLib::vec2f & direction) override;
+
+protected:
+    float spreadValue = 0.15f;
+};

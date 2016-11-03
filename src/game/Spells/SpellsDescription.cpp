@@ -21,3 +21,28 @@ std::unique_ptr<ISpellController> ProjectileSpellDescription::CreateSpellControl
                                                                  PeriodicCastInfo {ISpellDescription::cooldown, energy},
                                                                  std::make_unique<ProjectileSpellEntity>(spread, 1.0f, damage, 2.0));
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+MultiProjectileSpellDescription::MultiProjectileSpellDescription(const std::string & name,
+                                                                 float cooldown,
+                                                                 float damage,
+                                                                 float spread,
+                                                                 unsigned count,
+                                                                 float per_bullet_spread,
+                                                                 float energy)
+    : ISpellDescription(ISpellDescription::SpellType::Multiprojectile, cooldown, name)
+    , damage(damage)
+    , spread(spread)
+    , count(count)
+    , per_bullet_spread(per_bullet_spread)
+    , energy(energy)
+{
+}
+
+std::unique_ptr<ISpellController> MultiProjectileSpellDescription::CreateSpellController(LiveEntity* caster) const
+{
+    return std::make_unique<DirectedPeriodicCastSpellController>(caster,
+                                                                 PeriodicCastInfo {ISpellDescription::cooldown, energy},
+                                                                 std::make_unique<MultiProjectileSpellEntity>(spread, 1.0f, damage, 2.0, per_bullet_spread));
+}
