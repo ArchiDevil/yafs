@@ -15,5 +15,18 @@
         "spread": 0.15,
         "per-bullet-spread": 0.15,
         "energy": 0.5
+    }, {
+        "name": "timed-mine",
+        "type": "timedmine",
+        "cooldown": 10.0,
+        "damage": 10.0,
+        "energy": 3.0,
+        "time": 5.0
+    }, {
+        "name": "detector-mine",
+        "type": "detectormine",
+        "cooldown": 10.0,
+        "damage": 10.0,
+        "energy": 3.0
     }]
 }

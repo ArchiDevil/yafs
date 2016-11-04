@@ -46,3 +46,36 @@ std::unique_ptr<ISpellController> MultiProjectileSpellDescription::CreateSpellCo
                                                                  PeriodicCastInfo {ISpellDescription::cooldown, energy},
                                                                  std::make_unique<MultiProjectileSpellEntity>(spread, 1.0f, damage, 2.0, per_bullet_spread));
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+DetectorMineSpellDescription::DetectorMineSpellDescription(const std::string & name, float cooldown, float damage, float energy)
+    : ISpellDescription(ISpellDescription::SpellType::Mine, cooldown, name)
+    , damage(damage)
+    , energy(energy)
+{
+}
+
+std::unique_ptr<ISpellController> DetectorMineSpellDescription::CreateSpellController(LiveEntity* caster) const
+{
+    return std::make_unique<PeriodicCastSpellController>(caster,
+                                                         PeriodicCastInfo {ISpellDescription::cooldown, energy},
+                                                         std::make_unique<DetectorMinePeriodicCastSpellEntity>(damage));
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+TimedMineSpellDescription::TimedMineSpellDescription(const std::string & name, float cooldown, float damage, float energy, double time)
+    : ISpellDescription(ISpellDescription::SpellType::Mine, cooldown, name)
+    , damage(damage)
+    , energy(energy)
+    , time(time)
+{
+}
+
+std::unique_ptr<ISpellController> TimedMineSpellDescription::CreateSpellController(LiveEntity* caster) const
+{
+    return std::make_unique<PeriodicCastSpellController>(caster,
+                                                         PeriodicCastInfo {ISpellDescription::cooldown, energy},
+                                                         std::make_unique<TimedMinePeriodicCastSpellEntity>(damage, time));
+}

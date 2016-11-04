@@ -16,11 +16,6 @@ Entity::Entity(const MathLib::vec2f & position,
     UpdateGraphicsSpritePosition();
 }
 
-bool Entity::handleEvent(const ProjectilePositionEvent& /*event*/)
-{
-    return true;
-}
-
 const MathLib::vec2f Entity::GetPosition() const
 {
     return position;
@@ -35,7 +30,6 @@ void Entity::Kill()
 {
     isToDelete = true;
     sprite.reset();
-    observer<ProjectilePositionEvent>::unsubscribe(&EntityEventManager::GetInstance());
 }
 
 bool Entity::CalculateCollision(const Entity & ent) const

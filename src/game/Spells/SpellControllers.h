@@ -18,6 +18,25 @@ struct PeriodicCastInfo
     float energyCost = 0.0f;
 };
 
+class PeriodicCastSpellController final : public ISpellController
+{
+public:
+    PeriodicCastSpellController(LiveEntity* caster,
+                                const PeriodicCastInfo& castInfo,
+                                std::unique_ptr<PeriodicCastSpellEntity> && spellEntity);
+
+    void SpellKeyDown() override;
+    void SpellKeyUp() override;
+    void Update(double dt) override;
+
+private:
+    bool castStarted = false;
+    PeriodicCastInfo castInfo;
+    std::unique_ptr<PeriodicCastSpellEntity> spellEntity = nullptr;
+    double remainingCooldown = 0.0;
+
+};
+
 class DirectedPeriodicCastSpellController final : public ISpellController
 {
 public:

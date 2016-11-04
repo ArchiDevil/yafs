@@ -2,10 +2,41 @@
 
 #include "ISpellEntity.h"
 
+//////////////////////////////////////////////////////////////////////////
+
+class PeriodicCastSpellEntity : public ISpellEntity
+{
+public:
+    virtual void Cast(const LiveEntity * caster) = 0;
+};
+
+//////////////////////////////////////////////////////////////////////////
+
 class DirectedPeriodicCastSpellEntity : public ISpellEntity
 {
 public:
     virtual void Cast(const LiveEntity * caster, const MathLib::vec2f & direction) = 0;
+};
+
+class DetectorMinePeriodicCastSpellEntity final : public PeriodicCastSpellEntity
+{
+public:
+    DetectorMinePeriodicCastSpellEntity(float explosionDamage);
+    void Cast(const LiveEntity * caster) override;
+
+protected:
+    float explosionDamage = 0.0f;
+};
+
+class TimedMinePeriodicCastSpellEntity final : public PeriodicCastSpellEntity
+{
+public:
+    TimedMinePeriodicCastSpellEntity(float explosionDamage, double time);
+    void Cast(const LiveEntity * caster) override;
+
+protected:
+    float explosionDamage = 0.0f;
+    double time = 0.0;
 };
 
 class ProjectileSpellEntity : public DirectedPeriodicCastSpellEntity
@@ -21,7 +52,7 @@ protected:
     double lifetime = 3.0;
 };
 
-class MultiProjectileSpellEntity final : public ProjectileSpellEntity
+class MultiProjectileSpellEntity final: public ProjectileSpellEntity
 {
 public:
     MultiProjectileSpellEntity(float angleSpread, float speed, float damage, double lifetime, float spreadValue);
