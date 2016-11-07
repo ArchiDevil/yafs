@@ -9,6 +9,13 @@ PeriodicCastSpellController::PeriodicCastSpellController(LiveEntity* caster,
 {
 }
 
+PeriodicCastSpellController::PeriodicCastSpellController(LiveEntity* caster,
+                                                         const PeriodicCastInfo& castInfo)
+    : ISpellController(caster)
+    , castInfo(castInfo)
+{
+}
+
 void PeriodicCastSpellController::SpellKeyDown()
 {
     castStarted = true;
@@ -27,10 +34,16 @@ void PeriodicCastSpellController::Update(double dt)
     if (!castStarted || remainingCooldown >= 0.0)
         return;
 
-    spellEntity->Cast(caster);
+    OnCast();
 
     remainingCooldown = castInfo.cooldown;
     // UNDONE: remove energy from caster
+}
+
+void PeriodicCastSpellController::OnCast()
+{
+    if (spellEntity)
+        spellEntity->Cast(caster);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -38,34 +51,15 @@ void PeriodicCastSpellController::Update(double dt)
 DirectedPeriodicCastSpellController::DirectedPeriodicCastSpellController(LiveEntity* caster,
                                                                          const PeriodicCastInfo& castInfo,
                                                                          std::unique_ptr<DirectedPeriodicCastSpellEntity> && spellEntity)
-    : ISpellController(caster)
-    , castInfo(castInfo)
+    : PeriodicCastSpellController(caster, castInfo)
     , spellEntity(std::move(spellEntity))
 {
 }
 
-void DirectedPeriodicCastSpellController::SpellKeyDown()
+void DirectedPeriodicCastSpellController::OnCast()
 {
-    castStarted = true;
-}
-
-void DirectedPeriodicCastSpellController::SpellKeyUp()
-{
-    castStarted = false;
-}
-
-void DirectedPeriodicCastSpellController::Update(double dt)
-{
-    if (remainingCooldown >= 0.0)
-        remainingCooldown -= dt;
-
-    if (!castStarted || remainingCooldown >= 0.0)
-        return;
-
-    spellEntity->Cast(caster, caster->GetTargetDirection());
-
-    remainingCooldown = castInfo.cooldown;
-    // UNDONE: remove energy from caster
+    if (spellEntity)
+        spellEntity->Cast(caster, caster->GetTargetDirection());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -85,7 +79,8 @@ void ChanneledCastSpellController::SpellKeyDown()
         return;
 
     castStarted = true;
-    spellEntity->StartCast(ISpellController::caster);
+    if (spellEntity)
+        spellEntity->StartCast(ISpellController::caster);
 }
 
 void ChanneledCastSpellController::SpellKeyUp()
@@ -118,5 +113,6 @@ void ChanneledCastSpellController::StopCast()
     remainingCooldown = castInfo.cooldown;
     castTime = 0.0;
     castStarted = false;
-    spellEntity->StopCast(ISpellController::caster);
+    if (spellEntity)
+        spellEntity->StopCast(ISpellController::caster);
 }

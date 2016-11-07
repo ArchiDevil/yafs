@@ -53,7 +53,7 @@ protected:
     double lifetime = 3.0;
 };
 
-class MultiProjectileSpellEntity final: public ProjectileSpellEntity
+class MultiProjectileSpellEntity final : public ProjectileSpellEntity
 {
 public:
     MultiProjectileSpellEntity(float angleSpread, float speed, float damage, double lifetime, float spreadValue);
