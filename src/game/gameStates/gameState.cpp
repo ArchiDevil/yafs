@@ -48,6 +48,7 @@ bool GameState::initState()
 
     playerPtr->SetSpellController(database->GetSpellByName("projectile").CreateSpellController(playerPtr),      Player::CS_MainSlot);
     playerPtr->SetSpellController(database->GetSpellByName("multiprojectile").CreateSpellController(playerPtr), Player::CS_AdditionalSlot);
+    playerPtr->SetSpellController(database->GetSpellByName("shield").CreateSpellController(playerPtr),          Player::CS_ShieldSlot);
 
     LOG_INFO("End of game state initializing");
 
@@ -118,10 +119,10 @@ bool GameState::render(double dt)
     std::ostringstream experienceCount;
     experienceCount << "Experience: " << GoingHome::GetGamePtr()->GetPlayerPtr()->GetExperienceCount();
     pFntMgr->DrawTextTL(experienceCount.str(),
-        pCtxMgr->GetEngineSettings().screenWidth - 160.0f,
-        pCtxMgr->GetEngineSettings().screenHeight - 40.0f);
+                        pCtxMgr->GetEngineSettings().screenWidth - 160.0f,
+                        pCtxMgr->GetEngineSettings().screenHeight - 40.0f);
 
-    //guiPlatform->getRenderManagerPtr()->drawOneFrame();
+                    //guiPlatform->getRenderManagerPtr()->drawOneFrame();
 
     pCtxMgr->EndScene();
 

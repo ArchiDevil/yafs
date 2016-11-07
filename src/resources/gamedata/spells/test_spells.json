@@ -15,5 +15,11 @@
         "spread": 0.15,
         "per-bullet-spread": 0.15,
         "energy": 0.5
+    }, {
+        "name": "shield",
+        "type": "shield",
+        "cooldown": 3.0,
+        "usage-time": 1.0,
+        "energy-per-second": 1.0
     }]
 }

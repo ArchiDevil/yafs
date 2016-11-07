@@ -35,10 +35,16 @@ void EntityManager::UpdateAllEntities(double dt)
     }
 }
 
+void EntityManager::RemoveEntity(std::shared_ptr<Entity> & ent)
+{
+    std::swap(ent, entities.back());
+    entities.pop_back();
+}
+
 std::shared_ptr<Player> EntityManager::CreatePlayer(const MathLib::vec2f & position,
                                                     float health)
 {
-    auto entity = factory->CreateEntity<Player>(position, health);
+    auto entity = factory.CreateEntity<Player>(position, health);
     AddEntity(entity);
     return entity;
 }
@@ -47,7 +53,7 @@ std::shared_ptr<Enemy> EntityManager::CreateEnemy(const MathLib::vec2f & positio
                                                   float health,
                                                   int expCount)
 {
-    auto entity = factory->CreateEntity<Enemy>(position, health, expCount);
+    auto entity = factory.CreateEntity<Enemy>(position, health, expCount);
     AddEntity(entity);
     return entity;
 }
@@ -58,34 +64,38 @@ std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f
                                                             double lifetime,
                                                             const LiveEntity* producer)
 {
-    auto entity = factory->CreateEntity<Projectile>(position, speed, damage, lifetime, producer);
+    auto entity = factory.CreateEntity<Projectile>(position, speed, damage, lifetime, producer);
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode *sprite)
+std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(const MathLib::vec2f & position,
+                                                                      int expCount)
 {
-    auto entity = factory->CreateEntity<BackgroundBlinker>(sprite);
+    auto entity = factory.CreateEntity<ExperiencePoint>(position, expCount);
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode *sprite)
+std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode * sprite)
 {
-    auto entity = factory->CreateEntity<BackgroundWanderer>(sprite);
+    auto entity = factory.CreateEntity<BackgroundBlinker>(sprite);
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(const MathLib::vec2f & position, int expCount)
+std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode * sprite)
 {
-    auto entity = factory->CreateEntity<ExperiencePoint>(position, expCount);
+    auto entity = factory.CreateEntity<BackgroundWanderer>(sprite);
     AddEntity(entity);
     return entity;
 }
 
-void EntityManager::RemoveEntity(std::shared_ptr<Entity> & ent)
+std::shared_ptr<VisualStickerEntity> EntityManager::CreateVisualStickerEntity(const LiveEntity * owner,
+                                                                              const MathLib::vec2f& position,
+                                                                              ShiftEngine::SpriteSceneNode * sprite)
 {
-    std::swap(ent, entities.back());
-    entities.pop_back();
+    auto entity = factory.CreateEntity<VisualStickerEntity>(owner, position, sprite);
+    AddEntity(entity);
+    return entity;
 }

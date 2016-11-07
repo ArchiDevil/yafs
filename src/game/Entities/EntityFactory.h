@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Enemy.h"
-#include "Player.h"
-#include "Projectile.h"
-#include "ExperiencePoint.h"
 #include "BackgroundBlinker.h"
 #include "BackgroundWanderer.h"
+#include "Enemy.h"
+#include "ExperiencePoint.h"
+#include "Player.h"
+#include "Projectile.h"
+#include "VisualStickerEntity.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <MathLib/math.h>
