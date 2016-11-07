@@ -39,6 +39,31 @@ void MultiProjectileSpellEntity::Cast(const LiveEntity * caster, const MathLib::
 
 //////////////////////////////////////////////////////////////////////////
 
+DetectorMinePeriodicCastSpellEntity::DetectorMinePeriodicCastSpellEntity(float explosionDamage)
+    : explosionDamage(explosionDamage)
+{
+}
+
+void DetectorMinePeriodicCastSpellEntity::Cast(const LiveEntity * caster)
+{
+    GetGamePtr()->GetEntityMgr()->CreateDetectorMine(caster, caster->GetPosition(), explosionDamage, 2.0f, 1.0f);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+TimedMinePeriodicCastSpellEntity::TimedMinePeriodicCastSpellEntity(float explosionDamage, double time)
+    : explosionDamage(explosionDamage)
+    , time(time)
+{
+}
+
+void TimedMinePeriodicCastSpellEntity::Cast(const LiveEntity * caster)
+{
+    GetGamePtr()->GetEntityMgr()->CreateTimedMine(caster, caster->GetPosition(), explosionDamage, 2.0f, 1.0f, time);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
 void ChannelledShieldSpellEntity::StartCast(LiveEntity * caster)
 {
     caster->AddBuff(shieldBuff);

@@ -12,6 +12,7 @@ class ISpellController;
 class LiveEntity
     : public Entity
     , observer<ExperiencePointPositionEvent>
+    , observer<ExplosionEvent>
     , observer<ProjectilePositionEvent>
 {
 public:
@@ -35,6 +36,7 @@ public:
 
     bool            observer<ProjectilePositionEvent>::handleEvent(const ProjectilePositionEvent & event) override;
     bool            observer<ExperiencePointPositionEvent>::handleEvent(const ExperiencePointPositionEvent & event) override;
+    bool            observer<ExplosionEvent>::handleEvent(const ExplosionEvent & event) override;
 
     MathLib::vec2f  GetTargetDirection() const;
     void            SetTargetDirection(const MathLib::vec2f & val);
@@ -58,6 +60,7 @@ protected:
     std::vector<std::shared_ptr<IBuff>> buffs;
 
     scoped_subscriber<ExperiencePointPositionEvent> experiencePointSubscriber = {&EntityEventManager::GetInstance(), this};
+    scoped_subscriber<ExplosionEvent> explosionSubscriber = {&EntityEventManager::GetInstance(), this};
     scoped_subscriber<ProjectilePositionEvent> projectileSubscriber = {&EntityEventManager::GetInstance(), this};
 
 };

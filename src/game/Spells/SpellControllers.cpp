@@ -1,25 +1,32 @@
 #include "SpellControllers.h"
 
-DirectedPeriodicCastSpellController::DirectedPeriodicCastSpellController(LiveEntity* caster,
-                                                                         const PeriodicCastInfo& castInfo,
-                                                                         std::unique_ptr<DirectedPeriodicCastSpellEntity> && spellEntity)
+PeriodicCastSpellController::PeriodicCastSpellController(LiveEntity* caster,
+                                                         const PeriodicCastInfo& castInfo,
+                                                         std::unique_ptr<PeriodicCastSpellEntity> && spellEntity)
     : ISpellController(caster)
     , castInfo(castInfo)
     , spellEntity(std::move(spellEntity))
 {
 }
 
-void DirectedPeriodicCastSpellController::SpellKeyDown()
+PeriodicCastSpellController::PeriodicCastSpellController(LiveEntity* caster,
+                                                         const PeriodicCastInfo& castInfo)
+    : ISpellController(caster)
+    , castInfo(castInfo)
+{
+}
+
+void PeriodicCastSpellController::SpellKeyDown()
 {
     castStarted = true;
 }
 
-void DirectedPeriodicCastSpellController::SpellKeyUp()
+void PeriodicCastSpellController::SpellKeyUp()
 {
     castStarted = false;
 }
 
-void DirectedPeriodicCastSpellController::Update(double dt)
+void PeriodicCastSpellController::Update(double dt)
 {
     if (remainingCooldown >= 0.0)
         remainingCooldown -= dt;
@@ -27,10 +34,32 @@ void DirectedPeriodicCastSpellController::Update(double dt)
     if (!castStarted || remainingCooldown >= 0.0)
         return;
 
-    spellEntity->Cast(caster, caster->GetTargetDirection());
+    OnCast();
 
     remainingCooldown = castInfo.cooldown;
     // UNDONE: remove energy from caster
+}
+
+void PeriodicCastSpellController::OnCast()
+{
+    if (spellEntity)
+        spellEntity->Cast(caster);
+}
+
+//////////////////////////////////////////////////////////////////////////
+
+DirectedPeriodicCastSpellController::DirectedPeriodicCastSpellController(LiveEntity* caster,
+                                                                         const PeriodicCastInfo& castInfo,
+                                                                         std::unique_ptr<DirectedPeriodicCastSpellEntity> && spellEntity)
+    : PeriodicCastSpellController(caster, castInfo)
+    , spellEntity(std::move(spellEntity))
+{
+}
+
+void DirectedPeriodicCastSpellController::OnCast()
+{
+    if (spellEntity)
+        spellEntity->Cast(caster, caster->GetTargetDirection());
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -50,7 +79,8 @@ void ChanneledCastSpellController::SpellKeyDown()
         return;
 
     castStarted = true;
-    spellEntity->StartCast(ISpellController::caster);
+    if (spellEntity)
+        spellEntity->StartCast(ISpellController::caster);
 }
 
 void ChanneledCastSpellController::SpellKeyUp()
@@ -83,5 +113,6 @@ void ChanneledCastSpellController::StopCast()
     remainingCooldown = castInfo.cooldown;
     castTime = 0.0;
     castStarted = false;
-    spellEntity->StopCast(ISpellController::caster);
+    if (spellEntity)
+        spellEntity->StopCast(ISpellController::caster);
 }

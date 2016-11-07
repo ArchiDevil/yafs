@@ -4,6 +4,8 @@
 #include "BackgroundWanderer.h"
 #include "Enemy.h"
 #include "ExperiencePoint.h"
+#include "MineDetectorEntity.h"
+#include "MineTimedEntity.h"
 #include "Player.h"
 #include "Projectile.h"
 #include "VisualStickerEntity.h"

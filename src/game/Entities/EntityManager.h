@@ -28,6 +28,19 @@ public:
                                                          double lifetime,
                                                          const LiveEntity* producer);
 
+    std::shared_ptr<MineDetectorEntity> CreateDetectorMine(const LiveEntity * owner,
+                                                           const MathLib::vec2f& position,
+                                                           float explosionDamage,
+                                                           float explosionRadius,
+                                                           float triggerDistance);
+
+    std::shared_ptr<MineTimedEntity>    CreateTimedMine(const LiveEntity * owner,
+                                                        const MathLib::vec2f& position,
+                                                        float explosionDamage,
+                                                        float explosionRadius,
+                                                        float triggerDistance,
+                                                        double timeToExplode);
+
     std::shared_ptr<ExperiencePoint>    CreateExperiencePoint(const MathLib::vec2f & position,
                                                               int expCount);
 

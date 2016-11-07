@@ -77,6 +77,29 @@ std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(const Math
     return entity;
 }
 
+std::shared_ptr<MineDetectorEntity> EntityManager::CreateDetectorMine(const LiveEntity * owner,
+                                                                      const MathLib::vec2f& position,
+                                                                      float explosionDamage,
+                                                                      float explosionRadius,
+                                                                      float triggerDistance)
+{
+    auto entity = factory.CreateEntity<MineDetectorEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance);
+    AddEntity(entity);
+    return entity;
+}
+
+std::shared_ptr<MineTimedEntity> EntityManager::CreateTimedMine(const LiveEntity * owner,
+                                                                const MathLib::vec2f& position,
+                                                                float explosionDamage,
+                                                                float explosionRadius,
+                                                                float triggerDistance,
+                                                                double timeToExplode)
+{
+    auto entity = factory.CreateEntity<MineTimedEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance, timeToExplode);
+    AddEntity(entity);
+    return entity;
+}
+
 std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode * sprite)
 {
     auto entity = factory.CreateEntity<BackgroundBlinker>(sprite);

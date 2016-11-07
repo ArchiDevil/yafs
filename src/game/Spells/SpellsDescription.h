@@ -71,6 +71,29 @@ private:
     const float energy = 0.0f;
 };
 
+class DetectorMineSpellDescription final : public ISpellDescription
+{
+public:
+    DetectorMineSpellDescription(const std::string & name, float cooldown, float damage, float energy);
+    std::unique_ptr<ISpellController> CreateSpellController(LiveEntity* caster) const override;
+
+private:
+    const float damage = 0.0f;
+    const float energy = 0.0f;
+};
+
+class TimedMineSpellDescription final : public ISpellDescription
+{
+public:
+    TimedMineSpellDescription(const std::string & name, float cooldown, float damage, float energy, double time);
+    std::unique_ptr<ISpellController> CreateSpellController(LiveEntity* caster) const override;
+
+private:
+    const float damage = 0.0f;
+    const float energy = 0.0f;
+    const double time = 0.0;
+};
+
 class ShieldSpellDescription final : public ISpellDescription
 {
 public:

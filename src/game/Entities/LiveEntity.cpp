@@ -48,6 +48,23 @@ bool LiveEntity::handleEvent(const ExperiencePointPositionEvent & event)
     return true;
 }
 
+bool LiveEntity::handleEvent(const ExplosionEvent & event)
+{
+    if (MathLib::distance(Entity::GetPosition(), event.epicenter) < event.radius)   // radius of entity is not supported
+    {                                                                               // if you want to add it, just add it to the radius
+        // woops, duplicate with projectile event
+        health -= event.damage;
+        if (health <= 0)
+        {
+            Kill();
+            GetGamePtr()->GetEntityMgr()->CreateExperiencePoint(position, experienceCount);
+        }
+        return false;
+    }
+
+    return true;
+}
+
 MathLib::vec2f LiveEntity::GetTargetDirection() const
 {
     return targetDirection;
@@ -63,6 +80,9 @@ void LiveEntity::Update(double dt)
     for (auto& controller : controllers)
         if (controller)
             controller->Update(dt);
+
+    ((notifier<LiveEntityPositionEvent>)EntityEventManager::GetInstance())
+        .notifyAll(LiveEntityPositionEvent(this));
 }
 
 void LiveEntity::StartSpellInSlot(ControllerSlot slot)

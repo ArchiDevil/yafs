@@ -44,6 +44,19 @@ void SpellsDatabase::LoadSpellsFromFile(const std::string& filename)
                     float energy = arrayElement["energy"];
                     spells[hash] = std::make_unique<MultiProjectileSpellDescription>(name, cooldown, damage, spread, count, per_bullet_spread, energy);
                 }
+                else if (type == "detectormine")
+                {
+                    float damage = arrayElement["damage"];
+                    float energy = arrayElement["energy"];
+                    spells[hash] = std::make_unique<DetectorMineSpellDescription>(name, cooldown, damage, energy);
+                }
+                else if (type == "timedmine")
+                {
+                    float damage = arrayElement["damage"];
+                    float energy = arrayElement["energy"];
+                    double time = arrayElement["energy"];
+                    spells[hash] = std::make_unique<TimedMineSpellDescription>(name, cooldown, damage, energy, time);
+                }
                 else if (type == "shield")
                 {
                     float usage_time = arrayElement["usage-time"];

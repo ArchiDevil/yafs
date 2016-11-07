@@ -26,6 +26,9 @@ set(LS  Entities/BackgroundBlinker.cpp
         Entities/EntityManager.cpp
         Entities/ExperiencePoint.cpp
         Entities/LiveEntity.cpp
+        Entities/MineEntity.cpp
+        Entities/MineDetectorEntity.cpp
+        Entities/MineTimedEntity.cpp
         Entities/Player.cpp
         Entities/Projectile.cpp)
 source_group("Source Files\\Entities" FILES ${LS})
@@ -41,6 +44,9 @@ set(LS  Entities/BackgroundBlinker.h
         Entities/EntityManager.h
         Entities/ExperiencePoint.h
         Entities/LiveEntity.h
+        Entities/MineEntity.h
+        Entities/MineDetectorEntity.h
+        Entities/MineTimedEntity.h
         Entities/Player.h
         Entities/Projectile.h
         Entities/VisualEntity.h
