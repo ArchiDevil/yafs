@@ -36,3 +36,15 @@ void MultiProjectileSpellEntity::Cast(const LiveEntity * caster, const MathLib::
         ProjectileSpellEntity::Cast(caster, vec2Transform(direction, matrixRotationZ(i)));
     }
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+void ChannelledShieldSpellEntity::StartCast(LiveEntity * caster)
+{
+    caster->AddBuff(shieldBuff);
+}
+
+void ChannelledShieldSpellEntity::StopCast(LiveEntity * caster)
+{
+    caster->RemoveBuff(shieldBuff);
+}
