@@ -57,6 +57,12 @@ void SpellsDatabase::LoadSpellsFromFile(const std::string& filename)
                     double time = arrayElement["energy"];
                     spells[hash] = std::make_unique<TimedMineSpellDescription>(name, cooldown, damage, energy, time);
                 }
+                else if (type == "shield")
+                {
+                    float usage_time = arrayElement["usage-time"];
+                    float energy_per_second = arrayElement["energy-per-second"];
+                    spells[hash] = std::make_unique<ShieldSpellDescription>(name, cooldown, usage_time, energy_per_second);
+                }
                 else
                 {
                     throw std::invalid_argument("Wrong type");

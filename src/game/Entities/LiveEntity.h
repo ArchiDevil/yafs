@@ -4,7 +4,9 @@
 #include "../Spells/ISpellController.h"
 
 #include <array>
+#include <vector>
 
+class IBuff;
 class ISpellController;
 
 class LiveEntity
@@ -40,15 +42,22 @@ public:
     void            SetTargetDirection(const MathLib::vec2f & val);
     int             GetExperienceCount();
 
-    void SetSpellController(std::unique_ptr<ISpellController> && controller, ControllerSlot slot);
+    // buff system is TBD but this is just for spells task purposes
+    void            AddBuff(const std::shared_ptr<IBuff> & buff);
+    void            RemoveBuff(const std::shared_ptr<IBuff> & buff);
+
+    void            SetSpellController(std::unique_ptr<ISpellController> && controller, ControllerSlot slot);
     ISpellController* GetSpellController(ControllerSlot slot) const;
 
 protected:
+    float           CalculateDamage(float damage);
+
     float           health = 1.0f;
     int             experienceCount = 0;
     MathLib::vec2f  targetDirection = {};
 
     std::array<std::unique_ptr<ISpellController>, CS_Count> controllers; // just two controllers
+    std::vector<std::shared_ptr<IBuff>> buffs;
 
     scoped_subscriber<ExperiencePointPositionEvent> experiencePointSubscriber = {&EntityEventManager::GetInstance(), this};
     scoped_subscriber<ExplosionEvent> explosionSubscriber = {&EntityEventManager::GetInstance(), this};

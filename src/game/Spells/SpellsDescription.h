@@ -93,3 +93,14 @@ private:
     const float energy = 0.0f;
     const double time = 0.0;
 };
+
+class ShieldSpellDescription final : public ISpellDescription
+{
+public:
+    ShieldSpellDescription(const std::string & name, float cooldown, float usage_time, float energy_per_second);
+    std::unique_ptr<ISpellController> CreateSpellController(LiveEntity* caster) const override;
+
+private:
+    const float usage_time = 0.0f;
+    const float energy_per_second = 0.0f;
+};

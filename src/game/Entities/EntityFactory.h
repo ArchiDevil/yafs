@@ -8,6 +8,7 @@
 #include "MineTimedEntity.h"
 #include "Player.h"
 #include "Projectile.h"
+#include "VisualStickerEntity.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <MathLib/math.h>

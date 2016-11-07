@@ -19,6 +19,7 @@ list(APPEND SRC ${LS})
 
 set(LS  Entities/BackgroundBlinker.cpp
         Entities/BackgroundWanderer.cpp
+        Entities/Buffs.cpp
         Entities/Enemy.cpp
         Entities/Entity.cpp
         Entities/EntityFactory.cpp
@@ -35,6 +36,7 @@ list(APPEND SRC ${LS})
 
 set(LS  Entities/BackgroundBlinker.h
         Entities/BackgroundWanderer.h
+        Entities/Buffs.h
         Entities/Enemy.h
         Entities/Entity.h
         Entities/EntityEventManager.h
@@ -46,7 +48,9 @@ set(LS  Entities/BackgroundBlinker.h
         Entities/MineDetectorEntity.h
         Entities/MineTimedEntity.h
         Entities/Player.h
-        Entities/Projectile.h)
+        Entities/Projectile.h
+        Entities/VisualEntity.h
+        Entities/VisualStickerEntity.h)
 source_group("Header Files\\Entities" FILES ${LS})
 list(APPEND SRC ${LS})
 

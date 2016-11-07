@@ -28,5 +28,11 @@
         "cooldown": 10.0,
         "damage": 10.0,
         "energy": 3.0
+    }, {
+        "name": "shield",
+        "type": "shield",
+        "cooldown": 3.0,
+        "usage-time": 1.0,
+        "energy-per-second": 1.0
     }]
 }

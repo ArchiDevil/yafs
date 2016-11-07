@@ -48,6 +48,10 @@ public:
 
     std::shared_ptr<BackgroundWanderer> CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode * sprite);
 
+    std::shared_ptr<VisualStickerEntity>CreateVisualStickerEntity(const LiveEntity * owner,
+                                                                  const MathLib::vec2f& position,
+                                                                  ShiftEngine::SpriteSceneNode * sprite);
+
 private:
     void AddEntity(const std::shared_ptr<Entity> & ent);
     void RemoveEntity(std::shared_ptr<Entity> & ent);

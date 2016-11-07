@@ -61,3 +61,15 @@ void TimedMinePeriodicCastSpellEntity::Cast(const LiveEntity * caster)
 {
     GetGamePtr()->GetEntityMgr()->CreateTimedMine(caster, caster->GetPosition(), explosionDamage, 2.0f, 1.0f, time);
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+void ChannelledShieldSpellEntity::StartCast(LiveEntity * caster)
+{
+    caster->AddBuff(shieldBuff);
+}
+
+void ChannelledShieldSpellEntity::StopCast(LiveEntity * caster)
+{
+    caster->RemoveBuff(shieldBuff);
+}

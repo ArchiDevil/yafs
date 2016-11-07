@@ -67,3 +67,56 @@ void DirectedPeriodicCastSpellController::Update(double dt)
     remainingCooldown = castInfo.cooldown;
     // UNDONE: remove energy from caster
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+ChanneledCastSpellController::ChanneledCastSpellController(LiveEntity* caster,
+                                                           const ChanneledCastInfo& castInfo,
+                                                           std::unique_ptr<ChannelledCastSpellEntity> && spellEntity)
+    : ISpellController(caster)
+    , castInfo(castInfo)
+    , spellEntity(std::move(spellEntity))
+{
+}
+
+void ChanneledCastSpellController::SpellKeyDown()
+{
+    if (remainingCooldown > 0 || castStarted)
+        return;
+
+    castStarted = true;
+    spellEntity->StartCast(ISpellController::caster);
+}
+
+void ChanneledCastSpellController::SpellKeyUp()
+{
+    if (!castStarted)
+        return;
+
+    StopCast();
+}
+
+void ChanneledCastSpellController::Update(double dt)
+{
+    if (remainingCooldown >= 0.0)
+        remainingCooldown -= dt;
+
+    if (!castStarted)
+        return;
+
+    castTime += dt;
+    if (castTime >= castInfo.maximumUsageTime)
+    {
+        StopCast();
+    }
+
+    // UNDONE: remove energy from caster
+}
+
+void ChanneledCastSpellController::StopCast()
+{
+    remainingCooldown = castInfo.cooldown;
+    castTime = 0.0;
+    castStarted = false;
+    spellEntity->StopCast(ISpellController::caster);
+}

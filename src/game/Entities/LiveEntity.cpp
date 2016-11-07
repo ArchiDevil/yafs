@@ -3,6 +3,7 @@
 #include "../Game.h"
 #include "Projectile.h"
 #include "ExperiencePoint.h"
+#include "Buffs.h"
 
 using namespace MathLib;
 using namespace GoingHome;
@@ -101,6 +102,15 @@ ISpellController* LiveEntity::GetSpellController(ControllerSlot slot) const
     return controllers[slot].get();
 }
 
+float LiveEntity::CalculateDamage(float damage)
+{
+    float damageModifier = 0.0f;
+    for (auto & buff : buffs)
+        damageModifier += buff->GetDamageModificationRatio();
+
+    return damage * damageModifier;
+}
+
 void LiveEntity::SetSpellController(std::unique_ptr<ISpellController> && controller, ControllerSlot slot)
 {
     controllers[slot] = std::move(controller);
@@ -109,4 +119,16 @@ void LiveEntity::SetSpellController(std::unique_ptr<ISpellController> && control
 int LiveEntity::GetExperienceCount()
 {
     return experienceCount;
+}
+
+void LiveEntity::AddBuff(const std::shared_ptr<IBuff> & buff)
+{
+    buffs.push_back(buff);
+    buff->OnActivation(this);
+}
+
+void LiveEntity::RemoveBuff(const std::shared_ptr<IBuff> & buff)
+{
+    buff->OnDeactivation(this);
+    buffs.erase(std::find(buffs.begin(), buffs.end(), buff));
 }

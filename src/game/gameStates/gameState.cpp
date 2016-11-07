@@ -49,6 +49,7 @@ bool GameState::initState()
     playerPtr->SetSpellController(database->GetSpellByName("projectile").CreateSpellController(playerPtr),      Player::CS_MainSlot);
     playerPtr->SetSpellController(database->GetSpellByName("multiprojectile").CreateSpellController(playerPtr), Player::CS_AdditionalSlot);
     playerPtr->SetSpellController(database->GetSpellByName("timed-mine").CreateSpellController(playerPtr),      Player::CS_MineSlot);
+    playerPtr->SetSpellController(database->GetSpellByName("shield").CreateSpellController(playerPtr),          Player::CS_ShieldSlot);
 
     LOG_INFO("End of game state initializing");
 

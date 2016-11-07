@@ -113,3 +113,12 @@ std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(Shif
     AddEntity(entity);
     return entity;
 }
+
+std::shared_ptr<VisualStickerEntity> EntityManager::CreateVisualStickerEntity(const LiveEntity * owner,
+                                                                              const MathLib::vec2f& position,
+                                                                              ShiftEngine::SpriteSceneNode * sprite)
+{
+    auto entity = factory.CreateEntity<VisualStickerEntity>(owner, position, sprite);
+    AddEntity(entity);
+    return entity;
+}
