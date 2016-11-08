@@ -128,7 +128,7 @@ endfunction(VSTestLinkLibraries)
 
 if(MSVC)
     add_definitions(-DUNICODE -D_UNICODE)
-    add_definitions("/wd4201 /wd4505 /wd4297 /wd4324 /D_CRT_SECURE_NO_WARNINGS /W4")
+    add_definitions("/wd4201 /wd4505 /wd4297 /wd4324 /D_CRT_SECURE_NO_WARNINGS /W4 /MP")
 else()
     add_definitions(-std=c++11)
 endif()
