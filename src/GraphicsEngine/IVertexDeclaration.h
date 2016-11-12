@@ -7,9 +7,9 @@ namespace ShiftEngine
 class IVertexDeclaration
 {
 public:
-    virtual ~IVertexDeclaration() {}
+    virtual ~IVertexDeclaration() = default;
     virtual void Bind() = 0;
 };
 
-typedef std::shared_ptr<IVertexDeclaration> IVertexDeclarationPtr;
+using IVertexDeclarationPtr = std::shared_ptr<IVertexDeclaration>;
 }

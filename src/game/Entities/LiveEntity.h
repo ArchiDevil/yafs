@@ -40,7 +40,7 @@ public:
 
     MathLib::vec2f  GetTargetDirection() const;
     void            SetTargetDirection(const MathLib::vec2f & val);
-    int             GetExperienceCount();
+    int             GetExperienceCount() const;
 
     // buff system is TBD but this is just for spells task purposes
     void            AddBuff(const std::shared_ptr<IBuff> & buff);

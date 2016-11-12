@@ -8,7 +8,7 @@
 
 using namespace ShiftEngine;
 
-D3D11MeshManager::D3D11MeshManager(CComPtr<ID3D11Device> pDevice)
+D3D11MeshManager::D3D11MeshManager(Microsoft::WRL::ComPtr<ID3D11Device> pDevice)
     : pDevice(pDevice)
 {}
 
@@ -21,7 +21,7 @@ IMeshDataPtr D3D11MeshManager::LoadMesh(const std::wstring & fileName)
     }
     else
     {
-        CComPtr<ID3D11DeviceContext> pImmediate = nullptr;
+        Microsoft::WRL::ComPtr<ID3D11DeviceContext> pImmediate = nullptr;
         pDevice->GetImmediateContext(&pImmediate);
         D3D11MeshDataPtr ptr = std::make_shared<D3D11MeshData>(nullptr, nullptr, pDevice, pImmediate);
         if (!Load(fileName, ptr.get()))
@@ -47,7 +47,7 @@ IMeshDataPtr D3D11MeshManager::CreateMeshFromVertices(const uint8_t * verticesDa
         return LoadErrorMesh();
 
     auto vd = GetContextManager()->GetVertexDeclaration(*semantic);
-    CComPtr<ID3D11DeviceContext> pImmediate = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> pImmediate = nullptr;
     pDevice->GetImmediateContext(&pImmediate);
     D3D11MeshDataPtr out = std::make_shared<D3D11MeshData>(nullptr, nullptr, pDevice, pImmediate);
     if (!out->CreateBuffers(false, verticesData, verticesDataSize, indicesData.data(), indicesData.size() * sizeof(uint32_t), semantic, vd, bbox))

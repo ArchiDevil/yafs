@@ -3,13 +3,13 @@
 #include <cstdint>
 #include <vector>
 #include <string>
+#include <memory>
 
 class StreamBlock
 {
 public:
     StreamBlock(uint32_t _id, uint32_t _size, const uint8_t * _data);
     StreamBlock(const StreamBlock & ref);
-    ~StreamBlock();
 
     StreamBlock & operator=(const StreamBlock & ref);
 
@@ -20,18 +20,17 @@ public:
 private:
     uint32_t id;
     uint32_t size;
-    uint8_t * data;
+    std::unique_ptr<uint8_t[]> data;
 };
 
 class BlockStreamer
 {
 public:
-    BlockStreamer();
     ~BlockStreamer();
 
     bool AddBlock(uint32_t id, size_t size, const uint8_t * data);
     bool RemoveBlock(uint32_t block_id);
-    const std::vector<StreamBlock*> & GetBlocks() const;
+    const std::vector<std::unique_ptr<StreamBlock>> & GetBlocks() const;
 
     bool Save(const std::wstring & filename) const;
     bool Load(const std::wstring & filename);
@@ -39,6 +38,6 @@ public:
 private:
     void Clear();
 
-    std::vector<StreamBlock *> blocks;
+    std::vector<std::unique_ptr<StreamBlock>> blocks;
 
 };

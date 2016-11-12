@@ -28,9 +28,7 @@ public:
     {
     }
 
-    virtual ~ITexture()
-    {
-    }
+    virtual ~ITexture() = default;
 
     int GetHeight() const
     {
@@ -55,5 +53,5 @@ private:
     TextureType type;
 };
 
-typedef std::shared_ptr<ITexture> ITexturePtr;
+using ITexturePtr = std::shared_ptr<ITexture>;
 }

@@ -106,5 +106,6 @@ private:
     MaterialInfo                                    info;
 };
 
-typedef std::shared_ptr<Material> MaterialPtr;
+using MaterialPtr = std::shared_ptr<Material>;
+
 }

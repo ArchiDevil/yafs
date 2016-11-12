@@ -14,8 +14,7 @@ namespace ShiftEngine
 class IMeshData
 {
 public:
-    virtual ~IMeshData()
-    {}
+    virtual ~IMeshData() = default;
 
     virtual uint32_t Draw() = 0;
     virtual void Clear() = 0;
@@ -67,6 +66,6 @@ protected:
     MathLib::AABB bbox = {};
 };
 
-typedef std::shared_ptr<IMeshData> IMeshDataPtr;
+using IMeshDataPtr = std::shared_ptr<IMeshData>;
 
 }

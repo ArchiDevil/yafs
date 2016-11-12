@@ -116,7 +116,7 @@ void LiveEntity::SetSpellController(std::unique_ptr<ISpellController> && control
     controllers[slot] = std::move(controller);
 }
 
-int LiveEntity::GetExperienceCount()
+int LiveEntity::GetExperienceCount() const
 {
     return experienceCount;
 }

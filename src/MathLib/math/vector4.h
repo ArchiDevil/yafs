@@ -13,14 +13,16 @@ struct vec4
         , y(0)
         , z(0)
         , w(0)
-    {}
+    {
+    }
 
     vec4(T _x, T _y, T _z, T _w)
         : x(_x)
         , y(_y)
         , z(_z)
         , w(_w)
-    {}
+    {
+    }
 
     union
     {
@@ -120,8 +122,8 @@ struct vec4
     }
 };
 
-typedef vec4<float>  vec4f;
-typedef vec4<double> vec4d;
-typedef vec4<int> vec4i;
+using vec4f = vec4<float>;
+using vec4d = vec4<double>;
+using vec4i = vec4<int>;
 
 }

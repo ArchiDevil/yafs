@@ -153,10 +153,10 @@ bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettin
     if (FAILED(graphicsContext.Device->CreateTexture2D(&depthStencilDesc, 0, &graphicsContext.DefaultDS->texture)))
         LOG_FATAL_ERROR("Unable to create default depth buffer");
 
-    if (FAILED(graphicsContext.Device->CreateDepthStencilView(graphicsContext.DefaultDS->texture, 0, &graphicsContext.DefaultDS->view)))
+    if (FAILED(graphicsContext.Device->CreateDepthStencilView(graphicsContext.DefaultDS->texture.Get(), 0, &graphicsContext.DefaultDS->view)))
         LOG_FATAL_ERROR("Unable to create default depth buffer");
 
-    graphicsContext.DeviceContext->OMSetRenderTargets(1, &graphicsContext.DefaultRT->view.p, graphicsContext.DefaultDS->view);
+    graphicsContext.DeviceContext->OMSetRenderTargets(1, graphicsContext.DefaultRT->view.GetAddressOf(), graphicsContext.DefaultDS->view.Get());
 
     D3D11_VIEWPORT vp;
     vp.TopLeftX = 0;
@@ -177,10 +177,10 @@ bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettin
         LOG_FATAL_ERROR("Unable to create states for renderer");
 
     zBufferState = true;
-    graphicsContext.DeviceContext->OMSetDepthStencilState(graphicsContext.dsStateZOn, 1);
-    graphicsContext.DeviceContext->RSSetState(graphicsContext.rsNormal);
+    graphicsContext.DeviceContext->OMSetDepthStencilState(graphicsContext.dsStateZOn.Get(), 1);
+    graphicsContext.DeviceContext->RSSetState(graphicsContext.rsNormal.Get());
     const float BlendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-    graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsNormal, BlendFactor, 0xffffffff);
+    graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsNormal.Get(), BlendFactor, 0xffffffff);
 
     shaderManager = new D3D11ShaderManager(graphicsContext.Device);
     shaderGenerator = new D3D11ShaderGenerator();
@@ -316,9 +316,9 @@ void D3D11ContextManager::SetZState(bool enabled)
 {
     zBufferState = enabled;
     if (enabled)
-        graphicsContext.DeviceContext->OMSetDepthStencilState(graphicsContext.dsStateZOn, 1);
+        graphicsContext.DeviceContext->OMSetDepthStencilState(graphicsContext.dsStateZOn.Get(), 1);
     else
-        graphicsContext.DeviceContext->OMSetDepthStencilState(graphicsContext.dsStateZOff, 1);
+        graphicsContext.DeviceContext->OMSetDepthStencilState(graphicsContext.dsStateZOff.Get(), 1);
 }
 
 const GraphicEngineSettings & D3D11ContextManager::GetEngineSettings() const
@@ -365,13 +365,13 @@ void D3D11ContextManager::SetBlendingState(BlendingState bs)
     switch (bs)
     {
     case BlendingState::None:
-        graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsNormal, BlendFactor, 0xffffffff);
+        graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsNormal.Get(), BlendFactor, 0xffffffff);
         break;
     case BlendingState::AlphaEnabled:
-        graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsAlpha, BlendFactor, 0xffffffff);
+        graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsAlpha.Get(), BlendFactor, 0xffffffff);
         break;
     case BlendingState::Additive:
-        graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsAdditive, BlendFactor, 0xffffffff);
+        graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsAdditive.Get(), BlendFactor, 0xffffffff);
         break;
     default:
         break;
@@ -391,13 +391,13 @@ void D3D11ContextManager::SetRasterizerState(RasterizerState rs)
     switch (rs)
     {
     case RasterizerState::Wireframe:
-        graphicsContext.DeviceContext->RSSetState(graphicsContext.rsWireframe);
+        graphicsContext.DeviceContext->RSSetState(graphicsContext.rsWireframe.Get());
         break;
     case RasterizerState::Normal:
-        graphicsContext.DeviceContext->RSSetState(graphicsContext.rsNormal);
+        graphicsContext.DeviceContext->RSSetState(graphicsContext.rsNormal.Get());
         break;
     case RasterizerState::NoCulling:
-        graphicsContext.DeviceContext->RSSetState(graphicsContext.rsNoCulling);
+        graphicsContext.DeviceContext->RSSetState(graphicsContext.rsNoCulling.Get());
         break;
     default:
         break;
@@ -416,7 +416,7 @@ FontManager * D3D11ContextManager::GetFontManager()
 
 IVertexDeclarationPtr D3D11ContextManager::CreateVDFromDescription(const VertexSemantic & semantic)
 {
-    ID3D11Device * pDevice = graphicsContext.Device;
+    ID3D11Device * pDevice = graphicsContext.Device.Get();
     ID3D11InputLayout * outIL = nullptr;
 
     const size_t bufferSize = 2048;
@@ -562,5 +562,5 @@ IVertexDeclarationPtr D3D11ContextManager::GetVertexDeclaration(const VertexSema
 
 ID3D11Device* D3D11ContextManager::GetDevicePtr() const
 {
-    return graphicsContext.Device;
+    return graphicsContext.Device.Get();
 }

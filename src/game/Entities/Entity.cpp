@@ -34,7 +34,7 @@ void Entity::Kill()
 
 bool Entity::CalculateCollision(const Entity & ent) const
 {
-    float radius = std::max({sprite->GetLocalScale().x, sprite->GetLocalScale().y, sprite->GetLocalScale().z});
+    const float radius = std::max({sprite->GetLocalScale().x, sprite->GetLocalScale().y, sprite->GetLocalScale().z});
 
     if (MathLib::distance(ent.GetPosition(), position) < radius) // then it is collided
         return true;

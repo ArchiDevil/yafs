@@ -11,12 +11,14 @@ struct vec2
     vec2()
         : x(0)
         , y(0)
-    {}
+    {
+    }
 
     vec2(T _x, T _y)
         : x(_x)
         , y(_y)
-    {}
+    {
+    }
 
     union
     {
@@ -109,8 +111,8 @@ struct vec2
     }
 };
 
-typedef vec2<double>    vec2d;
-typedef vec2<float>     vec2f;
-typedef vec2<int>       vec2i;
+using vec2d = vec2<double>;
+using vec2f = vec2<float>;
+using vec2i = vec2<int>;
 
 }

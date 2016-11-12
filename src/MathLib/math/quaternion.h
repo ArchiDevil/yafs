@@ -24,24 +24,27 @@ public:
     quaternion()
         : vector(T(1.0), T(0.0), T(0.0))
         , w(T(1.0))
-    {}
+    {
+    }
 
     quaternion(T x, T y, T z, T w)
         : vector(x, y, z)
         , w(w)
-    {}
+    {
+    }
 
     quaternion(const vec3<T> & vec)
         : vector(vec)
         , w(0)
-    {}
+    {
+    }
 
-    /*
-    qroll =  [cos (y/2), (sin(y/2), 0, 0)]
-    qpitch = [cos (q/2), (0, sin(q/2), 0)]
-    qyaw =  [cos (f/2), (0, 0, sin(f/2))]
-    q = qyaw qpitch qroll
-    */
+   /*
+   qroll =  [cos (y/2), (sin(y/2), 0, 0)]
+   qpitch = [cos (q/2), (0, sin(q/2), 0)]
+   qyaw =  [cos (f/2), (0, 0, sin(f/2))]
+   q = qyaw qpitch qroll
+   */
 
     quaternion(float latitude, float longitude, float angle)
     {
@@ -198,8 +201,8 @@ public:
     }
 };
 
-typedef quaternion<float> qaFloat;
-typedef quaternion<double> qaDouble;
+using qaFloat = quaternion<float>;
+using qaDouble = quaternion<double>;
 
 template<typename T>
 quaternion<T> quaternionFromVecAngle(const vec3<T> & axis, float angle)

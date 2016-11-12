@@ -54,7 +54,7 @@ namespace UtilTest
             Assert::AreEqual(blocks[0]->GetSize(), (uint32_t)100, L"Wrong loaded size");
             Assert::AreEqual(blocks[1]->GetSize(), (uint32_t)50, L"Wrong loaded size");
 
-            for (auto elem : blocks)
+            for (auto& elem : blocks)
             {
                 uint8_t * dt = elem->GetData();
                 for (uint32_t i = 0; i < elem->GetSize(); i++)

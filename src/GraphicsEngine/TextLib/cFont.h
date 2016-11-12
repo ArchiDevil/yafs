@@ -32,6 +32,7 @@ public:
     cFont(const std::wstring& filename, ShiftEngine::ITexturePtr tp)
         : filename(filename)
         , tp(tp)
+        , data()
     {
         std::ifstream in;
         in.open(filename);
@@ -40,7 +41,7 @@ public:
 
         std::string Line;
         std::string Read, Key, Value;
-        std::size_t i;
+        std::size_t i = 0;
 
         while (!in.eof())
         {

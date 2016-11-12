@@ -83,6 +83,8 @@ struct XboxController
     XboxController()
         : userIndex(0)
         , isConnected(false)
+        , curState({})
+        , preState({})
     {}
 
     XboxController(int playerNumber)

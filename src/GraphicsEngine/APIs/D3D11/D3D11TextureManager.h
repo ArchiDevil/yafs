@@ -13,7 +13,9 @@ namespace ShiftEngine
 class D3D11TextureManager : public ITextureManager
 {
 public:
-    D3D11TextureManager(CComPtr<ID3D11Device> device, CComPtr<ID3D11DeviceContext> pDeviceContext, const std::wstring & texturesPath);
+    D3D11TextureManager(Microsoft::WRL::ComPtr<ID3D11Device> device, 
+                        Microsoft::WRL::ComPtr<ID3D11DeviceContext> pDeviceContext, 
+                        const std::wstring & texturesPath);
 
     ITexturePtr CreateTexture2D(const std::wstring & FileName) override;
     ITexturePtr CreateCubemap(const std::wstring & posX,
@@ -34,8 +36,8 @@ private:
     std::unordered_map<std::wstring, D3D11TexturePtr> textures;
     D3D11TexturePtr errorTexture = nullptr;
 
-    CComPtr<ID3D11Device> pDevice = nullptr;
-    CComPtr<ID3D11DeviceContext> pDeviceContext = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> pDeviceContext = nullptr;
 };
 
 }

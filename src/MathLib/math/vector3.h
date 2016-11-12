@@ -12,13 +12,15 @@ struct vec3
         : x(0)
         , y(0)
         , z(0)
-    {}
+    {
+    }
 
     vec3(T _x, T _y, T _z)
         : x(_x)
         , y(_y)
         , z(_z)
-    {}
+    {
+    }
 
     union
     {
@@ -115,8 +117,8 @@ struct vec3
     }
 };
 
-typedef vec3<float>     vec3f;
-typedef vec3<double>    vec3d;
-typedef vec3<int>       vec3i;
+using vec3f = vec3<float>;
+using vec3d = vec3<double>;
+using vec3i = vec3<int>;
 
 }

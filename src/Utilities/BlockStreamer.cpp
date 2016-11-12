@@ -12,21 +12,13 @@ StreamBlock::StreamBlock(uint32_t _id, uint32_t _size, const uint8_t * _data)
     : id(_id)
     , size(_size)
 {
-    data = new uint8_t[size];
-    memcpy(data, _data, size);
+    data.reset(new uint8_t[size]);
+    memcpy(data.get(), _data, size);
 }
 
 StreamBlock::StreamBlock(const StreamBlock & ref)
-    : id(ref.id)
-    , size(ref.size)
 {
-    data = new uint8_t[size];
-    memcpy(data, ref.data, size);
-}
-
-StreamBlock::~StreamBlock()
-{
-    delete[] data;
+    *this = ref;
 }
 
 uint32_t StreamBlock::GetId() const
@@ -41,23 +33,19 @@ uint32_t StreamBlock::GetSize() const
 
 uint8_t * StreamBlock::GetData() const
 {
-    return data;
+    return data.get();
 }
 
 StreamBlock & StreamBlock::operator=(const StreamBlock & ref)
 {
     if (&ref == this)
         return *this;
-    delete[] data;
+
     this->id = ref.id;
     this->size = ref.size;
-    data = new uint8_t[size];
-    memcpy(data, ref.data, size);
+    data.reset(new uint8_t[size]);
+    memcpy(data.get(), ref.data.get(), size);
     return *this;
-}
-
-BlockStreamer::BlockStreamer()
-{
 }
 
 BlockStreamer::~BlockStreamer()
@@ -67,16 +55,11 @@ BlockStreamer::~BlockStreamer()
 
 bool BlockStreamer::AddBlock(uint32_t id, size_t size, const uint8_t * data)
 {
-    for (auto * elem : blocks)
-    {
+    for (auto & elem : blocks)
         if (elem->GetId() == id)
-        {
             return false;
-        }
-    }
 
-    StreamBlock * block = new StreamBlock(id, size, data);
-    blocks.push_back(block);
+    blocks.emplace_back(std::make_unique<StreamBlock>(id, size, data));
     return true;
 }
 
@@ -86,8 +69,7 @@ bool BlockStreamer::RemoveBlock(uint32_t block_id)
     {
         if (blocks[i]->GetId() == block_id)
         {
-            delete blocks[i];
-            blocks[i] = blocks.back();
+            std::swap(blocks[i], blocks.back());
             blocks.pop_back();
             return true;
         }
@@ -107,7 +89,7 @@ bool BlockStreamer::Save(const std::wstring & filename) const
     //magic number
     out.write((const char*)&magic, sizeof(uint32_t));
     //writing blocks...
-    for (auto * elem : blocks)
+    for (auto & elem : blocks)
     {
         uint32_t id = elem->GetId();
         out.write((const char*)&id, sizeof(uint32_t));
@@ -141,7 +123,6 @@ bool BlockStreamer::Load(const std::wstring & filename)
     {
         uint32_t id = 0;
         uint32_t size = 0;
-        uint8_t * data = nullptr;
 
         in.read((char*)&id, sizeof(uint32_t));
         uint32_t readBytes = (uint32_t)in.gcount();
@@ -164,19 +145,16 @@ bool BlockStreamer::Load(const std::wstring & filename)
             return false;
         }
 
-        data = new uint8_t[size];
-        in.read((char*)data, size);
+        std::unique_ptr<uint8_t> data {new uint8_t[size]};
+        in.read((char*)data.get(), size);
         if (in.gcount() < size)
         {
             Clear();
             in.close();
-            delete[] data;
             return false;
         }
 
-        StreamBlock * block = new StreamBlock(id, size, data);
-        blocks.push_back(block);
-        delete[] data;
+        blocks.emplace_back(std::make_unique<StreamBlock>(id, size, data.get()));
     }
 
     in.close();
@@ -186,10 +164,10 @@ bool BlockStreamer::Load(const std::wstring & filename)
 
 void BlockStreamer::Clear()
 {
-    std::for_each(blocks.begin(), blocks.end(), [](StreamBlock * block) {delete block; });
+    blocks.clear();
 }
 
-const std::vector<StreamBlock*> & BlockStreamer::GetBlocks() const
+const std::vector<std::unique_ptr<StreamBlock>> & BlockStreamer::GetBlocks() const
 {
     return blocks;
 }

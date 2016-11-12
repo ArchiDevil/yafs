@@ -14,7 +14,7 @@ struct matrix
 {
     static_assert(E > 0, "E cannot be less than 1");
 
-    T arr[E][E];
+    T arr[E][E] = {};
 
     matrix()
     {
@@ -246,9 +246,9 @@ struct matrix
     }
 };
 
-typedef matrix<float, 3> mat3f;
-typedef matrix<double, 3> mat3d;
-typedef matrix<float, 4> mat4f;
-typedef matrix<double, 4> mat4d;
+using mat3f = matrix<float, 3>;
+using mat3d = matrix<double, 3>;
+using mat4f = matrix<float, 4>;
+using mat4d = matrix<double, 4>;
 
 }

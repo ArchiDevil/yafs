@@ -631,7 +631,7 @@ namespace InputConverter
     {
         static WCHAR deadKey = 0;
 
-        BYTE keyState[256];
+        BYTE keyState[256] = {};
         HKL  layout = GetKeyboardLayout(0);
         if (GetKeyboardState(keyState) == 0)
             return 0;
@@ -643,7 +643,7 @@ namespace InputConverter
             // A dead key is stored and we have just converted a character key
             // Combine the two into a single character
             WCHAR wcBuff[3] = { buff[0], deadKey, '\0' };
-            WCHAR out[3];
+            WCHAR out[3] = {};
 
             deadKey = '\0';
             if (FoldStringW(MAP_PRECOMPOSED, (LPWSTR)wcBuff, 3, (LPWSTR)out, 3))

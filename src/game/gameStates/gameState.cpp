@@ -7,8 +7,6 @@
 
 using namespace MathLib;
 
-Enemy* testEnemy = nullptr;
-
 GameState::GameState(IniWorker * iw/*, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform*/)
     : iniLoader(iw)
     //, guiModule(guiModule)
@@ -43,7 +41,7 @@ bool GameState::initState()
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
     // just for example, let's create some enemies
-    testEnemy = entityMgrPtr->CreateEnemy({1.0f, 1.0f}, 2.0f, 100).get();
+    Enemy* testEnemy = entityMgrPtr->CreateEnemy({1.0f, 1.0f}, 2.0f, 100).get();
     testEnemy->MoveTo({0.0f, 0.0f});
 
     playerPtr->SetSpellController(database->GetSpellByName("projectile").CreateSpellController(playerPtr),      Player::CS_MainSlot);

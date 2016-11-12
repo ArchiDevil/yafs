@@ -4,8 +4,10 @@
 
 using namespace ShiftEngine;
 
-D3D11MeshData::D3D11MeshData(ID3D11Buffer * _VB /*= nullptr*/, ID3D11Buffer * _IB /*= nullptr*/,
-                             ID3D11Device * pDevice /*= nullptr*/, ID3D11DeviceContext * pDeviceContext /*= nullptr*/)
+D3D11MeshData::D3D11MeshData(Microsoft::WRL::ComPtr<ID3D11Buffer> _VB /*= nullptr*/, 
+                             Microsoft::WRL::ComPtr<ID3D11Buffer> _IB /*= nullptr*/,
+                             Microsoft::WRL::ComPtr<ID3D11Device> pDevice /*= nullptr*/, 
+                             Microsoft::WRL::ComPtr<ID3D11DeviceContext> pDeviceContext /*= nullptr*/)
     : VertexBuffer(_VB)
     , IndexBuffer(_IB)
     , pDevice(pDevice)
@@ -94,8 +96,8 @@ bool D3D11MeshData::CreateBuffers(bool dynamic,
 
 void D3D11MeshData::Clear()
 {
-    VertexBuffer.Release();
-    IndexBuffer.Release();
+    VertexBuffer.Reset();
+    IndexBuffer.Reset();
 }
 
 size_t D3D11MeshData::Draw()
@@ -108,10 +110,10 @@ size_t D3D11MeshData::Draw()
 
     unsigned int stride = vertexSize;
     unsigned int offset = 0;
-    pDeviceContext->IASetVertexBuffers(0, 1, &VertexBuffer.p, &stride, &offset);
+    pDeviceContext->IASetVertexBuffers(0, 1, VertexBuffer.GetAddressOf(), &stride, &offset);
     if (indicesCount > 0)
     {
-        pDeviceContext->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+        pDeviceContext->IASetIndexBuffer(IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
         pDeviceContext->DrawIndexed(indicesCount, 0, 0);
     }
     else
