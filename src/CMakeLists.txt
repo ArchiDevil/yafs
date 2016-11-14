@@ -1,7 +1,7 @@
 if(MSVC)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
 else()
-    add_definitions(-std=c++0x)
+    add_definitions(-std=c++11)
 endif()
 
 add_definitions(-DNOMINMAX)
@@ -20,6 +20,9 @@ if(MSVC AND WIN32)
     add_subdirectory(game)
     set_target_properties(Game PROPERTIES FOLDER "Apps")
 endif()
+
+add_subdirectory(PhysicsEngine)
+set_target_properties(PhysicsEngine PROPERTIES FOLDER "Libs")
 
 add_subdirectory(MathLib)
 set_target_properties(MathLib PROPERTIES FOLDER "Libs")

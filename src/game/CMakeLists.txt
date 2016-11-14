@@ -76,7 +76,7 @@ else()
     link_directories($ENV{DXSDK_DIR}/lib/x86)
 endif()
 
-set(GAME_LIBS GraphicsEngine System Utilities MathLib)
+set(GAME_LIBS GraphicsEngine PhysicsEngine System Utilities MathLib)
 
 add_executable(Game ${SRC})
 target_link_libraries(Game ${GAME_LIBS})
