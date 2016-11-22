@@ -7,3 +7,4 @@ set(SRC
         Solver.h)
 
 add_library(PhysicsEngine ${SRC})
+add_subdirectory(tests)

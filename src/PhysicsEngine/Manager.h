@@ -15,7 +15,7 @@ namespace Physics
 class PhysicsManager
 {
 public:
-    std::shared_ptr<Entity> CreateEntity(const MathLib::vec2f & position, const MathLib::vec2f & speed = {});
+    std::shared_ptr<Entity> CreateEntity(const MathLib::vec2f & position, float size, const MathLib::vec2f & speed = {});
     void Update(double dt, Solver * solver);
 
 private:
