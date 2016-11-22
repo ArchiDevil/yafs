@@ -10,54 +10,51 @@ namespace MathLib
 
 //dot product between two vectors
 template <typename T>
-T dot(const vec2<T> & vec1, const vec2<T> & vec2)
+constexpr T dot(const vec2<T> & vec1, const vec2<T> & vec2)
 {
     return vec1.x * vec2.x + vec1.y * vec2.y;
 }
 
 //dot product between two vectors
 template <typename T>
-T dot(const vec3<T> & vec1, const vec3<T> & vec2)
+constexpr T dot(const vec3<T> & vec1, const vec3<T> & vec2)
 {
     return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
 }
 
 //dot product between two vectors
 template <typename T>
-T dot(const vec4<T> & vec1, const vec4<T> & vec2)
+constexpr T dot(const vec4<T> & vec1, const vec4<T> & vec2)
 {
     return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z + vec1.w * vec2.w;
 }
 
 //cross product between two vectors
 template<typename T>
-vec3<T> cross(const vec3<T> & vec1, const vec3<T> & vec2)
+constexpr vec3<T> cross(const vec3<T> & vec1, const vec3<T> & vec2)
 {
     return vec3<T>(vec1.y * vec2.z - vec1.z * vec2.y, vec1.z * vec2.x - vec1.x * vec2.z, vec1.x * vec2.y - vec1.y * vec2.x);
 }
 
 //normalizes vector
 template<typename T>
-vec2<T> normalize(const vec2<T> & vec)
+constexpr vec2<T> normalize(const vec2<T> & vec)
 {
-    T inv_length = (T)1.0 / vec.length();
-    return vec * inv_length;
+    return vec * ((T)1.0 / vec.length());
 }
 
 //normalizes vector
 template<typename T>
-vec3<T> normalize(const vec3<T> & vec)
+constexpr vec3<T> normalize(const vec3<T> & vec)
 {
-    T inv_length = (T)1.0 / vec.length();
-    return vec * inv_length;
+    return vec * ((T)1.0 / vec.length());
 }
 
 //normalizes vector
 template<typename T>
-vec4<T> normalize(const vec4<T> & vec)
+constexpr vec4<T> normalize(const vec4<T> & vec)
 {
-    T inv_length = (T)1.0 / vec.length();
-    return vec * inv_length;
+    return vec * ((T)1.0 / vec.length());
 }
 
 //angle between two vectors

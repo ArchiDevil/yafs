@@ -38,4 +38,5 @@
 /3rdparty/freetype2/
 /3rdparty/mygui/
 /3rdparty/DirectXTex/
+/.vs/
 *.log

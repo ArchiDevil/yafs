@@ -46,7 +46,7 @@ T angleX(const vec2<T> & vec)
 }
 
 template<typename T>
-inline T LinearInterpolation(T a, T b, T k)
+constexpr T LinearInterpolation(T a, T b, T k)
 {
     return a + (b - a) * k;
 }
@@ -69,13 +69,13 @@ inline vec3<T> GetPointOnSphere(vec3<T> center, T radius, T xAngle, T yAngle)
 }
 
 template<typename T>
-T degrad(T degress)
+constexpr T degrad(T degress)
 {
     return degress * (T)M_PI / (T)180.0;
 }
 
 template<typename T>
-T raddeg(T radians)
+constexpr T raddeg(T radians)
 {
     return radians * (T)180.0 / (T)M_PI;
 }
