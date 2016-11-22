@@ -1,5 +1,7 @@
 #include "Entity.h"
 
+#include <cassert>
+
 Physics::Entity::Entity(MathLib::vec2f position, MathLib::vec2f initialSpeed, float size)
     : position(position)
     , speed(initialSpeed)
@@ -38,5 +40,6 @@ void Physics::Entity::Update(double dt, MathLib::vec2f force)
 
 void Physics::Entity::OnCollision(Entity * otherEntity)
 {
-    throw std::exception("Not implemented yet");
+    assert(otherEntity);
+    notifier<CollisionEvent>::notifyAll(CollisionEvent{ this, otherEntity });
 }

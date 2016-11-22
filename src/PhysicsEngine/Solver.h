@@ -13,10 +13,10 @@ namespace Physics
 class Solver : public IManager
 {
 public:
-    void UpdateEntities(double dt, std::vector<std::weak_ptr<Entity>>& entities);
+    static void UpdateEntities(double dt, std::vector<std::weak_ptr<Entity>>& entities);
 
 private:
-    void UpdateEntity(double dt, Entity& entity, std::vector<std::weak_ptr<Entity>>& entities);
+    static void UpdateEntity(double dt, size_t currentIndex, Entity& entity, std::vector<std::weak_ptr<Entity>>& entities);
 };
 
 }

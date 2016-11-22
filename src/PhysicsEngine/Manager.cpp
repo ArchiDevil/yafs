@@ -10,12 +10,9 @@ std::shared_ptr<Entity> PhysicsManager::CreateEntity(const MathLib::vec2f & posi
     return entity;
 }
 
-void PhysicsManager::Update(double dt, Solver * solver)
+void PhysicsManager::Update(double dt)
 {
-    if (!solver)
-        return;
-
-    solver->UpdateEntities(dt, entities);
+    Solver::UpdateEntities(dt, entities);
 }
 
 }

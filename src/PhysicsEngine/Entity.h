@@ -1,13 +1,23 @@
 #pragma once
 
 #include <MathLib/math.h>
+#include <Utilities/observer.h>
 
 class Entity;
 
 namespace Physics
 {
 
+class Entity;
+
+struct CollisionEvent
+{
+    Entity * firstEntity;
+    Entity * secondEntity;
+};
+
 class Entity
+    : notifier<CollisionEvent>
 {
 public:
     Entity(MathLib::vec2f position, MathLib::vec2f initialSpeed, float size);
