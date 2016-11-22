@@ -8,7 +8,7 @@ namespace MathLib
 template<typename T>
 struct vec4
 {
-    vec4()
+    constexpr vec4()
         : x(0)
         , y(0)
         , z(0)
@@ -16,7 +16,7 @@ struct vec4
     {
     }
 
-    vec4(T _x, T _y, T _z, T _w)
+    constexpr vec4(T _x, T _y, T _z, T _w)
         : x(_x)
         , y(_y)
         , z(_z)
@@ -33,12 +33,12 @@ struct vec4
         };
     };
 
-    T length() const
+    constexpr T length() const
     {
         return (T)sqrt((double)x*x + (double)y*y + (double)z*z + (double)w*w);
     }
 
-    inline const T * ptr() const
+    constexpr const T * ptr() const
     {
         return el;
     }
@@ -85,38 +85,39 @@ struct vec4
         return *this;
     }
 
-    template<typename T2> operator vec4<T2>() const
+    template<typename T2> 
+    constexpr operator vec4<T2>() const
     {
         return vec4<T2>((T2)x, (T2)y, (T2)z, (T2)w);
     }
 
-    inline vec4 operator + (const vec4 & ref) const
+    constexpr vec4 operator + (const vec4 & ref) const
     {
-        return vec4(this->x + ref.x, this->y + ref.y, this->z + ref.z, this->w + ref.w);
+        return{ this->x + ref.x, this->y + ref.y, this->z + ref.z, this->w + ref.w };
     }
 
-    inline vec4 operator - (const vec4 & ref) const
+    constexpr vec4 operator - (const vec4 & ref) const
     {
-        return vec4(this->x - ref.x, this->y - ref.y, this->z - ref.z, this->w - ref.w);
+        return{ this->x - ref.x, this->y - ref.y, this->z - ref.z, this->w - ref.w };
     }
 
-    inline vec4 operator - () const
+    constexpr vec4 operator - () const
     {
-        return vec4(-x, -y, -z, -w);
+        return{ -x, -y, -z, -w };
     }
 
     template<typename D>
-    inline vec4 operator * (D num) const
+    constexpr vec4 operator * (D num) const
     {
-        return vec4(x * (T)num, y * (T)num, z * (T)num, w * (T)num);
+        return{ x * (T)num, y * (T)num, z * (T)num, w * (T)num };
     }
 
-    inline bool operator == (const vec4 & ref) const
+    constexpr bool operator == (const vec4 & ref) const
     {
         return ((this->x == ref.x) && (this->y == ref.y) && (this->z == ref.z) && (this->w == ref.w));
     }
 
-    inline bool operator != (const vec4 & ref) const
+    constexpr bool operator != (const vec4 & ref) const
     {
         return !((this->x == ref.x) && (this->y == ref.y) && (this->z == ref.z) && (this->w == ref.w));
     }

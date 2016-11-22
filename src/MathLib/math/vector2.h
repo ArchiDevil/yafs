@@ -8,13 +8,13 @@ namespace MathLib
 template<typename T>
 struct vec2
 {
-    vec2()
+    constexpr vec2()
         : x(0)
         , y(0)
     {
     }
 
-    vec2(T _x, T _y)
+    constexpr vec2(T _x, T _y)
         : x(_x)
         , y(_y)
     {
@@ -29,12 +29,12 @@ struct vec2
         };
     };
 
-    T length() const
+    constexpr T length() const
     {
         return (T)sqrt((double)x*x + (double)y*y);
     }
 
-    inline const T * ptr() const
+    constexpr const T * ptr() const
     {
         return el;
     }
@@ -74,38 +74,39 @@ struct vec2
         return *this;
     }
 
-    inline vec2 operator + (const vec2 & ref) const
+    constexpr vec2 operator + (const vec2 & ref) const
     {
-        return vec2(this->x + ref.x, this->y + ref.y);
+        return{ this->x + ref.x, this->y + ref.y };
     }
 
-    inline vec2 operator - (const vec2 & ref) const
+    constexpr vec2 operator - (const vec2 & ref) const
     {
-        return vec2(this->x - ref.x, this->y - ref.y);
+        return{ this->x - ref.x, this->y - ref.y };
     }
 
-    inline vec2 operator - () const
+    constexpr vec2 operator - () const
     {
-        return vec2(-x, -y);
+        return{ -x, -y };
     }
 
-    template<typename T2> operator vec2<T2>() const
+    template<typename T2>
+    constexpr operator vec2<T2>() const
     {
         return vec2<T2>((T2)x, (T2)y);
     }
 
     template<typename D>
-    inline vec2 operator * (D num) const
+    constexpr vec2 operator * (D num) const
     {
-        return vec2(x * (T)num, y * (T)num);
+        return{ x * (T)num, y * (T)num };
     }
 
-    inline bool operator == (const vec2 & ref) const
+    constexpr bool operator == (const vec2 & ref) const
     {
         return ((this->x == ref.x) && (this->y == ref.y));
     }
 
-    inline bool operator != (const vec2 & ref) const
+    constexpr bool operator != (const vec2 & ref) const
     {
         return !((this->x == ref.x) && (this->y == ref.y));
     }

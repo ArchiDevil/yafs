@@ -8,14 +8,14 @@ namespace MathLib
 template<typename T>
 struct vec3
 {
-    vec3()
+    constexpr vec3()
         : x(0)
         , y(0)
         , z(0)
     {
     }
 
-    vec3(T _x, T _y, T _z)
+    constexpr vec3(T _x, T _y, T _z)
         : x(_x)
         , y(_y)
         , z(_z)
@@ -31,7 +31,7 @@ struct vec3
         };
     };
 
-    T length() const
+    constexpr T length() const
     {
         return (T)sqrt((double)x*x + (double)y*y + (double)z*z);
     }
@@ -41,7 +41,7 @@ struct vec3
         return el;
     }
 
-    inline const T * ptr() const
+    constexpr const T * ptr() const
     {
         return el;
     }
@@ -80,38 +80,39 @@ struct vec3
         return *this;
     }
 
-    template<typename T2> operator vec3<T2>() const
+    template<typename T2>
+    constexpr operator vec3<T2>() const
     {
         return vec3<T2>((T2)x, (T2)y, (T2)z);
     }
 
-    inline vec3 operator + (const vec3 & ref) const
+    constexpr vec3 operator + (const vec3 & ref) const
     {
-        return vec3(this->x + ref.x, this->y + ref.y, this->z + ref.z);
+        return{ this->x + ref.x, this->y + ref.y, this->z + ref.z };
     }
 
-    inline vec3 operator - (const vec3 & ref) const
+    constexpr vec3 operator - (const vec3 & ref) const
     {
-        return vec3(this->x - ref.x, this->y - ref.y, this->z - ref.z);
+        return{ this->x - ref.x, this->y - ref.y, this->z - ref.z };
     }
 
-    inline vec3 operator - () const
+    constexpr vec3 operator - () const
     {
-        return vec3(-x, -y, -z);
+        return{ -x, -y, -z };
     }
 
     template<typename D>
-    inline vec3 operator * (D num) const
+    constexpr vec3 operator * (D num) const
     {
-        return vec3(x * (T)num, y * (T)num, z * (T)num);
+        return{ x * (T)num, y * (T)num, z * (T)num };
     }
 
-    inline bool operator == (const vec3 & ref) const
+    constexpr bool operator == (const vec3 & ref) const
     {
         return ((this->x == ref.x) && (this->y == ref.y) && (this->z == ref.z));
     }
 
-    inline bool operator != (const vec3 & ref) const
+    constexpr bool operator != (const vec3 & ref) const
     {
         return !((this->x == ref.x) && (this->y == ref.y) && (this->z == ref.z));
     }
