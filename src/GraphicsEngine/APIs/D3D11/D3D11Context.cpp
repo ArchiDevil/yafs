@@ -150,7 +150,5 @@ HRESULT D3D11Context::CreateStates()
 
 HRESULT ShiftEngine::D3D11Context::CreateAnnotationsHandler()
 {
-    HRESULT hr = DeviceContext->QueryInterface<ID3DUserDefinedAnnotation>(&UserAnnotationsHandler);
-    if (FAILED(hr))
-        return hr;
+    return DeviceContext->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void**)&UserAnnotationsHandler);
 }

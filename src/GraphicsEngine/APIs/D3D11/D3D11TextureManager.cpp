@@ -172,7 +172,7 @@ ITexturePtr ShiftEngine::D3D11TextureManager::CreateCubemap(const std::wstring &
 
             Microsoft::WRL::ComPtr<ID3D11Resource> resource = nullptr;
             errorTexture->texture->GetResource(&resource);
-            resource->QueryInterface<ID3D11Texture2D>(&(srcTex[i]));
+            resource->QueryInterface(__uuidof(ID3D11Texture2D), (void**)&(srcTex[i]));
         }
     }
 
@@ -294,7 +294,7 @@ ITexturePtr D3D11TextureManager::CreateTextureArray(const std::vector<std::wstri
             // leakzzz
             Microsoft::WRL::ComPtr<ID3D11Resource> resource = nullptr;
             errorTexture->texture->GetResource(&resource);
-            resource->QueryInterface<ID3D11Texture2D>(&(srcTex[i]));
+            resource->QueryInterface(__uuidof(ID3D11Texture2D), &(srcTex[i]));
         }
     }
 
