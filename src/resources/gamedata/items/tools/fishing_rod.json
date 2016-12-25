@@ -1,9 +1,0 @@
-{
-  "id": "fishing_rod",
-  "name": "Fishing rod",
-  "description": "",
-  "type": "tool",
-  "tooltype": "fishing",
-  "fishingquality": 10,
-  "icon": "fishing_rod.png"
-}

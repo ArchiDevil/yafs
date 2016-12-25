@@ -1,7 +1,7 @@
 #pragma once
 
 #include <d3d11.h>
-#include <atlbase.h>
+#include <wrl.h>
 #include <string>
 #include <memory>
 
@@ -17,8 +17,10 @@ namespace ShiftEngine
 class D3D11MeshData : public IMeshData
 {
 public:
-    D3D11MeshData(ID3D11Buffer * _VB = nullptr, ID3D11Buffer * _IB = nullptr,
-                  ID3D11Device * pDevice = nullptr, ID3D11DeviceContext * pDeviceContext = nullptr);
+    D3D11MeshData(Microsoft::WRL::ComPtr<ID3D11Buffer> _VB = nullptr,
+                  Microsoft::WRL::ComPtr<ID3D11Buffer> _IB = nullptr,
+                  Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr,
+                  Microsoft::WRL::ComPtr<ID3D11DeviceContext> pDeviceContext = nullptr);
 
     bool CreateBuffers(bool dynamic,
                        const uint8_t * vData,
@@ -32,12 +34,12 @@ public:
     void Clear() override;
 
 private:
-    CComPtr<ID3D11Device> pDevice = nullptr;
-    CComPtr<ID3D11DeviceContext> pDeviceContext = nullptr;
-    CComPtr<ID3D11Buffer> VertexBuffer = nullptr;
-    CComPtr<ID3D11Buffer> IndexBuffer = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> pDeviceContext = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> VertexBuffer = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Buffer> IndexBuffer = nullptr;
 };
 
-typedef std::shared_ptr<D3D11MeshData> D3D11MeshDataPtr;
+using D3D11MeshDataPtr = std::shared_ptr<D3D11MeshData>;
 
 }

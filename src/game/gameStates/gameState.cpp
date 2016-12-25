@@ -8,8 +8,6 @@
 
 using namespace MathLib;
 
-Enemy* testEnemy = nullptr;
-
 GameState::GameState(IniWorker * iw/*, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform*/)
     : iniLoader(iw)
     //, guiModule(guiModule)
@@ -29,6 +27,9 @@ bool GameState::initState()
     GoingHome::CreateGame();
 
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
+    Player* playerPtr = GoingHome::GetGamePtr()->GetPlayerPtr();
+    SpellsDatabase* database = GoingHome::GetGamePtr()->GetSpellsDatabase();
+    EntityManager* entityMgrPtr = GoingHome::GetGamePtr()->GetEntityMgr();
 
     //pGame->gameHud.reset(new GameHUD(guiModule));
     //LOG_INFO("HUD has been created");
@@ -42,8 +43,12 @@ bool GameState::initState()
 
     // just for example, let's create some enemies
     auto ptr = std::make_shared<AISmallSpirit>();
-    testEnemy = GoingHome::GetGamePtr()->GetEntityMgr()->CreateEnemy({1.0f, 1.0f}, 5.0f, 100, ptr).get();
-    testEnemy->MoveTo({0.0f, 0.0f});
+    Enemy* testEnemy = entityMgrPtr->CreateEnemy({1.0f, 1.0f}, 5.0f, 100, ptr).get();
+
+    playerPtr->SetSpellController(database->GetSpellByName("projectile").CreateSpellController(playerPtr),      Player::CS_MainSlot);
+    playerPtr->SetSpellController(database->GetSpellByName("multiprojectile").CreateSpellController(playerPtr), Player::CS_AdditionalSlot);
+    playerPtr->SetSpellController(database->GetSpellByName("timed-mine").CreateSpellController(playerPtr),      Player::CS_MineSlot);
+    playerPtr->SetSpellController(database->GetSpellByName("shield").CreateSpellController(playerPtr),          Player::CS_ShieldSlot);
 
     LOG_INFO("End of game state initializing");
 
@@ -112,10 +117,10 @@ bool GameState::render(double dt)
     std::ostringstream experienceCount;
     experienceCount << "Experience: " << GoingHome::GetGamePtr()->GetPlayerPtr()->GetExperienceCount();
     pFntMgr->DrawTextTL(experienceCount.str(),
-        pCtxMgr->GetEngineSettings().screenWidth - 160.0f,
-        pCtxMgr->GetEngineSettings().screenHeight - 40.0f);
+                        pCtxMgr->GetEngineSettings().screenWidth - 160.0f,
+                        pCtxMgr->GetEngineSettings().screenHeight - 40.0f);
 
-    //guiPlatform->getRenderManagerPtr()->drawOneFrame();
+                    //guiPlatform->getRenderManagerPtr()->drawOneFrame();
 
     pCtxMgr->EndScene();
 
@@ -158,25 +163,30 @@ void GameState::ProcessInput(double dt)
 
     player->SetTargetDirection({x, y});
 
-    static bool lm_click = false;
-    if (inputEngine.IsMouseDown(LButton) && !lm_click)
-    {
-        lm_click = true;
-        player->Shoot(MathLib::normalize(player->GetTargetDirection() - player->GetPosition()));
-    }
+    // TODO: we need some handler of this shit
+    if (inputEngine.IsMouseDown(LButton))
+        player->StartSpellInSlot(LiveEntity::CS_MainSlot);
 
     if (inputEngine.IsMouseUp(LButton))
-        lm_click = false;
+        player->StopSpellInSlot(LiveEntity::CS_MainSlot);
 
-    static bool rm_click = false;
-    if (inputEngine.IsMouseDown(RButton) && !rm_click)
-    {
-        rm_click = true;
-        player->ShootAlternative(MathLib::normalize(player->GetTargetDirection() - player->GetPosition()));
-    }
+    if (inputEngine.IsMouseDown(RButton))
+        player->StartSpellInSlot(LiveEntity::CS_AdditionalSlot);
 
     if (inputEngine.IsMouseUp(RButton))
-        rm_click = false;
+        player->StopSpellInSlot(LiveEntity::CS_AdditionalSlot);
+
+    if (inputEngine.IsKeyDown(DIK_E))
+        player->StartSpellInSlot(LiveEntity::CS_MineSlot);
+
+    if (inputEngine.IsKeyUp(DIK_E))
+        player->StopSpellInSlot(LiveEntity::CS_MineSlot);
+
+    if (inputEngine.IsKeyDown(DIK_LSHIFT))
+        player->StartSpellInSlot(LiveEntity::CS_ShieldSlot);
+
+    if (inputEngine.IsKeyUp(DIK_LSHIFT))
+        player->StopSpellInSlot(LiveEntity::CS_ShieldSlot);
 
     float xVelocity = 0.0f, yVelocity = 0.0f;
     if (inputEngine.IsKeyDown(DIK_W))

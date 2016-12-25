@@ -4,7 +4,7 @@
 
 #include <MathLib/math.h>
 
-class Player
+class Player final
     : public LiveEntity
 {
 public:
@@ -12,7 +12,6 @@ public:
     virtual ~Player() = default;
 
     void Update(double dt) override;
-    void ShootAlternative(const MathLib::vec2f & direction);
     void SetMoveVelocity(const MathLib::vec2f &velocity);
 
 private:

@@ -9,7 +9,7 @@ namespace ShiftEngine
 class IProgram
 {
 public:
-    virtual ~IProgram() {}
+    virtual ~IProgram() = default;
 
     virtual bool SetMatrixConstantByName(const char * nameInShader, const float * mat) = 0;
     virtual bool SetScalarConstantByName(const char * nameInShader, const float * scalar) = 0;
@@ -29,5 +29,5 @@ public:
     virtual void Apply(bool setShader) = 0;
 };
 
-typedef std::shared_ptr<IProgram> IProgramPtr;
+using IProgramPtr = std::shared_ptr<IProgram>;
 }

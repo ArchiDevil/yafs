@@ -1,9 +1,0 @@
-{
-  "items": [
-    {
-      "item": "stick",
-      "min_count": 2,
-      "max_count": 8
-    }
-  ]
-}

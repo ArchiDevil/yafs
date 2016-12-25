@@ -64,56 +64,6 @@ void EntityManager::UpdateAllEntities(double dt)
     }
 }
 
-std::shared_ptr<Player> EntityManager::CreatePlayer(const MathLib::vec2f & position,
-                                                    float health)
-{
-    auto entity = factory->CreateEntity<Player>(position, health);
-    AddEntity((std::shared_ptr<LiveEntity>)entity, liveEntitiesToAdd);
-    return entity;
-}
-
-std::shared_ptr<Enemy> EntityManager::CreateEnemy(const MathLib::vec2f & position,
-                                                  float health,
-                                                  int expCount,
-                                                  const std::shared_ptr<AIBase> & ai)
-{
-    auto entity = factory->CreateEntity<Enemy>(position, health, expCount, ai);
-    AddEntity((std::shared_ptr<LiveEntity>)entity, liveEntitiesToAdd);
-    return entity;
-}
-
-std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f & position,
-                                                            const MathLib::vec2f & speed,
-                                                            float damage,
-                                                            double lifetime,
-                                                            Entity* producer)
-{
-    auto entity = factory->CreateEntity<Projectile>(position, speed, damage, lifetime, producer);
-    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
-    return entity;
-}
-
-std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode *sprite)
-{
-    auto entity = factory->CreateEntity<BackgroundBlinker>(sprite);
-    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
-    return entity;
-}
-
-std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode *sprite)
-{
-    auto entity = factory->CreateEntity<BackgroundWanderer>(sprite);
-    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
-    return entity;
-}
-
-std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(const MathLib::vec2f & position, int expCount)
-{
-    auto entity = factory->CreateEntity<ExperiencePoint>(position, expCount);
-    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
-    return entity;
-}
-
 template<typename T>
 void EntityManager::RemoveEntity(std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list)
 {
@@ -137,4 +87,87 @@ const std::vector<std::shared_ptr<LiveEntity>> * EntityManager::GetHostileLiveEn
     }
 
     return hostileEnt;
+}
+
+std::shared_ptr<Player> EntityManager::CreatePlayer(const MathLib::vec2f & position,
+                                                    float health)
+{
+    auto entity = factory.CreateEntity<Player>(position, health);
+    AddEntity((std::shared_ptr<LiveEntity>)entity, liveEntitiesToAdd);
+    return entity;
+}
+
+std::shared_ptr<Enemy> EntityManager::CreateEnemy(const MathLib::vec2f & position,
+                                                  float health,
+                                                  int expCount,
+                                                  const std::shared_ptr<AIBase> & ai)
+{
+    auto entity = factory.CreateEntity<Enemy>(position, health, expCount, ai);
+    AddEntity((std::shared_ptr<LiveEntity>)entity, liveEntitiesToAdd);
+    return entity;
+}
+
+std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f & position,
+                                                            const MathLib::vec2f & speed,
+                                                            float damage,
+                                                            double lifetime,
+                                                            const LiveEntity* producer)
+{
+    auto entity = factory.CreateEntity<Projectile>(position, speed, damage, lifetime, producer);
+    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
+    return entity;
+}
+
+std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(const MathLib::vec2f & position,
+                                                                      int expCount)
+{
+    auto entity = factory.CreateEntity<ExperiencePoint>(position, expCount);
+    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
+    return entity;
+}
+
+std::shared_ptr<MineDetectorEntity> EntityManager::CreateDetectorMine(const LiveEntity * owner,
+                                                                      const MathLib::vec2f& position,
+                                                                      float explosionDamage,
+                                                                      float explosionRadius,
+                                                                      float triggerDistance)
+{
+    auto entity = factory.CreateEntity<MineDetectorEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance);
+    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
+    return entity;
+}
+
+std::shared_ptr<MineTimedEntity> EntityManager::CreateTimedMine(const LiveEntity * owner,
+                                                                const MathLib::vec2f& position,
+                                                                float explosionDamage,
+                                                                float explosionRadius,
+                                                                float triggerDistance,
+                                                                double timeToExplode)
+{
+    auto entity = factory.CreateEntity<MineTimedEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance, timeToExplode);
+    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
+    return entity;
+}
+
+std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode * sprite)
+{
+    auto entity = factory.CreateEntity<BackgroundBlinker>(sprite);
+    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
+    return entity;
+}
+
+std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode * sprite)
+{
+    auto entity = factory.CreateEntity<BackgroundWanderer>(sprite);
+    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
+    return entity;
+}
+
+std::shared_ptr<VisualStickerEntity> EntityManager::CreateVisualStickerEntity(const LiveEntity * owner,
+                                                                              const MathLib::vec2f& position,
+                                                                              ShiftEngine::SpriteSceneNode * sprite)
+{
+    auto entity = factory.CreateEntity<VisualStickerEntity>(owner, position, sprite);
+    AddEntity((std::shared_ptr<Entity>)entity, entitiesToAdd);
+    return entity;
 }

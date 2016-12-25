@@ -28,7 +28,7 @@ void AIStateEscape::Do(double dt, LiveEntity * entity)
 
     if (runVector.length() != 0.0f)
     {
-        entPosition += MathLib::normalize(runVector) * (dt);
+        entPosition += MathLib::normalize(runVector) * (dt / 2);
         entity->SetPosition(entPosition);
         entity->UpdateGraphicsSpritePosition();
     }

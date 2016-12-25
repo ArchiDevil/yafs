@@ -3,6 +3,7 @@
 #include "../Game.h"
 #include "Projectile.h"
 #include "ExperiencePoint.h"
+#include "Buffs.h"
 
 using namespace MathLib;
 using namespace GoingHome;
@@ -49,13 +50,21 @@ bool LiveEntity::handleEvent(const ExperiencePointPositionEvent & event)
     return true;
 }
 
-// TODO: use direction here
-void LiveEntity::Shoot(const vec2f & direction)
+bool LiveEntity::handleEvent(const ExplosionEvent & event)
 {
-    vec2f dir = direction;
-    float angleFactor = (float)(rand() % 30 - 15) / 100.0f;
-    dir = vec2Transform(dir, matrixRotationZ(angleFactor));
-    GetGamePtr()->GetEntityMgr()->CreateProjectile(position, dir * 2.0f, 1.0f, 3.0, this);
+    if (MathLib::distance(Entity::GetPosition(), event.epicenter) < event.radius)   // radius of entity is not supported
+    {                                                                               // if you want to add it, just add it to the radius
+        // woops, duplicate with projectile event
+        health -= event.damage;
+        if (health <= 0)
+        {
+            Kill();
+            GetGamePtr()->GetEntityMgr()->CreateExperiencePoint(position, experienceCount);
+        }
+        return false;
+    }
+
+    return true;
 }
 
 MathLib::vec2f LiveEntity::GetTargetDirection() const
@@ -68,23 +77,75 @@ void LiveEntity::SetTargetDirection(const MathLib::vec2f & val)
     targetDirection = val;
 }
 
-const int LiveEntity::GetExperienceCount()
+void LiveEntity::Update(double dt)
+{
+    for (auto& controller : controllers)
+        if (controller)
+            controller->Update(dt);
+
+    ((notifier<LiveEntityPositionEvent>)EntityEventManager::GetInstance())
+        .notifyAll(LiveEntityPositionEvent(this));
+}
+
+void LiveEntity::StartSpellInSlot(ControllerSlot slot)
+{
+    if (controllers[slot])
+        controllers[slot]->SpellKeyDown();
+}
+
+void LiveEntity::StopSpellInSlot(ControllerSlot slot)
+{
+    if (controllers[slot])
+        controllers[slot]->SpellKeyUp();
+}
+
+ISpellController* LiveEntity::GetSpellController(ControllerSlot slot) const
+{
+    return controllers[slot].get();
+}
+
+float LiveEntity::CalculateDamage(float damage)
+{
+    float damageModifier = 0.0f;
+    for (auto & buff : buffs)
+        damageModifier += buff->GetDamageModificationRatio();
+
+    return damage * damageModifier;
+}
+
+void LiveEntity::SetSpellController(std::unique_ptr<ISpellController> && controller, ControllerSlot slot)
+{
+    controllers[slot] = std::move(controller);
+}
+
+int LiveEntity::GetExperienceCount() const
 {
     return experienceCount;
 }
 
-const float LiveEntity::GetMaxHealth()
+float LiveEntity::GetMaxHealth() const
 {
     return maxHealth;
 }
 
-const float LiveEntity::GetHealth()
+float LiveEntity::GetHealth() const
 {
     return health;
 }
 
-const LiveEntity::Fraction LiveEntity::GetFraction()
+LiveEntity::Fraction LiveEntity::GetFraction() const
 {
     return fraction;
 }
 
+void LiveEntity::AddBuff(const std::shared_ptr<IBuff> & buff)
+{
+    buffs.push_back(buff);
+    buff->OnActivation(this);
+}
+
+void LiveEntity::RemoveBuff(const std::shared_ptr<IBuff> & buff)
+{
+    buff->OnDeactivation(this);
+    buffs.erase(std::find(buffs.begin(), buffs.end(), buff));
+}

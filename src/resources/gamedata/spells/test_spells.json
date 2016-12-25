@@ -1,0 +1,38 @@
+{
+    "spells": [{
+        "name": "projectile",
+        "type": "projectile",
+        "cooldown": 0.3,
+        "damage": 1.0,
+        "spread": 0.15,
+        "energy": 0.1
+    }, {
+        "name": "multiprojectile",
+        "type": "multiprojectile",
+        "cooldown": 3.0,
+        "damage": 1.0,
+        "count": 3,
+        "spread": 0.15,
+        "per-bullet-spread": 0.15,
+        "energy": 0.5
+    }, {
+        "name": "timed-mine",
+        "type": "timedmine",
+        "cooldown": 10.0,
+        "damage": 10.0,
+        "energy": 3.0,
+        "time": 5.0
+    }, {
+        "name": "detector-mine",
+        "type": "detectormine",
+        "cooldown": 10.0,
+        "damage": 10.0,
+        "energy": 3.0
+    }, {
+        "name": "shield",
+        "type": "shield",
+        "cooldown": 3.0,
+        "usage-time": 1.0,
+        "energy-per-second": 1.0
+    }]
+}

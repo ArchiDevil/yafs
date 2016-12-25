@@ -9,29 +9,29 @@ D3D11Context::~D3D11Context()
 
     // make sure here that objects are released in appropriate order
     // to avoid crashes and asserts in DX runtime
-    bsAlpha.Release();
-    bsAdditive.Release();
-    bsNormal.Release();
+    bsAlpha.Reset();
+    bsAdditive.Reset();
+    bsNormal.Reset();
 
-    rsNormal.Release();
-    rsWireframe.Release();
-    rsNoCulling.Release();
+    rsNormal.Reset();
+    rsWireframe.Reset();
+    rsNoCulling.Reset();
 
-    dsStateZOn.Release();
-    dsStateZOff.Release();
+    dsStateZOn.Reset();
+    dsStateZOff.Reset();
 
     DefaultDS.reset(nullptr);
     DefaultRT.reset(nullptr);
-    DeviceContext.Release();
-    SwapChain.Release();
-    Device.Release();
+    DeviceContext.Reset();
+    SwapChain.Reset();
+    Device.Reset();
 }
 
 void D3D11Context::ClearDefaultRenderTarget()
 {
     static float clearColors[] = {0.0f, 0.0f, 0.0f, 1.0f};
-    DeviceContext->ClearRenderTargetView(DefaultRT->view, clearColors);
-    DeviceContext->ClearDepthStencilView(DefaultDS->view, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    DeviceContext->ClearRenderTargetView(DefaultRT->view.Get(), clearColors);
+    DeviceContext->ClearDepthStencilView(DefaultDS->view.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 }
 
 HRESULT D3D11Context::CreateStates()
@@ -150,7 +150,5 @@ HRESULT D3D11Context::CreateStates()
 
 HRESULT ShiftEngine::D3D11Context::CreateAnnotationsHandler()
 {
-    HRESULT hr = DeviceContext->QueryInterface(&UserAnnotationsHandler);
-    if (FAILED(hr))
-        return hr;
+    return DeviceContext.CopyTo(__uuidof(ID3DUserDefinedAnnotation), (void**)&UserAnnotationsHandler);
 }

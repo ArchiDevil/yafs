@@ -7,6 +7,16 @@ set(SRC BackgroundManager.cpp
         GoingHomeApplication.h
         main.cpp)
 
+set(LS  gameStates/gameState.cpp
+        gameStates/MainMenuState.cpp)
+source_group("Source Files\\Game States" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  gameStates/gameState.h
+        gameStates/MainMenuState.h)
+source_group("Header Files\\Game States" FILES ${LS})
+list(APPEND SRC ${LS})
+
 set(LS  AI/AIBase.cpp
         AI/AISmallSpirit.cpp)
 source_group("Source Files\\AI" FILES ${LS})
@@ -33,13 +43,16 @@ list(APPEND SRC ${LS})
 
 set(LS  Entities/BackgroundBlinker.cpp
         Entities/BackgroundWanderer.cpp
+        Entities/Buffs.cpp
         Entities/Enemy.cpp
         Entities/Entity.cpp
-        Entities/EntityEventManager.cpp
         Entities/EntityFactory.cpp
         Entities/EntityManager.cpp
         Entities/ExperiencePoint.cpp
         Entities/LiveEntity.cpp
+        Entities/MineEntity.cpp
+        Entities/MineDetectorEntity.cpp
+        Entities/MineTimedEntity.cpp
         Entities/Player.cpp
         Entities/Projectile.cpp)
 source_group("Source Files\\Entities" FILES ${LS})
@@ -47,6 +60,7 @@ list(APPEND SRC ${LS})
 
 set(LS  Entities/BackgroundBlinker.h
         Entities/BackgroundWanderer.h
+        Entities/Buffs.h
         Entities/Enemy.h
         Entities/Entity.h
         Entities/EntityEventManager.h
@@ -54,22 +68,31 @@ set(LS  Entities/BackgroundBlinker.h
         Entities/EntityManager.h
         Entities/ExperiencePoint.h
         Entities/LiveEntity.h
+        Entities/MineEntity.h
+        Entities/MineDetectorEntity.h
+        Entities/MineTimedEntity.h
         Entities/Player.h
-        Entities/Projectile.h)
+        Entities/Projectile.h
+        Entities/VisualEntity.h
+        Entities/VisualStickerEntity.h)
 source_group("Header Files\\Entities" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  gameStates/gameState.cpp
-        gameStates/MainMenuState.cpp)
-source_group("Source Files\\Game States" FILES ${LS})
+set(LS  Spells/SpellControllers.cpp
+        Spells/SpellEntities.cpp
+        Spells/SpellsDatabase.cpp
+        Spells/SpellsDescription.cpp)
+source_group("Source Files\\Spells" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  gameStates/gameState.h
-        gameStates/MainMenuState.h)
-source_group("Header Files\\Game States" FILES ${LS})
+set(LS  Spells/ISpellController.h
+        Spells/ISpellEntity.h
+        Spells/SpellControllers.h
+        Spells/SpellEntities.h
+        Spells/SpellsDatabase.h
+        Spells/SpellsDescription.h)
+source_group("Header Files\\Spells" FILES ${LS})
 list(APPEND SRC ${LS})
-
-include_directories(../../3rdparty/jsoncpp/include)
 
 if(${EX_PLATFORM} EQUAL 64)
     link_directories($ENV{DXSDK_DIR}/lib/x64)
@@ -77,7 +100,7 @@ else()
     link_directories($ENV{DXSDK_DIR}/lib/x86)
 endif()
 
-set(GAME_LIBS GraphicsEngine System Utilities MathLib)
+set(GAME_LIBS GraphicsEngine PhysicsEngine System Utilities MathLib)
 
 add_executable(Game ${SRC})
 target_link_libraries(Game ${GAME_LIBS})

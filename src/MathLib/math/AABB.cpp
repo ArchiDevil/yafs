@@ -1,9 +1,5 @@
 #include "AABB.h"
 
-using std::min;
-using std::abs;
-using std::max;
-
 MathLib::AABB::AABB(const vec3f & _bmin, const vec3f & _bmax)
     : bMin(_bmin)
     , bMax(_bmax)
@@ -12,15 +8,15 @@ MathLib::AABB::AABB(const vec3f & _bmin, const vec3f & _bmax)
 
 void MathLib::AABB::GetVertices(vec3f vertices[8]) const
 {
-    vertices[0] = vec3f(bMin);
-    vertices[1] = vec3f(bMax.x, bMin.y, bMin.z);
-    vertices[2] = vec3f(bMin.x, bMax.y, bMin.z);
-    vertices[3] = vec3f(bMax.x, bMax.y, bMin.z);
+    vertices[0] = { bMin };
+    vertices[1] = { bMax.x, bMin.y, bMin.z };
+    vertices[2] = { bMin.x, bMax.y, bMin.z };
+    vertices[3] = { bMax.x, bMax.y, bMin.z };
 
-    vertices[4] = vec3f(bMin.x, bMin.y, bMax.z);
-    vertices[5] = vec3f(bMin.x, bMax.y, bMax.z);
-    vertices[6] = vec3f(bMax.x, bMin.y, bMax.z);
-    vertices[7] = vec3f(bMax);
+    vertices[4] = { bMin.x, bMin.y, bMax.z };
+    vertices[5] = { bMin.x, bMax.y, bMax.z };
+    vertices[6] = { bMax.x, bMin.y, bMax.z };
+    vertices[7] = { bMax };
 }
 
 bool MathLib::AABB::IntersectsAABB(const AABB & otherAABBox) const
@@ -33,37 +29,37 @@ bool MathLib::AABB::IntersectsAABB(const AABB & otherAABBox) const
 
 void MathLib::AABB::Include(const AABB & otherAABBox)
 {
-    bMin.x = min(bMin.x, otherAABBox.bMin.x);
-    bMin.y = min(bMin.y, otherAABBox.bMin.y);
-    bMin.z = min(bMin.z, otherAABBox.bMin.z);
+    bMin.x = std::min(bMin.x, otherAABBox.bMin.x);
+    bMin.y = std::min(bMin.y, otherAABBox.bMin.y);
+    bMin.z = std::min(bMin.z, otherAABBox.bMin.z);
 
-    bMax.x = max(bMax.x, otherAABBox.bMax.x);
-    bMax.y = max(bMax.y, otherAABBox.bMax.y);
-    bMax.z = max(bMax.z, otherAABBox.bMax.z);
+    bMax.x = std::max(bMax.x, otherAABBox.bMax.x);
+    bMax.y = std::max(bMax.y, otherAABBox.bMax.y);
+    bMax.z = std::max(bMax.z, otherAABBox.bMax.z);
 }
 
 float MathLib::AABB::GetSurfaceArea() const
 {
-    float l = abs(bMax.x - bMin.x);
-    float h = abs(bMax.y - bMin.y);
-    float w = abs(bMax.z - bMin.z);
+    float l = std::abs(bMax.x - bMin.x);
+    float h = std::abs(bMax.y - bMin.y);
+    float w = std::abs(bMax.z - bMin.z);
 
     return 2.0f * (l * w + l * h + w * h);
 }
 
 float MathLib::AABB::GetVolume() const
 {
-    float l = abs(bMax.x - bMin.x);
-    float h = abs(bMax.y - bMin.y);
-    float w = abs(bMax.z - bMin.z);
+    float l = std::abs(bMax.x - bMin.x);
+    float h = std::abs(bMax.y - bMin.y);
+    float w = std::abs(bMax.z - bMin.z);
 
     return l * h * w;
 }
 
 bool MathLib::AABB::IntersectsLineSegment(const vec3f &mid, const vec3f &dir, const int hl) const
 {
-    const vec3f sizes = vec3f((bMax.x - bMin.x) / 2, (bMax.y - bMin.y) / 2, (bMax.z - bMin.z) / 2);
-    const vec3f position = vec3f(bMax.x - sizes.x, bMax.y - sizes.y, bMax.z - sizes.z);
+    const vec3f sizes = { (bMax.x - bMin.x) / 2, (bMax.y - bMin.y) / 2, (bMax.z - bMin.z) / 2 };
+    const vec3f position = { bMax.x - sizes.x, bMax.y - sizes.y, bMax.z - sizes.z };
     const vec3f T = position - mid;
     float r;
 
@@ -94,6 +90,6 @@ bool MathLib::AABB::IntersectsLineSegment(const vec3f &mid, const vec3f &dir, co
 MathLib::vec3f MathLib::AABB::GetCentralPoint() const
 {
     return vec3f((bMax.x - bMin.x) / 2.0f,
-        (bMax.y - bMin.y) / 2.0f,
-        (bMax.z - bMin.z) / 2.0f) + bMin;
+                 (bMax.y - bMin.y) / 2.0f,
+                 (bMax.z - bMin.z) / 2.0f) + bMin;
 }

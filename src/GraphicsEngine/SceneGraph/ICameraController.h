@@ -5,7 +5,9 @@
 class ICameraController
 {
 public:
-    virtual ~ICameraController() {}
+    virtual ~ICameraController()
+    {
+    }
 };
 
-typedef std::unique_ptr<ICameraController> ICameraControllerPtr;
+using ICameraControllerPtr = std::unique_ptr<ICameraController>;

@@ -16,7 +16,7 @@ void BackgroundWanderer::Update(double dt)
 
     if (currentState == WandererState::Moving)
     {
-        float speed = 0.2f;
+        const float speed = 0.2f;
         Entity::position += MathLib::normalize(targetPosition - Entity::position) * speed * dt;
 
         // TODO: handle it automatically, this is ugly
@@ -36,13 +36,13 @@ void BackgroundWanderer::Update(double dt)
             return;
 
         // let's check and get to new position
-        int chance = 5; // just 10% of chance to move
-        int checkedValue = rand() % 100;
+        const int chance = 5; // just 10% of chance to move
+        const int checkedValue = rand() % 100;
         if (checkedValue < chance)
         {
             // set new target
-            float radius = (rand() % 100) * 2.0f / 100.0f + 1.0f;
-            float angle = (rand() % 100) * 6.28f / 100.0f;
+            const float radius = (rand() % 100) * 2.0f / 100.0f + 1.0f;
+            const float angle = (rand() % 100) * 6.28f / 100.0f;
             MathLib::vec2f vecToTransform = {1.0f, 0.0f};
             vecToTransform = MathLib::vec2Transform(vecToTransform, MathLib::matrixRotationZ(angle));
             vecToTransform *= radius;

@@ -2,7 +2,7 @@
 
 #include <D3D11.h>
 #include <D3Dcompiler.h>
-#include <atlbase.h>
+#include <wrl.h>
 #include <memory>
 
 #include <Utilities/logger.hpp>
@@ -27,7 +27,9 @@ class D3D11Shader
     friend class D3D11Program;
 
 public:
-    D3D11Shader(CComPtr<ID3D11DeviceChild> _shader, D3D11ShaderType _type, CComPtr<ID3D11ShaderReflection> _reflection)
+    D3D11Shader(Microsoft::WRL::ComPtr<ID3D11DeviceChild> _shader, 
+                D3D11ShaderType _type, 
+                Microsoft::WRL::ComPtr<ID3D11ShaderReflection> _reflection)
         : shader(_shader)
         , type(_type)
         , reflection(_reflection)
@@ -40,7 +42,7 @@ public:
         case ShiftEngine::D3D11ShaderType::ST_Vertex:
         {
             ID3D11VertexShader * query = nullptr;
-            if (SUCCEEDED(shader->QueryInterface(__uuidof(ID3D11VertexShader), (void**)&query)))
+            if (SUCCEEDED(shader.CopyTo(__uuidof(ID3D11VertexShader), (void**)&query)))
             {
                 dev->VSSetShader(query, nullptr, 0);
                 query->Release();
@@ -55,7 +57,7 @@ public:
         case ShiftEngine::D3D11ShaderType::ST_Pixel:
         {
             ID3D11PixelShader * query = nullptr;
-            if (SUCCEEDED(shader->QueryInterface(__uuidof(ID3D11PixelShader), (void**)&query)))
+            if (SUCCEEDED(shader.CopyTo(__uuidof(ID3D11PixelShader), (void**)&query)))
             {
                 dev->PSSetShader(query, nullptr, 0);
                 query->Release();
@@ -76,11 +78,11 @@ public:
     }
 
 private:
-    CComPtr<ID3D11DeviceChild> shader = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11DeviceChild> shader = nullptr;
     D3D11ShaderType type;
-    CComPtr<ID3D11ShaderReflection> reflection = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11ShaderReflection> reflection = nullptr;
 };
 
-typedef std::shared_ptr<D3D11Shader> D3D11ShaderPtr;
+using D3D11ShaderPtr = std::shared_ptr<D3D11Shader>;
 
 }   //end of namespace ShiftEngine

@@ -6,13 +6,13 @@ using namespace ShiftEngine;
 
 BackgroundManager::BackgroundManager(EntityManager *entityMgr)
 {
-    auto* sceneGraph = GetSceneGraph();
+    auto* const sceneGraph = GetSceneGraph();
     for (int i = 0; i < 3; ++i)
         backgroundLayers.push_back(sceneGraph->AddEmptyNode());
 
     for (int i = 0; i < 50; ++i)
     {
-        SpriteSceneNode *sprite = sceneGraph->AddSpriteNode(L"cloud.png", 3);
+        SpriteSceneNode* const sprite = sceneGraph->AddSpriteNode(L"cloud.png", 3);
         sprite->SetDrawingMode(SpriteSceneNode::SpriteDrawingMode::Additive);
         sprite->SetLocalScale(std::rand() % 330 / 100.0f + 0.7f);
         sprite->SetLocalPosition({float(std::rand() % 800) / 100.0f - 4.0f, float(std::rand() % 600) / 100.0f - 3.0f, 0.0f});
@@ -22,7 +22,7 @@ BackgroundManager::BackgroundManager(EntityManager *entityMgr)
 
     for (int i = 0; i < 25; ++i)
     {
-        SpriteSceneNode *sprite = sceneGraph->AddSpriteNode(L"enemy_sprite.png", 2);
+        SpriteSceneNode* const sprite = sceneGraph->AddSpriteNode(L"enemy_sprite.png", 2);
         sprite->SetDrawingMode(SpriteSceneNode::SpriteDrawingMode::Additive);
         sprite->SetLocalPosition({float(std::rand() % 800) / 100.0f - 4.0f, float(std::rand() % 600) / 100.0f - 3.0f, 0.0f});
         sprite->SetLocalScale(0.3f);
@@ -32,7 +32,7 @@ BackgroundManager::BackgroundManager(EntityManager *entityMgr)
 
     for (int i = 0; i < 5; ++i)
     {
-        SpriteSceneNode *sprite = sceneGraph->AddSpriteNode(L"enemy_sprite.png", 1);
+        SpriteSceneNode* const sprite = sceneGraph->AddSpriteNode(L"enemy_sprite.png", 1);
         sprite->SetDrawingMode(SpriteSceneNode::SpriteDrawingMode::Additive);
         sprite->SetLocalPosition({float(std::rand() % 800) / 100.0f - 4.0f, float(std::rand() % 600) / 100.0f - 3.0f, 0.0f});
         sprite->SetLocalScale(0.2f);
@@ -50,7 +50,7 @@ void BackgroundManager::Update(double dt)
     MathLib::vec2f playerPosition = GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition();
     for (int i = 0; i < 3; ++i)
     {
-        float k = (i + 2.0f) / 4.0f;
+        const float k = (i + 2.0f) / 4.0f;
         backgroundLayers[i]->SetLocalPosition({playerPosition.x * k, playerPosition.y * k, 0.0f});
     }
 }

@@ -13,6 +13,7 @@ endif()
 
 set(RootDir ${CMAKE_CURRENT_LIST_DIR}/src)
 include_directories(${RootDir})
+include_directories(${CMAKE_CURRENT_LIST_DIR}/3rdparty)
 set(RENDERER D3D11_RENDER)
 
 option(BUILD_TESTS "Generate projects for tests building" ON)
@@ -127,7 +128,7 @@ endfunction(VSTestLinkLibraries)
 
 if(MSVC)
     add_definitions(-DUNICODE -D_UNICODE)
-    add_definitions("/wd4201 /wd4505 /wd4297 /wd4324 /D_CRT_SECURE_NO_WARNINGS /W4")
+    add_definitions("/wd4201 /wd4505 /wd4297 /wd4324 /D_CRT_SECURE_NO_WARNINGS /W4 /MP")
 else()
     add_definitions(-std=c++11)
 endif()

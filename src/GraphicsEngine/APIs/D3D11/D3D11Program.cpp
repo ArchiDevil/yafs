@@ -5,7 +5,10 @@
 
 using namespace ShiftEngine;
 
-D3D11Program::D3D11Program(D3D11ShaderPtr & _vertexShader, D3D11ShaderPtr & _pixelShader, CComPtr<ID3D11Device> _pDevice, CComPtr<ID3D11DeviceContext> _pDeviceContext)
+D3D11Program::D3D11Program(D3D11ShaderPtr & _vertexShader, 
+                           D3D11ShaderPtr & _pixelShader, 
+                           Microsoft::WRL::ComPtr<ID3D11Device> _pDevice, 
+                           Microsoft::WRL::ComPtr<ID3D11DeviceContext> _pDeviceContext)
     : vertexShader(_vertexShader)
     , pixelShader(_pixelShader)
     , pDevice(_pDevice)
@@ -266,8 +269,8 @@ void D3D11Program::Apply(bool shaderChanged)
 {
     if (shaderChanged)
     {
-        vertexShader->BindShader(pDeviceContext);
-        pixelShader->BindShader(pDeviceContext);
+        vertexShader->BindShader(pDeviceContext.Get());
+        pixelShader->BindShader(pDeviceContext.Get());
     }
 
     for (auto & elem : constantBuffers)
@@ -275,18 +278,18 @@ void D3D11Program::Apply(bool shaderChanged)
         if (elem.isDirty || shaderChanged)
         {
             D3D11_MAPPED_SUBRESOURCE mapped;
-            HRESULT hr = pDeviceContext->Map(elem.cbFromShader, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &mapped);
+            HRESULT hr = pDeviceContext->Map(elem.cbFromShader.Get(), NULL, D3D11_MAP_WRITE_DISCARD, NULL, &mapped);
             if (FAILED(hr))
                 throw;
 
             memcpy(mapped.pData, elem.bufferData, elem.Size);
-            pDeviceContext->Unmap(elem.cbFromShader, NULL);
+            pDeviceContext->Unmap(elem.cbFromShader.Get(), NULL);
 
             elem.isDirty = false;
             if (elem.vertex && shaderChanged)
-                pDeviceContext->VSSetConstantBuffers(elem.StartSlotVertex, 1, &elem.cbFromShader.p);
+                pDeviceContext->VSSetConstantBuffers(elem.StartSlotVertex, 1, elem.cbFromShader.GetAddressOf());
             if (elem.pixel && shaderChanged)
-                pDeviceContext->PSSetConstantBuffers(elem.StartSlotPixel, 1, &elem.cbFromShader.p);
+                pDeviceContext->PSSetConstantBuffers(elem.StartSlotPixel, 1, elem.cbFromShader.GetAddressOf());
         }
     }
 

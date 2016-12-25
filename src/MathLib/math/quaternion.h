@@ -19,22 +19,31 @@ class quaternion
 {
 public:
     vec3<T> vector;
-    T w;
+    T w = (T)1.0;
 
-    quaternion()
+    constexpr quaternion()
         : vector(T(1.0), T(0.0), T(0.0))
         , w(T(1.0))
-    {}
+    {
+    }
 
-    quaternion(T x, T y, T z, T w)
+    constexpr quaternion(T x, T y, T z, T w)
         : vector(x, y, z)
         , w(w)
-    {}
+    {
+    }
 
-    quaternion(const vec3<T> & vec)
+    constexpr quaternion(const vec3<T> & vec)
         : vector(vec)
         , w(0)
-    {}
+    {
+    }
+
+    constexpr quaternion(const vec3<T> & vec, T w)
+        : vector(vec)
+        , w(w)
+    {
+    }
 
     /*
     qroll =  [cos (y/2), (sin(y/2), 0, 0)]
@@ -66,16 +75,14 @@ public:
     * Кватернион, умноженный на скаляр, представляет то же самое вращение, кроме случая умножения на 0.
     * При умножении на 0 мы получим "неопределенное" вращение.
     */
-    quaternion operator + (const quaternion & ref) const
+    constexpr quaternion operator + (const quaternion & ref) const
     {
-        vec3<T> result_vec = this->vector + ref.vector;
-        return quaternion(result_vec.x, result_vec.y, result_vec.z, this->w + ref.w);
+        return quaternion(this->vector + ref.vector, this->w + ref.w);
     }
 
-    quaternion operator - (const quaternion & ref) const
+    constexpr quaternion operator - (const quaternion & ref) const
     {
-        vec3<T> result_vec = this->vector - ref.vector;
-        return quaternion(result_vec.x, result_vec.y, result_vec.z, this->w - ref.w);
+        return quaternion(this->vector - ref.vector, this->w - ref.w);
     }
 
     /*
@@ -105,18 +112,18 @@ public:
         return result.to_vector();
     }
 
-    bool operator == (const quaternion & ref) const
+    constexpr bool operator == (const quaternion & ref) const
     {
         return this->vector == ref.vector
             && this->w == ref.w;
     }
 
-    bool operator != (const quaternion & ref) const
+    constexpr bool operator != (const quaternion & ref) const
     {
         return !(*this == ref);
     }
 
-    T norm() const
+    constexpr T norm() const
     {
         return vector.x*vector.x + vector.y*vector.y + vector.z*vector.z + w*w;
     }
@@ -130,7 +137,7 @@ public:
     * Задает вращение обратное данному.
     * Обратное вращение можно также получить, просто поменяв знак скалярного "w" компонента на обратный.
     */
-    quaternion conjugate() const
+    constexpr quaternion conjugate() const
     {
         return quaternion(-vector.x, -vector.y, -vector.z, this->w);
     }
@@ -138,7 +145,7 @@ public:
     /*
     * Существует такой кватернион, при умножении на который произведение дает нулевое вращение и соответствующее тождественному кватерниону (identity quaternion):
     */
-    quaternion inverse() const
+    constexpr quaternion inverse() const
     {
         return conjugate() * (T(1.0) / norm());
     }
@@ -148,7 +155,7 @@ public:
     * Соответственно скалярное произведение двух единичных кватернионов даст косинус половины угла между двумя ориентациями.
     * Угол между кватернионами это угол поворота из q  в  q' (по кратчайшей дуге).
     */
-    quaternion innerProduct(const quaternion & ref) const
+    constexpr quaternion innerProduct(const quaternion & ref) const
     {
         return quaternion(vec3<T>(vector.x * ref.vector.x,
                                   vector.y * ref.vector.y,
@@ -192,14 +199,14 @@ public:
         return m;
     }
 
-    vec3<T> to_vector() const
+    constexpr vec3<T> to_vector() const
     {
         return vector;
     }
 };
 
-typedef quaternion<float> qaFloat;
-typedef quaternion<double> qaDouble;
+using qaFloat = quaternion<float>;
+using qaDouble = quaternion<double>;
 
 template<typename T>
 quaternion<T> quaternionFromVecAngle(const vec3<T> & axis, float angle)
@@ -230,7 +237,7 @@ quaternion<T> quaternionFromMatrix(const matrix<T, 3> & ref)
     else
     {
         int i = 0, j, k;
-        int nxt[3] = {1, 2, 0};
+        int nxt[3] = { 1, 2, 0 };
 
         i = 0;
         if (ref.arr[1][1] > ref.arr[0][0]) i = 1;

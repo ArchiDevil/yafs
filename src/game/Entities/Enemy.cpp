@@ -31,6 +31,7 @@ void Enemy::Update(double dt)
             state = EnemyState::Standing;
         }
     }*/
+    LiveEntity::Update(dt);
 }
 
 void Enemy::MoveTo(const MathLib::vec2f & target)

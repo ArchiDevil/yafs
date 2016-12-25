@@ -5,7 +5,8 @@
 
 #include <MathLib/math.h>
 
-class Enemy : public LiveEntity
+class Enemy final
+    : public LiveEntity
 {
     enum class EnemyState
     {
