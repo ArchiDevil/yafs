@@ -150,5 +150,5 @@ HRESULT D3D11Context::CreateStates()
 
 HRESULT ShiftEngine::D3D11Context::CreateAnnotationsHandler()
 {
-    return DeviceContext->QueryInterface(__uuidof(ID3DUserDefinedAnnotation), (void**)&UserAnnotationsHandler);
+    return DeviceContext.CopyTo(__uuidof(ID3DUserDefinedAnnotation), (void**)&UserAnnotationsHandler);
 }
