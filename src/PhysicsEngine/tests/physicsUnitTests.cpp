@@ -1,6 +1,8 @@
 #include "CppUnitTest.h"
 
-#include <PhysicsEngine/Manager.h>
+#include <PhysicsEngine/PhysicsEngine.h>
+
+#include <functional>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -9,6 +11,28 @@ namespace PhysicsTest
 
 TEST_CLASS(PhysicsTests)
 {
+    class TestHolder : public Physics::IPhysicsEntityHolder
+    {
+        std::function<void(Physics::IPhysicsEntityHolder*)> collisionHandler;
+
+    public:
+        void OnCollision(Physics::IPhysicsEntityHolder* holder) override
+        {
+            if (collisionHandler)
+                collisionHandler(holder);
+        }
+
+        void SetCollisionHandler(const std::function<void(Physics::IPhysicsEntityHolder*)> & handler)
+        {
+            this->collisionHandler = handler;
+        }
+
+        Physics::Entity * GetEntity() const
+        {
+            return physicsEntity.get();
+        }
+    };
+
 public:
     bool AreEqualInEPS(float first, float second)
     {
@@ -28,7 +52,9 @@ public:
         float size = 42.0f;
         MathLib::vec2f startSpeed = { 25.0f, 0.0f };
 
-        std::shared_ptr<Physics::Entity> entity = manager.CreateEntity(startPosition, size, startSpeed);
+        TestHolder holder;
+        manager.CreateEntity(holder, startPosition, size, startSpeed);
+        Physics::Entity * entity = holder.GetEntity();
         Assert::IsTrue(AreEqualInEPS(entity->GetPosition(), startPosition));
         Assert::IsTrue(AreEqualInEPS(entity->GetSize(), size));
         Assert::IsTrue(AreEqualInEPS(entity->GetSpeed(), startSpeed));
@@ -54,8 +80,9 @@ public:
     TEST_METHOD(EntityManagerTest)
     {
         Physics::PhysicsManager manager;
-        auto entity = manager.CreateEntity({}, 0.0, {});
-        Assert::IsFalse(entity.get() == nullptr);
+        TestHolder holder;
+        manager.CreateEntity(holder, {}, 0.0, {});
+        Assert::IsFalse(nullptr == holder.GetEntity());
     }
 
     TEST_METHOD(SolverTest)
@@ -63,8 +90,12 @@ public:
         Physics::PhysicsManager manager;
 
         // these two entities should collide
-        auto entity1 = manager.CreateEntity({ 0.0, 0.0 }, 1.0, { 0.0, 0.0 });
-        auto entity2 = manager.CreateEntity({ 1.5, 0.0 }, 2.0, { 0.0, 0.0 });
+        TestHolder holder1, holder2;
+        manager.CreateEntity(holder1, { 0.0, 0.0 }, 1.0, { 0.0, 0.0 });
+        manager.CreateEntity(holder2, { 1.5, 0.0 }, 2.0, { 0.0, 0.0 });
+
+        Physics::Entity * entity1 = holder1.GetEntity();
+        Physics::Entity * entity2 = holder2.GetEntity();
 
         manager.Update(1.0);
 
@@ -79,7 +110,8 @@ public:
         Assert::IsTrue(AreEqualInEPS(entity2->GetSpeed().y, 0.0f));
 
         // friction test - every entity should slow down without any other forces from outer space
-        entity1 = manager.CreateEntity({ -10.0, 0.0 }, 1.0, { 0.0, 10.0 });
+        manager.CreateEntity(holder1, { -10.0, 0.0 }, 1.0, { 0.0, 10.0 });
+        entity1 = holder1.GetEntity();
 
         float lastYSpeed = entity1->GetSpeed().y;
         for (size_t i = 0; i < 10; ++i)
@@ -93,6 +125,35 @@ public:
             Assert::IsTrue(entity1->GetSpeed().y < lastYSpeed);
             lastYSpeed = entity1->GetSpeed().y;
         }
+    }
+
+    TEST_METHOD(CollisionTest)
+    {
+        Physics::PhysicsManager manager;
+
+        // these two entities should collide
+        TestHolder holder1, holder2;
+        bool collision1 = false;
+        bool collision2 = false;
+        holder1.SetCollisionHandler([&](Physics::IPhysicsEntityHolder* holder)
+        {
+            Assert::IsTrue((Physics::IPhysicsEntityHolder*)&holder2 == holder);
+            collision1 = true;
+        }
+        );
+        holder2.SetCollisionHandler([&](Physics::IPhysicsEntityHolder* holder)
+        {
+            Assert::IsTrue((Physics::IPhysicsEntityHolder*)&holder1 == holder);
+            collision2 = true;
+        }
+        );
+
+        manager.CreateEntity(holder1, { 0.0, 0.0 }, 1.0, { 0.0, 0.0 });
+        manager.CreateEntity(holder2, { 1.5, 0.0 }, 2.0, { 0.0, 0.0 });
+
+        manager.Update(1.0);
+        Assert::AreEqual(true, collision1);
+        Assert::AreEqual(true, collision2);
     }
 };
 

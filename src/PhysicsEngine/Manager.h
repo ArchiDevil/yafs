@@ -4,7 +4,7 @@
 #include <MathLib/math.h>
 
 #include "Entity.h"
-#include "Solver.h"
+#include "Types.h"
 
 #include <vector>
 #include <memory>
@@ -15,7 +15,7 @@ namespace Physics
 class PhysicsManager
 {
 public:
-    std::shared_ptr<Entity> CreateEntity(const MathLib::vec2f & position, float size, const MathLib::vec2f & speed = {});
+    void CreateEntity(IPhysicsEntityHolder & holder, const MathLib::vec2f & position, float size, const MathLib::vec2f & speed = {});
     void Update(double dt);
 
 private:
