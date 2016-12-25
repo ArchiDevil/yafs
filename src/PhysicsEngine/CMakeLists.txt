@@ -3,8 +3,10 @@ set(SRC
         Entity.h
         Manager.cpp
         Manager.h
+        PhysicsEngine.h
         Solver.cpp
-        Solver.h)
+        Solver.h
+        Types.h)
 
 add_library(PhysicsEngine ${SRC})
 add_subdirectory(tests)
