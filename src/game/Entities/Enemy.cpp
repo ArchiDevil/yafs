@@ -19,7 +19,7 @@ void Enemy::Update(double dt)
     {
         ai->Update(dt, this);
     }
-    if (state == EnemyState::Moving)
+    /*if (state == EnemyState::Moving)
     {
         MathLib::vec2f direction = MathLib::normalize(movePosition - Entity::position);
         Entity::position += direction * dt; //* speed;
@@ -30,7 +30,7 @@ void Enemy::Update(double dt)
         {
             state = EnemyState::Standing;
         }
-    }
+    }*/
 }
 
 void Enemy::MoveTo(const MathLib::vec2f & target)

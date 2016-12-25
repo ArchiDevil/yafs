@@ -12,7 +12,7 @@ ExperiencePoint::ExperiencePoint(const MathLib::vec2f & position, int expCount)
     : Entity(position, GetSceneGraph()->AddSpriteNode(experienceTextureName))
     , expCount(expCount)
 {
-    sprite->SetLocalScale(0.75f);
+    sprite->SetLocalScale(0.25f);
 }
 
 void ExperiencePoint::Update(double dt)

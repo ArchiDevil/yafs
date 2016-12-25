@@ -67,8 +67,6 @@ bool GameState::update(double dt)
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);
 
-    GoingHome::GetGamePtr()->GetEntityMgr()->UpdateAllEntities(dt);
-
     return true;
 }
 

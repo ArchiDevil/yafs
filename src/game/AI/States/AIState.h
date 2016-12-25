@@ -4,10 +4,10 @@
 
 #include <memory>
 
-class AIAction
+class AIState
 {
 public:
-    AIAction() = default;
-    virtual ~AIAction() = default;
+    AIState() = default;
+    virtual ~AIState() = default;
     virtual void Do(double dt, LiveEntity * entity) = 0;
 };

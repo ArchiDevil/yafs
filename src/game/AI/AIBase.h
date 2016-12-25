@@ -1,25 +1,27 @@
 #pragma once
 
-#include "Actions/AIAction.h"
+#include "States/AIState.h"
 #include <vector>
 #include <memory>
 #include "../Entities/LiveEntity.h"
 
+enum class AIStateType
+{
+    Idle,
+    Pursuit,
+    Attack,
+    Escape,
+    Dodge,
+    Death
+};
+
 class AIBase
 {
 protected:
-    enum class AIState
-    {
-        Idle,
-        Pursuit,
-        Attack,
-        Escape,
-        Dodge,
-        Death
-    };
 
-    AIState currentState = AIState::Idle;
-    std::shared_ptr<AIAction> currentAction = nullptr;
+
+    AIStateType currentState = AIStateType::Idle;
+    std::shared_ptr<AIState> currentAction = nullptr;
 
 public:
     AIBase() = default;

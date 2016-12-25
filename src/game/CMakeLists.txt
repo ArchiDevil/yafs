@@ -17,20 +17,18 @@ set(LS  AI/AIBase.h
 source_group("Header Files\\AI" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  AI/Actions/AIAction.cpp
-        AI/Actions/AIActionDodge.cpp
-        AI/Actions/AIActionEscape.cpp
-        AI/Actions/AIActionPursuit.cpp
-        AI/Actions/AIActionShoot.cpp)
-source_group("Source Files\\AI\\Actions" FILES ${LS})
+set(LS  AI/States/AIState.cpp
+        AI/States/AIStateDodge.cpp
+        AI/States/AIStateEscape.cpp
+        AI/States/AIStatePursuit.cpp)
+source_group("Source Files\\AI\\States" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  AI/Actions/AIAction.h
-        AI/Actions/AIActionDodge.h
-        AI/Actions/AIActionEscape.h
-        AI/Actions/AIActionPursuit.h
-        AI/Actions/AIActionShoot.h)
-source_group("Header Files\\AI\\Actions" FILES ${LS})
+set(LS  AI/States/AIState.h
+        AI/States/AIStateDodge.h
+        AI/States/AIStateEscape.h
+        AI/States/AIStatePursuit.h)
+source_group("Header Files\\AI\\States" FILES ${LS})
 list(APPEND SRC ${LS})
 
 set(LS  Entities/BackgroundBlinker.cpp

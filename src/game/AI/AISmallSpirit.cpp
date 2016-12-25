@@ -1,6 +1,6 @@
 #include "AISmallSpirit.h"
 
-#include "Actions\AIActionEscape.h"
+#include "States\AIStateEscape.h"
 
 AISmallSpirit::AISmallSpirit()
     : AIBase()
@@ -12,11 +12,11 @@ void AISmallSpirit::Update(double dt, LiveEntity * entity)
 {
     switch (currentState)
     {
-    case AIBase::AIState::Idle:
+    case AIStateType::Idle:
         if (entity->GetHealth() / entity->GetMaxHealth() < 0.3)
         {
-            currentAction = std::make_shared<AIActionEscape>();
-            currentState = AIBase::AIState::Escape;
+            currentAction = std::make_shared<AIStateEscape>();
+            currentState = AIStateType::Escape;
         }
         break;
     }
