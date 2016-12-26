@@ -35,7 +35,10 @@ void EntityManager::UpdateAllEntities(double dt)
             if ((*it).use_count() == 1)
             {
                 if (it + 1 == entities.end())
-                    return RemoveEntity(*it, entities);
+                {
+                    RemoveEntity(*it, entities);
+                    break;
+                }
 
                 RemoveEntity(*it, entities);
                 if (it != entities.begin())
@@ -54,7 +57,10 @@ void EntityManager::UpdateAllEntities(double dt)
             if ((*it).use_count() == 1)
             {
                 if (it + 1 == liveEntities.end())
-                    return RemoveEntity(*it, liveEntities);
+                {
+                    RemoveEntity(*it, liveEntities);
+                    break;
+                }
 
                 RemoveEntity(*it, liveEntities);
                 if (it != liveEntities.begin())

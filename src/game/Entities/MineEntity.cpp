@@ -21,7 +21,7 @@ MineEntity::MineEntity(const LiveEntity * owner,
 
 bool MineEntity::handleEvent(const ProjectilePositionEvent & event)
 {
-    if (CalculateCollision(*event.projectile))
+    if (!IsDead() && CalculateCollision(*event.projectile))
     {
         Explode();
         return false;

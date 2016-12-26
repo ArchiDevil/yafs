@@ -20,7 +20,7 @@ LiveEntity::LiveEntity(const vec2f & position, float health, const std::wstring 
 
 bool LiveEntity::handleEvent(const ProjectilePositionEvent & event)
 {
-    if (event.projectile->GetProducer() == this)
+    if (event.projectile->GetProducer() == this || IsDead())
         return true;
 
     if (CalculateCollision(*event.projectile))
@@ -40,7 +40,7 @@ bool LiveEntity::handleEvent(const ProjectilePositionEvent & event)
 
 bool LiveEntity::handleEvent(const ExperiencePointPositionEvent & event)
 {
-    if (CalculateCollision(*event.expPoint))
+    if (!IsDead() && CalculateCollision(*event.expPoint))
     {
         experienceCount += event.expPoint->GetExperienceCount();
         event.expPoint->Kill();
@@ -52,7 +52,7 @@ bool LiveEntity::handleEvent(const ExperiencePointPositionEvent & event)
 
 bool LiveEntity::handleEvent(const ExplosionEvent & event)
 {
-    if (MathLib::distance(Entity::GetPosition(), event.epicenter) < event.radius)   // radius of entity is not supported
+    if (!IsDead() && MathLib::distance(Entity::GetPosition(), event.epicenter) < event.radius)   // radius of entity is not supported
     {                                                                               // if you want to add it, just add it to the radius
         // woops, duplicate with projectile event
         health -= event.damage;

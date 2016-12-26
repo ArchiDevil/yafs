@@ -34,7 +34,6 @@ bool Entity::IsDead() const
 void Entity::Kill()
 {
     isToDelete = true;
-    sprite.reset();
 }
 
 bool Entity::CalculateCollision(const Entity & ent) const
