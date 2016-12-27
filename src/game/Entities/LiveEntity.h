@@ -3,6 +3,8 @@
 #include "Entity.h"
 #include "../Spells/ISpellController.h"
 
+#include <PhysicsEngine/PhysicsEngine.h>
+
 #include <array>
 #include <vector>
 
@@ -13,7 +15,7 @@ class LiveEntity
     : public Entity
     , observer<ExperiencePointPositionEvent>
     , observer<ExplosionEvent>
-    , observer<ProjectilePositionEvent>
+    , Physics::IPhysicsEntityHolder
 {
 public:
     enum ControllerSlot
@@ -29,12 +31,12 @@ public:
     LiveEntity(const MathLib::vec2f & position, float health, const std::wstring & textureName, int expCount);
     virtual ~LiveEntity() = default;
 
+    virtual void    TakeDamage(float damageCount) override;
     virtual void    Update(double dt) override;
 
     void            StartSpellInSlot(ControllerSlot slot);
     void            StopSpellInSlot(ControllerSlot slot);
 
-    bool            observer<ProjectilePositionEvent>::handleEvent(const ProjectilePositionEvent & event) override;
     bool            observer<ExperiencePointPositionEvent>::handleEvent(const ExperiencePointPositionEvent & event) override;
     bool            observer<ExplosionEvent>::handleEvent(const ExplosionEvent & event) override;
 
@@ -61,6 +63,5 @@ protected:
 
     scoped_subscriber<ExperiencePointPositionEvent> experiencePointSubscriber = {&EntityEventManager::GetInstance(), this};
     scoped_subscriber<ExplosionEvent> explosionSubscriber = {&EntityEventManager::GetInstance(), this};
-    scoped_subscriber<ProjectilePositionEvent> projectileSubscriber = {&EntityEventManager::GetInstance(), this};
 
 };

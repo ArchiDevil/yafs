@@ -16,26 +16,6 @@ LiveEntity::LiveEntity(const vec2f & position, float health, const std::wstring 
 {
 }
 
-bool LiveEntity::handleEvent(const ProjectilePositionEvent & event)
-{
-    if (event.projectile->GetProducer() == this)
-        return true;
-
-    if (CalculateCollision(*event.projectile))
-    {
-        health -= event.projectile->GetDamage();
-        event.projectile->Kill();
-
-        if (health <= 0)
-        {
-            Kill();
-            GetGamePtr()->GetEntityMgr()->CreateExperiencePoint(position, experienceCount);
-        }
-    }
-
-    return true;
-}
-
 bool LiveEntity::handleEvent(const ExperiencePointPositionEvent & event)
 {
     if (CalculateCollision(*event.expPoint))
@@ -52,7 +32,7 @@ bool LiveEntity::handleEvent(const ExplosionEvent & event)
 {
     if (MathLib::distance(Entity::GetPosition(), event.epicenter) < event.radius)   // radius of entity is not supported
     {                                                                               // if you want to add it, just add it to the radius
-        // woops, duplicate with projectile event
+        // whoops, duplicate with projectile event
         health -= event.damage;
         if (health <= 0)
         {
@@ -100,6 +80,17 @@ void LiveEntity::StopSpellInSlot(ControllerSlot slot)
 ISpellController* LiveEntity::GetSpellController(ControllerSlot slot) const
 {
     return controllers[slot].get();
+}
+
+void LiveEntity::TakeDamage(float damageCount)
+{
+    health -= damageCount;
+
+    if (health <= 0)
+    {
+        Kill();
+        GetGamePtr()->GetEntityMgr()->CreateExperiencePoint(position, experienceCount);
+    }
 }
 
 float LiveEntity::CalculateDamage(float damage)

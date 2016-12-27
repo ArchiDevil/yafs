@@ -11,16 +11,6 @@ class Projectile;
 class ExperiencePoint;
 class LiveEntity;
 
-struct ProjectilePositionEvent final
-{
-    ProjectilePositionEvent(Projectile * projectile)
-        : projectile(projectile)
-    {
-    }
-
-    Projectile * projectile = nullptr;
-};
-
 struct ExperiencePointPositionEvent final
 {
     ExperiencePointPositionEvent(ExperiencePoint * expPoint)
@@ -58,7 +48,6 @@ struct ExplosionEvent final
 // TODO: we need to rework this, because amount of events will grow fast
 class EntityEventManager final
     : public singleton<EntityEventManager>
-    , public notifier<ProjectilePositionEvent>
     , public notifier<ExperiencePointPositionEvent>
     , public notifier<LiveEntityPositionEvent>
     , public notifier<ExplosionEvent>

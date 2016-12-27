@@ -19,14 +19,12 @@ MineEntity::MineEntity(const LiveEntity * owner,
 {
 }
 
-bool MineEntity::handleEvent(const ProjectilePositionEvent & event)
+void MineEntity::TakeDamage(float damageCount)
 {
-    if (CalculateCollision(*event.projectile))
-    {
-        Explode();
-        return false;
-    }
-    return true;
+    // immediately without any hit points calculation
+    // this may be subject of change after some refactoring
+    // may be mines should have some hit points for unifying with other entities
+    Explode();
 }
 
 void MineEntity::Explode()

@@ -1,13 +1,17 @@
 #include "Projectile.h"
 #include "EntityEventManager.h"
 
+
+
 #include <GraphicsEngine/ShiftEngine.h>
 
 const std::wstring textureName = L"sprite.png";
 
-Projectile::Projectile(const MathLib::vec2f & position, const MathLib::vec2f & speed, float damage, double lifetime, const LiveEntity * producer)
+Projectile::Projectile(const MathLib::vec2f position,
+                       float damage,
+                       double lifetime,
+                       const LiveEntity * producer)
     : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
-    , speed(speed)
     , producer(producer)
     , remainingTime(lifetime)
     , damage(damage)
@@ -24,14 +28,11 @@ void Projectile::Update(double dt)
         return;
     }
 
-    position += speed * dt;
+    position = IPhysicsEntityHolder::physicsEntity->GetPosition();
     UpdateGraphicsSpritePosition();
 
     float overallIntensity = (float)remainingTime / 3.0f;
-    sprite->SetMaskColor({overallIntensity, overallIntensity, overallIntensity, 1.0f});
-
-    ((notifier<ProjectilePositionEvent>)EntityEventManager::GetInstance())
-        .notifyAll(ProjectilePositionEvent(this));
+    sprite->SetMaskColor({ overallIntensity, overallIntensity, overallIntensity, 1.0f });
 }
 
 const LiveEntity* Projectile::GetProducer() const
@@ -39,12 +40,17 @@ const LiveEntity* Projectile::GetProducer() const
     return producer;
 }
 
-float Projectile::GetDamage() const
+void Projectile::OnCollision(Physics::IPhysicsEntityHolder* other)
 {
-    return damage;
-}
+    Projectile* projectileCollider = dynamic_cast<Projectile*>(other);
+    if (projectileCollider)
+        return;
 
-void Projectile::SetDamage(float val)
-{
-    damage = val;
+    Entity *collider = dynamic_cast<Entity*>(other);
+    if (collider && producer != collider)
+    {
+        collider->TakeDamage(damage);
+    }
+
+    Entity::Kill();
 }

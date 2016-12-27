@@ -16,6 +16,9 @@ public:
     virtual ~Entity() = default;
 
     virtual void Update(double dt) = 0;
+    // this should be removes as soon as possible and moved to some derivative
+    // but this works for now, and will work before any architecture changes
+    virtual void TakeDamage(float damageCount) { damageCount; }
 
     const MathLib::vec2f GetPosition() const;
     bool IsDead() const;

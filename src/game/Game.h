@@ -5,6 +5,7 @@
 #include "BackgroundManager.h"
 #include "Spells/SpellsDatabase.h"
 
+#include <PhysicsEngine/PhysicsEngine.h>
 #include <Utilities/IManager.h>
 
 #include <memory>
@@ -18,18 +19,20 @@ public:
     Game();
     ~Game() = default;
 
-    Player*             GetPlayerPtr();
-    EntityManager*      GetEntityMgr();
-    BackgroundManager*  GetBackgroundMgr();
-    SpellsDatabase*     GetSpellsDatabase();
+    Player*                     GetPlayerPtr() const;
+    EntityManager*              GetEntityMgr() const;
+    BackgroundManager*          GetBackgroundMgr() const;
+    SpellsDatabase*             GetSpellsDatabase() const;
+    Physics::PhysicsManager*    GetPhysicsMgr() const;
 
 private:
-    Player*                             player = nullptr;
-    std::unique_ptr<EntityManager>      entityMgr = nullptr;
-    std::unique_ptr<BackgroundManager>  backgroundMgr = nullptr;
-    std::unique_ptr<SpellsDatabase>     spellsDatabase = nullptr;
-    // std::unique_ptr<GameEventHandler> gameEventHandler = nullptr;
-    // std::unique_ptr<GameHUD> gameHud = nullptr;
+    std::unique_ptr<Physics::PhysicsManager>    physicsMgr;
+    Player*                                     player;
+    std::unique_ptr<EntityManager>              entityMgr;
+    std::unique_ptr<BackgroundManager>          backgroundMgr;
+    std::unique_ptr<SpellsDatabase>             spellsDatabase;
+    // std::unique_ptr<GameEventHandler>        gameEventHandler;
+    // std::unique_ptr<GameHUD>                 gameHud;
 };
 
 void CreateGame();

@@ -1,5 +1,7 @@
 #include "EntityManager.h"
 
+#include "../Game.h"
+
 #include <algorithm>
 
 using namespace MathLib;
@@ -64,7 +66,10 @@ std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f
                                                             double lifetime,
                                                             const LiveEntity* producer)
 {
-    auto entity = factory.CreateEntity<Projectile>(position, speed, damage, lifetime, producer);
+    auto entity = factory.CreateEntity<Projectile>(position, damage, lifetime, producer);
+
+    GoingHome::GetGamePtr()->GetPhysicsMgr()->CreateEntity(*entity, position, 0.2f, speed);
+
     AddEntity(entity);
     return entity;
 }

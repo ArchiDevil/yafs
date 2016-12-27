@@ -10,6 +10,7 @@ namespace GoingHome
 
 Game::Game()
 {
+    physicsMgr.reset(new Physics::PhysicsManager());
     entityMgr.reset(new EntityManager());
     player = entityMgr->CreatePlayer({}, 10.0f).get();
     backgroundMgr.reset(new BackgroundManager(entityMgr.get()));
@@ -18,24 +19,29 @@ Game::Game()
     //gameEventHandler.reset(new GameEventHandler());
 }
 
-Player * Game::GetPlayerPtr()
+Player * Game::GetPlayerPtr() const
 {
     return player;
 }
 
-EntityManager * Game::GetEntityMgr()
+EntityManager * Game::GetEntityMgr() const
 {
     return entityMgr.get();
 }
 
-BackgroundManager * Game::GetBackgroundMgr()
+BackgroundManager * Game::GetBackgroundMgr() const
 {
     return backgroundMgr.get();
 }
 
-SpellsDatabase* Game::GetSpellsDatabase()
+SpellsDatabase* Game::GetSpellsDatabase() const
 {
     return spellsDatabase.get();
+}
+
+Physics::PhysicsManager* Game::GetPhysicsMgr() const
+{
+    return physicsMgr.get();
 }
 
 static Game * GamePtr = nullptr;

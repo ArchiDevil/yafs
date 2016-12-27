@@ -57,21 +57,19 @@ bool GameState::initState()
 bool GameState::update(double dt)
 {
     ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
+    GoingHome::Game* pGame = GoingHome::GetGamePtr();
 
-    // for example
-    static double totalTime = 0.0;
-    totalTime += dt;
+    pGame->GetBackgroundMgr()->Update(dt);
+    pGame->GetPhysicsMgr()->Update(dt);
+    pGame->GetEntityMgr()->UpdateAllEntities(dt);
 
-    GoingHome::GetGamePtr()->GetBackgroundMgr()->Update(dt);
-    GoingHome::GetGamePtr()->GetEntityMgr()->UpdateAllEntities(dt);
-
-    auto playerPosition = GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition();
+    auto playerPosition = pGame->GetPlayerPtr()->GetPosition();
     pScene->GetActiveCamera()->SetLocalPosition({playerPosition.x, playerPosition.y, 0.0f});
 
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);
 
-    GoingHome::GetGamePtr()->GetEntityMgr()->UpdateAllEntities(dt);
+    pGame->GetEntityMgr()->UpdateAllEntities(dt);
 
     return true;
 }
