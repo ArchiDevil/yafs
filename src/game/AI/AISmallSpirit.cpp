@@ -1,12 +1,6 @@
 #include "AISmallSpirit.h"
 
-#include "States\AIStateEscape.h"
-
-AISmallSpirit::AISmallSpirit()
-    : AIBase()
-{
-
-}
+#include "States/AIStateEscape.h"
 
 void AISmallSpirit::Update(double dt, LiveEntity * entity)
 {

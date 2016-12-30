@@ -17,8 +17,7 @@ set(LS  gameStates/gameState.h
 source_group("Header Files\\Game States" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  AI/AIBase.cpp
-        AI/AISmallSpirit.cpp)
+set(LS  AI/AISmallSpirit.cpp)
 source_group("Source Files\\AI" FILES ${LS})
 list(APPEND SRC ${LS})
 

@@ -1,5 +1,7 @@
 #include "EntityManager.h"
 
+#include "..\AI\AISmallSpirit.h"
+
 #include <algorithm>
 
 using namespace MathLib;
@@ -106,8 +108,20 @@ std::shared_ptr<Player> EntityManager::CreatePlayer(const MathLib::vec2f & posit
 std::shared_ptr<Enemy> EntityManager::CreateEnemy(const MathLib::vec2f & position,
                                                   float health,
                                                   int expCount,
-                                                  const std::shared_ptr<AIBase> & ai)
+                                                  Enemy::EnemyType type)
 {
+    std::shared_ptr<AIBase> ai;
+
+    switch (type)
+    {
+    case Enemy::EnemyType::SmallSpirit:
+        ai = std::make_shared<AISmallSpirit>();
+        break;
+    default:
+        assert(false);
+        break;
+    }
+
     auto entity = factory.CreateEntity<Enemy>(position, health, expCount, ai);
     AddEntity((std::shared_ptr<LiveEntity>)entity, liveEntitiesToAdd);
     return entity;

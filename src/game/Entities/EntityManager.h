@@ -21,7 +21,7 @@ public:
     std::shared_ptr<Enemy>              CreateEnemy(const MathLib::vec2f & position,
                                                     float health,
                                                     int expCount,
-                                                    const std::shared_ptr<AIBase> & ai);
+                                                    Enemy::EnemyType type);
 
     std::shared_ptr<Projectile>         CreateProjectile(const MathLib::vec2f & position,
                                                          const MathLib::vec2f & speed,

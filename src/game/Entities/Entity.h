@@ -21,9 +21,9 @@ public:
     void SetPosition(MathLib::vec2f & pos);
     bool IsDead() const;
     void Kill();
-    void UpdateGraphicsSpritePosition();
 
 protected:
+    void UpdateGraphicsSpritePosition();
     bool CalculateCollision(const Entity & ent) const;
 
     struct sprites_deleter

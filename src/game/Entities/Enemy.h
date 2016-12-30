@@ -16,8 +16,14 @@ class Enemy final
     };
 
 public:
+    enum class EnemyType
+    {
+        SmallSpirit,
+    };
+
     Enemy(const MathLib::vec2f & position, float health, int expCount, const std::shared_ptr<AIBase> & ai);
     virtual ~Enemy() = default;
+
     void Update(double dt) override;
     void MoveTo(const MathLib::vec2f & target);
 

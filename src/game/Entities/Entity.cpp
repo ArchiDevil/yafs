@@ -24,6 +24,7 @@ const MathLib::vec2f Entity::GetPosition() const
 void Entity::SetPosition(MathLib::vec2f & pos)
 {
     position = pos;
+    UpdateGraphicsSpritePosition();
 }
 
 bool Entity::IsDead() const
