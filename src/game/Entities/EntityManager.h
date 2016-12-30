@@ -53,8 +53,8 @@ public:
                                                                   const MathLib::vec2f& position,
                                                                   ShiftEngine::SpriteSceneNode * sprite);
 
-    const std::vector<std::shared_ptr<LiveEntity>> * GetLiveEntities();
-    const std::vector<std::shared_ptr<LiveEntity>> * GetHostileLiveEntities(LiveEntity::Faction fraction);
+    std::vector<std::shared_ptr<LiveEntity>> GetHostileLiveEntities(LiveEntity::Faction fraction);
+
 private:
     std::vector<std::shared_ptr<Entity>> entities;
     std::vector<std::shared_ptr<Entity>> entitiesToAdd;

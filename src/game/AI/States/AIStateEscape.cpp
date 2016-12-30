@@ -12,8 +12,8 @@ void AIStateEscape::Do(double dt, LiveEntity * entity)
     if (elapsedTime > 0.5) 
     {
         runVector = {};
-        const std::vector<std::shared_ptr<LiveEntity>> * hostileEntList = GoingHome::GetGamePtr()->GetEntityMgr()->GetHostileLiveEntities(entity->GetFaction());
-        for (auto& hostileEntity : *hostileEntList)
+        std::vector<std::shared_ptr<LiveEntity>> hostileEntList = GoingHome::GetGamePtr()->GetEntityMgr()->GetHostileLiveEntities(entity->GetFaction());
+        for (auto& hostileEntity : hostileEntList)
         {
             if (4.0f > MathLib::distance(entPosition, hostileEntity->GetPosition()))
                 runVector += entPosition - hostileEntity->GetPosition();
