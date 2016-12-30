@@ -42,7 +42,7 @@ public:
         case ShiftEngine::D3D11ShaderType::ST_Vertex:
         {
             ID3D11VertexShader * query = nullptr;
-            if (SUCCEEDED(shader->QueryInterface(&query)))
+            if (SUCCEEDED(shader.CopyTo(__uuidof(ID3D11VertexShader), (void**)&query)))
             {
                 dev->VSSetShader(query, nullptr, 0);
                 query->Release();
@@ -57,7 +57,7 @@ public:
         case ShiftEngine::D3D11ShaderType::ST_Pixel:
         {
             ID3D11PixelShader * query = nullptr;
-            if (SUCCEEDED(shader->QueryInterface(&query)))
+            if (SUCCEEDED(shader.CopyTo(__uuidof(ID3D11PixelShader), (void**)&query)))
             {
                 dev->PSSetShader(query, nullptr, 0);
                 query->Release();
