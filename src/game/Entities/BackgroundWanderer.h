@@ -5,7 +5,7 @@
 // Entity, that is used on background
 // Sometimes it starts it's moving to some point near it's position
 // Then it stops and waits until other movement
-class BackgroundWanderer
+class BackgroundWanderer final
     : public BackgroundBlinker
 {
     enum class WandererState

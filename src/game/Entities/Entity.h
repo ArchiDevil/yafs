@@ -20,12 +20,13 @@ public:
     // but this works for now, and will work before any architecture changes
     virtual void TakeDamage(float damageCount) { damageCount; }
 
-    const MathLib::vec2f GetPosition() const;
+    MathLib::vec2f GetPosition() const;
+    virtual void SetPosition(MathLib::vec2f position);
+
     bool IsDead() const;
-    void Kill();
+    virtual void Kill();
 
 protected:
-    bool CalculateCollision(const Entity & ent) const;
     void UpdateGraphicsSpritePosition();
 
     struct sprites_deleter
@@ -36,8 +37,10 @@ protected:
         }
     };
 
-    MathLib::vec2f position;
     bool isToDelete = false;
     std::unique_ptr<ShiftEngine::SpriteSceneNode, sprites_deleter> sprite = nullptr;
+
+private:
+    MathLib::vec2f position;
 
 };

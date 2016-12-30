@@ -1,5 +1,10 @@
 #include "game.h"
 
+#include "Entities/EntityManager.h"
+#include "Entities/Player.h"
+#include "BackgroundManager.h"
+#include "Spells/SpellsDatabase.h"
+
 //#include "Entities/PlayerGameObject.h"
 //#include "Entities/GameObjectsManager.h"
 //#include "GameEventHandler.h"
@@ -11,7 +16,7 @@ namespace GoingHome
 Game::Game()
 {
     physicsMgr.reset(new Physics::PhysicsManager());
-    entityMgr.reset(new EntityManager());
+    entityMgr.reset(new EntityManager(physicsMgr.get()));
     player = entityMgr->CreatePlayer({}, 10.0f).get();
     backgroundMgr.reset(new BackgroundManager(entityMgr.get()));
     spellsDatabase.reset(new SpellsDatabase());

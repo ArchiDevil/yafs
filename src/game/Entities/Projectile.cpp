@@ -1,8 +1,6 @@
 #include "Projectile.h"
 #include "EntityEventManager.h"
 
-
-
 #include <GraphicsEngine/ShiftEngine.h>
 
 const std::wstring textureName = L"sprite.png";
@@ -10,8 +8,10 @@ const std::wstring textureName = L"sprite.png";
 Projectile::Projectile(const MathLib::vec2f position,
                        float damage,
                        double lifetime,
-                       const LiveEntity * producer)
+                       const LiveEntity * producer,
+                       const std::shared_ptr<Physics::Entity>& physicsEntity)
     : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
+    , IPhysicsEntityHolder(physicsEntity)
     , producer(producer)
     , remainingTime(lifetime)
     , damage(damage)
@@ -28,8 +28,7 @@ void Projectile::Update(double dt)
         return;
     }
 
-    position = IPhysicsEntityHolder::physicsEntity->GetPosition();
-    UpdateGraphicsSpritePosition();
+    Entity::SetPosition(IPhysicsEntityHolder::physicsEntity->GetPosition());
 
     float overallIntensity = (float)remainingTime / 3.0f;
     sprite->SetMaskColor({ overallIntensity, overallIntensity, overallIntensity, 1.0f });
@@ -50,7 +49,6 @@ void Projectile::OnCollision(Physics::IPhysicsEntityHolder* other)
     if (collider && producer != collider)
     {
         collider->TakeDamage(damage);
+        Entity::Kill();
     }
-
-    Entity::Kill();
 }

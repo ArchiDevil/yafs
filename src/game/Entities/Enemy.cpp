@@ -6,8 +6,11 @@
 const std::wstring enemyTextureName = L"enemy_sprite.png";
 constexpr float MOVE_EPS = 0.05f;
 
-Enemy::Enemy(const MathLib::vec2f & position, float health, int expCount)
-    : LiveEntity(position, health, enemyTextureName, expCount)
+Enemy::Enemy(MathLib::vec2f position,
+             float health,
+             int expCount,
+             const std::shared_ptr<Physics::Entity>& physicsEntity)
+    : LiveEntity(position, health, enemyTextureName, expCount, physicsEntity)
 {
     sprite->SetLocalScale(0.5f);
 }
@@ -16,14 +19,16 @@ void Enemy::Update(double dt)
 {
     if (state == EnemyState::Moving)
     {
-        MathLib::vec2f direction = MathLib::normalize(movePosition - Entity::position);
-        Entity::position += direction * dt; //* speed;
-        UpdateGraphicsSpritePosition();
+        // position adjusting
+        MathLib::vec2f direction = MathLib::normalize(movePosition - Entity::GetPosition());
+        IPhysicsEntityHolder::physicsEntity->SetVelocity(direction);
 
-        MathLib::vec2f diff = movePosition - Entity::position;
+        // state switching
+        MathLib::vec2f diff = movePosition - Entity::GetPosition();
         if (abs(diff.x) < MOVE_EPS && abs(diff.y) < MOVE_EPS)
         {
             state = EnemyState::Waiting;
+            IPhysicsEntityHolder::physicsEntity->SetVelocity({});
         }
     }
 

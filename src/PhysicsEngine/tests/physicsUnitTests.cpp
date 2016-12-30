@@ -16,6 +16,11 @@ TEST_CLASS(PhysicsTests)
         std::function<void(Physics::IPhysicsEntityHolder*)> collisionHandler;
 
     public:
+        TestHolder(const std::shared_ptr<Physics::Entity>& entity)
+            : Physics::IPhysicsEntityHolder(entity)
+        {
+        }
+
         void OnCollision(Physics::IPhysicsEntityHolder* holder) override
         {
             if (collisionHandler)
@@ -52,12 +57,11 @@ public:
         float size = 42.0f;
         MathLib::vec2f startSpeed = { 25.0f, 0.0f };
 
-        TestHolder holder;
-        manager.CreateEntity(holder, startPosition, size, startSpeed);
+        TestHolder holder{ manager.CreateEntity(startPosition, size, startSpeed) };
         Physics::Entity * entity = holder.GetEntity();
         Assert::IsTrue(AreEqualInEPS(entity->GetPosition(), startPosition));
         Assert::IsTrue(AreEqualInEPS(entity->GetSize(), size));
-        Assert::IsTrue(AreEqualInEPS(entity->GetSpeed(), startSpeed));
+        Assert::IsTrue(AreEqualInEPS(entity->GetVelocity(), startSpeed));
         Assert::IsTrue(AreEqualInEPS(entity->GetElasticity(), 0.5f));
 
         // check speed updating
@@ -65,7 +69,7 @@ public:
         Assert::IsTrue(AreEqualInEPS(entity->GetPosition().x, startPosition.x + startSpeed.x));
         Assert::IsTrue(AreEqualInEPS(entity->GetPosition().y, startPosition.y));
         Assert::IsTrue(AreEqualInEPS(entity->GetSize(), size));
-        Assert::IsTrue(AreEqualInEPS(entity->GetSpeed(), startSpeed));
+        Assert::IsTrue(AreEqualInEPS(entity->GetVelocity(), startSpeed));
         Assert::IsTrue(AreEqualInEPS(entity->GetElasticity(), 0.5f));
 
         // check acceleration updating
@@ -73,15 +77,14 @@ public:
         Assert::IsTrue(AreEqualInEPS(entity->GetPosition().x, startPosition.x + startSpeed.x + startSpeed.x + 1.0f));
         Assert::IsTrue(AreEqualInEPS(entity->GetPosition().y, startPosition.y));
         Assert::IsTrue(AreEqualInEPS(entity->GetSize(), size));
-        Assert::IsTrue(AreEqualInEPS(entity->GetSpeed(), { startSpeed.x + 1.0f, startSpeed.y }));
+        Assert::IsTrue(AreEqualInEPS(entity->GetVelocity(), { startSpeed.x + 1.0f, startSpeed.y }));
         Assert::IsTrue(AreEqualInEPS(entity->GetElasticity(), 0.5f));
     }
 
     TEST_METHOD(EntityManagerTest)
     {
         Physics::PhysicsManager manager;
-        TestHolder holder;
-        manager.CreateEntity(holder, {}, 0.0, {});
+        TestHolder holder{ manager.CreateEntity({}, 0.0, {}) };
         Assert::IsFalse(nullptr == holder.GetEntity());
     }
 
@@ -90,9 +93,8 @@ public:
         Physics::PhysicsManager manager;
 
         // these two entities should collide
-        TestHolder holder1, holder2;
-        manager.CreateEntity(holder1, { 0.0, 0.0 }, 1.0, { 0.0, 0.0 });
-        manager.CreateEntity(holder2, { 1.5, 0.0 }, 2.0, { 0.0, 0.0 });
+        TestHolder holder1{ manager.CreateEntity({ 0.0, 0.0 }, 1.0,{ 0.0, 0.0 }) };
+        TestHolder holder2{ manager.CreateEntity({ 1.5, 0.0 }, 2.0,{ 0.0, 0.0 }) };
 
         Physics::Entity * entity1 = holder1.GetEntity();
         Physics::Entity * entity2 = holder2.GetEntity();
@@ -101,19 +103,19 @@ public:
 
         Assert::IsTrue(entity1->GetPosition().x < 0.0f);
         Assert::IsTrue(AreEqualInEPS(entity1->GetPosition().y, 0.0f));
-        Assert::IsTrue(entity1->GetSpeed().x < 0.0f);
-        Assert::IsTrue(AreEqualInEPS(entity1->GetSpeed().y, 0.0f));
+        Assert::IsTrue(entity1->GetVelocity().x < 0.0f);
+        Assert::IsTrue(AreEqualInEPS(entity1->GetVelocity().y, 0.0f));
 
         Assert::IsTrue(entity2->GetPosition().x > 1.5f);
         Assert::IsTrue(AreEqualInEPS(entity2->GetPosition().y, 0.0f));
-        Assert::IsTrue(entity2->GetSpeed().x > 0.0f);
-        Assert::IsTrue(AreEqualInEPS(entity2->GetSpeed().y, 0.0f));
+        Assert::IsTrue(entity2->GetVelocity().x > 0.0f);
+        Assert::IsTrue(AreEqualInEPS(entity2->GetVelocity().y, 0.0f));
 
         // friction test - every entity should slow down without any other forces from outer space
-        manager.CreateEntity(holder1, { -10.0, 0.0 }, 1.0, { 0.0, 10.0 });
+        holder1 = { manager.CreateEntity({ -10.0, 0.0 }, 1.0, { 0.0, 10.0 }) };
         entity1 = holder1.GetEntity();
 
-        float lastYSpeed = entity1->GetSpeed().y;
+        float lastYSpeed = entity1->GetVelocity().y;
         for (size_t i = 0; i < 10; ++i)
         {
             manager.Update(0.1);
@@ -121,9 +123,9 @@ public:
             Assert::IsTrue(AreEqualInEPS(entity1->GetPosition().x, -10.0f));
             Assert::IsTrue(entity1->GetPosition().y > 0.0f);
 
-            Assert::IsTrue(AreEqualInEPS(entity1->GetSpeed().x, 0.0f));
-            Assert::IsTrue(entity1->GetSpeed().y < lastYSpeed);
-            lastYSpeed = entity1->GetSpeed().y;
+            Assert::IsTrue(AreEqualInEPS(entity1->GetVelocity().x, 0.0f));
+            Assert::IsTrue(entity1->GetVelocity().y < lastYSpeed);
+            lastYSpeed = entity1->GetVelocity().y;
         }
     }
 
@@ -132,7 +134,8 @@ public:
         Physics::PhysicsManager manager;
 
         // these two entities should collide
-        TestHolder holder1, holder2;
+        TestHolder holder1{ manager.CreateEntity({ 0.0, 0.0 }, 1.0,{ 0.0, 0.0 }) };
+        TestHolder holder2{ manager.CreateEntity({ 1.5, 0.0 }, 2.0,{ 0.0, 0.0 }) };
         bool collision1 = false;
         bool collision2 = false;
         holder1.SetCollisionHandler([&](Physics::IPhysicsEntityHolder* holder)
@@ -147,9 +150,6 @@ public:
             collision2 = true;
         }
         );
-
-        manager.CreateEntity(holder1, { 0.0, 0.0 }, 1.0, { 0.0, 0.0 });
-        manager.CreateEntity(holder2, { 1.5, 0.0 }, 2.0, { 0.0, 0.0 });
 
         manager.Update(1.0);
         Assert::AreEqual(true, collision1);

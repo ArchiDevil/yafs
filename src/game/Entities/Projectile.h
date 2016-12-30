@@ -11,7 +11,12 @@ class Projectile final
     , public Physics::IPhysicsEntityHolder
 {
 public:
-    Projectile(const MathLib::vec2f position, float damage, double lifetime, const LiveEntity * producer);
+    Projectile(const MathLib::vec2f position,
+               float damage,
+               double lifetime,
+               const LiveEntity * producer,
+               const std::shared_ptr<Physics::Entity>& physicsEntity);
+
     virtual ~Projectile() = default;
 
     const LiveEntity *  GetProducer() const;

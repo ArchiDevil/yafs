@@ -1,14 +1,16 @@
 #pragma once
 
-#include "Entities/EntityManager.h"
-#include "Entities/Player.h"
-#include "BackgroundManager.h"
-#include "Spells/SpellsDatabase.h"
-
 #include <PhysicsEngine/PhysicsEngine.h>
 #include <Utilities/IManager.h>
 
 #include <memory>
+
+// these forwarding is to force user to include files
+// this should make user to think twice if he really needs to use this class
+class EntityManager;
+class Player;
+class BackgroundManager;
+class SpellsDatabase;
 
 namespace GoingHome
 {

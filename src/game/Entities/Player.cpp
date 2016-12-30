@@ -12,19 +12,20 @@ using namespace ShiftEngine;
 
 const std::wstring playerTextureName = L"player_sprite.png";
 
-Player::Player(const vec2f & position, float health)
-    : LiveEntity(position, health, playerTextureName, 0)
+Player::Player(vec2f position,
+               float health,
+               const std::shared_ptr<Physics::Entity>& physicsEntity)
+    : LiveEntity(position, health, playerTextureName, 0, physicsEntity)
 {
 }
 
-void Player::SetMoveVelocity(const vec2f & velocity)
+void Player::SetMoveVector(const vec2f & vector)
 {
-    moveVelocity = velocity;
+    moveVector = vector;
 }
 
 void Player::Update(double dt)
 {
-    position += moveVelocity * dt;
-    UpdateGraphicsSpritePosition();
+    physicsEntity->SetVelocity(moveVector);
     LiveEntity::Update(dt);
 }

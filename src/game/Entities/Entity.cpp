@@ -16,9 +16,15 @@ Entity::Entity(const MathLib::vec2f & position,
     UpdateGraphicsSpritePosition();
 }
 
-const MathLib::vec2f Entity::GetPosition() const
+MathLib::vec2f Entity::GetPosition() const
 {
     return position;
+}
+
+void Entity::SetPosition(MathLib::vec2f pos)
+{
+    this->position = pos;
+    UpdateGraphicsSpritePosition();
 }
 
 bool Entity::IsDead() const
@@ -30,16 +36,6 @@ void Entity::Kill()
 {
     isToDelete = true;
     sprite.reset();
-}
-
-bool Entity::CalculateCollision(const Entity & ent) const
-{
-    const float radius = std::max({sprite->GetLocalScale().x, sprite->GetLocalScale().y, sprite->GetLocalScale().z});
-
-    if (MathLib::distance(ent.GetPosition(), position) < radius) // then it is collided
-        return true;
-
-    return false;
 }
 
 void Entity::UpdateGraphicsSpritePosition()

@@ -14,7 +14,11 @@ class Enemy final
     };
 
 public:
-    Enemy(const MathLib::vec2f & position, float health, int expCount);
+    Enemy(MathLib::vec2f position,
+          float health,
+          int expCount,
+          const std::shared_ptr<Physics::Entity>& physicsEntity);
+
     virtual ~Enemy() = default;
     void Update(double dt) override;
     void MoveTo(const MathLib::vec2f & target);

@@ -10,10 +10,16 @@ class MineEntity
     , Physics::IPhysicsEntityHolder
 {
 public:
-    MineEntity(const LiveEntity * owner, const MathLib::vec2f& position, float explosionDamage, float explosionRadius, float triggerDistance);
+    MineEntity(const LiveEntity * owner,
+               const MathLib::vec2f& position,
+               float explosionDamage,
+               float explosionRadius,
+               float triggerDistance,
+               const std::shared_ptr<Physics::Entity>& physicsEntity);
     virtual ~MineEntity() = default;
 
-    void TakeDamage(float damageCount) override;
+    virtual void    Update(double dt) override;
+    void            TakeDamage(float damageCount) override;
 
 protected:
     void Explode();
