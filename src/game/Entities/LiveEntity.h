@@ -16,10 +16,10 @@ class LiveEntity
     , observer<ProjectilePositionEvent>
 {
 public:
-    enum Fraction
+    enum Faction
     {
-        FractionPlayer,
-        FractionEnemy
+        FactionPlayer,
+        FactionEnemy
     };
 
     enum ControllerSlot
@@ -32,7 +32,7 @@ public:
         CS_Count // must be last
     };
 
-    LiveEntity(const MathLib::vec2f & position, float health, const std::wstring & textureName, int expCount, Fraction fract = FractionEnemy);
+    LiveEntity(const MathLib::vec2f & position, float health, const std::wstring & textureName, int expCount, Faction fact = FactionEnemy);
     virtual ~LiveEntity() = default;
 
     virtual void    Update(double dt) override;
@@ -49,7 +49,7 @@ public:
     int             GetExperienceCount() const;
     float           GetMaxHealth() const;
     float           GetHealth() const;
-    Fraction        GetFraction() const;
+    Faction         GetFaction() const;
 
     // buff system is TBD but this is just for spells task purposes
     void            AddBuff(const std::shared_ptr<IBuff> & buff);
@@ -61,11 +61,12 @@ public:
 protected:
     float           CalculateDamage(float damage);
 
-    float           maxHealth = 1.0f;
+    const float     maxHealth;
+    const Faction   faction = FactionEnemy;
+
     float           health = 1.0f;
     int             experienceCount = 0;
     MathLib::vec2f  targetDirection = {};
-    Fraction        fraction = FractionEnemy;
 
     std::array<std::unique_ptr<ISpellController>, CS_Count> controllers; // just two controllers
     std::vector<std::shared_ptr<IBuff>> buffs;

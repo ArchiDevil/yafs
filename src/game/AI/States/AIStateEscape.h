@@ -1,12 +1,11 @@
 #pragma once
+
 #include "AIState.h"
 
-
-class AIStateEscape : public AIState
+class AIStateEscape final
+    : public AIState
 {
 public:
-    virtual ~AIStateEscape() = default;
-
     void Do(double dt, LiveEntity * entity) override;
 
 private:

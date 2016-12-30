@@ -7,9 +7,16 @@
 using namespace MathLib;
 
 template<typename T>
-void EntityManager::AddEntity(const std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list)
+void AddEntity(const std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list)
 {
     list.push_back(ent);
+}
+
+template<typename T>
+void RemoveEntity(std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list)
+{
+    std::swap(ent, list.back());
+    list.pop_back();
 }
 
 void EntityManager::UpdateAllEntities(double dt)
@@ -72,25 +79,18 @@ void EntityManager::UpdateAllEntities(double dt)
     }
 }
 
-template<typename T>
-void EntityManager::RemoveEntity(std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list)
-{
-    std::swap(ent, list.back());
-    list.pop_back();
-}
-
 const std::vector<std::shared_ptr<LiveEntity>> * EntityManager::GetLiveEntities()
 {
     return &liveEntities;
 }
 
-const std::vector<std::shared_ptr<LiveEntity>> * EntityManager::GetHostileLiveEntities(LiveEntity::Fraction fraction)
+const std::vector<std::shared_ptr<LiveEntity>> * EntityManager::GetHostileLiveEntities(LiveEntity::Faction fraction)
 {
     std::vector<std::shared_ptr<LiveEntity>> * hostileEnt = new std::vector<std::shared_ptr<LiveEntity>>();
 
     for (auto it = liveEntities.begin(); it != liveEntities.end(); ++it)
     {
-        if ((*it)->GetFraction() != fraction)
+        if ((*it)->GetFaction() != fraction)
             hostileEnt->push_back(*it);
     }
 

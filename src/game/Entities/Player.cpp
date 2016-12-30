@@ -13,7 +13,7 @@ using namespace ShiftEngine;
 const std::wstring playerTextureName = L"player_sprite.png";
 
 Player::Player(const vec2f & position, float health)
-    : LiveEntity(position, health, playerTextureName, 0, LiveEntity::FractionPlayer)
+    : LiveEntity(position, health, playerTextureName, 0, LiveEntity::FactionPlayer)
 {
 }
 

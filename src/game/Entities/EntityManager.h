@@ -54,13 +54,8 @@ public:
                                                                   ShiftEngine::SpriteSceneNode * sprite);
 
     const std::vector<std::shared_ptr<LiveEntity>> * GetLiveEntities();
-    const std::vector<std::shared_ptr<LiveEntity>> * GetHostileLiveEntities(LiveEntity::Fraction fraction);
+    const std::vector<std::shared_ptr<LiveEntity>> * GetHostileLiveEntities(LiveEntity::Faction fraction);
 private:
-    template<typename T>
-    void AddEntity(const std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list);
-    template<typename T>
-    void RemoveEntity(std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list);
-
     std::vector<std::shared_ptr<Entity>> entities;
     std::vector<std::shared_ptr<Entity>> entitiesToAdd;
     std::vector<std::shared_ptr<LiveEntity>> liveEntities;

@@ -9,12 +9,12 @@ using namespace MathLib;
 using namespace GoingHome;
 using namespace ShiftEngine;
 
-LiveEntity::LiveEntity(const vec2f & position, float health, const std::wstring & textureName, int expCount, Fraction fract)
+LiveEntity::LiveEntity(const vec2f & position, float health, const std::wstring & textureName, int expCount, Faction fact)
     : Entity(position, GetSceneGraph()->AddSpriteNode(textureName))
     , maxHealth(health)
     , health(health)
     , experienceCount(expCount)
-    , fraction(fract)
+    , faction(fact)
 {
 }
 
@@ -52,8 +52,8 @@ bool LiveEntity::handleEvent(const ExperiencePointPositionEvent & event)
 
 bool LiveEntity::handleEvent(const ExplosionEvent & event)
 {
-    if (!IsDead() && MathLib::distance(Entity::GetPosition(), event.epicenter) < event.radius)   // radius of entity is not supported
-    {                                                                               // if you want to add it, just add it to the radius
+    if (!IsDead() && MathLib::distance(Entity::GetPosition(), event.epicenter) < event.radius)  // radius of entity is not supported
+    {                                                                                           // if you want to add it, just add it to the radius
         // woops, duplicate with projectile event
         health -= event.damage;
         if (health <= 0)
@@ -133,9 +133,9 @@ float LiveEntity::GetHealth() const
     return health;
 }
 
-LiveEntity::Fraction LiveEntity::GetFraction() const
+LiveEntity::Faction LiveEntity::GetFaction() const
 {
-    return fraction;
+    return faction;
 }
 
 void LiveEntity::AddBuff(const std::shared_ptr<IBuff> & buff)
