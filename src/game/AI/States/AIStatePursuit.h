@@ -8,4 +8,8 @@ class AIStatePursuit final
 public:
     void Do(double dt, LiveEntity * entity) override;
 
+    AIStateType GetType() const override { return stateType; }
+
+    static const AIStateType stateType = AIStateType::Pursuit;
+
 };

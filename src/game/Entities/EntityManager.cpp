@@ -1,79 +1,68 @@
 #include "EntityManager.h"
 
-#include "..\AI\AISmallSpirit.h"
+#include "../AI/AISmallSpirit.h"
+
+#include "../Game.h"
 
 #include <algorithm>
 
 using namespace MathLib;
 
 template<typename T>
-void AddEntity(const std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list)
+void RemoveEntity(std::shared_ptr<T> & ent,
+                  std::vector<std::shared_ptr<T>> & list,
+                  std::vector<LiveEntity*> & liveReferences,
+                  std::vector<Projectile*> & projectileReferences)
 {
-    list.push_back(ent);
-}
+    LiveEntity* live = dynamic_cast<LiveEntity*>(ent.get());
+    auto liveIter = std::find(liveReferences.begin(),
+                              liveReferences.end(),
+                              live);
+    if (liveIter != liveReferences.end())
+        liveReferences.erase(liveIter);
 
-template<typename T>
-void RemoveEntity(std::shared_ptr<T> & ent, std::vector<std::shared_ptr<T>> & list)
-{
+    Projectile* proj = dynamic_cast<Projectile*>(ent.get());
+    auto projIter = std::find(projectileReferences.begin(),
+                              projectileReferences.end(),
+                              proj);
+    if (projIter != projectileReferences.end())
+        projectileReferences.erase(projIter);
+
     std::swap(ent, list.back());
     list.pop_back();
 }
 
-template<typename T>
-void UpdateEntitiesList(std::vector<std::shared_ptr<T>>& from, std::vector<std::shared_ptr<T>>& to)
+void EntityManager::UpdateAllEntities(double dt)
 {
-    if (from.size() > 0)
+    if (entitiesToAdd.size() > 0)
     {
-        for (auto it = from.begin(); it != from.end(); ++it)
-            to.push_back(*it);
-        from.clear();
+        for (auto& entity : entitiesToAdd)
+            entities.push_back(entity);
+        entitiesToAdd.clear();
     }
-}
 
-template<typename T>
-void ProcessEntityList(std::vector<std::shared_ptr<T>>& entitiesList, double dt)
-{
-    for (auto it = entitiesList.begin(); it != entitiesList.end(); ++it)
+    for (size_t i = 0; i < entities.size(); ++i)
     {
-        if (!(*it)->IsDead())
-            (*it)->Update(dt);
+        if (!entities[i]->IsDead())
+            entities[i]->Update(dt);
 
-        if ((*it)->IsDead())
+        // why do we need the second condition here?
+        // does it matter that anyone has a reference on an entity or not?
+        if (entities[i]->IsDead() && entities[i].use_count() == 1)
         {
-            if ((*it).use_count() == 1)
-            {
-                if (it + 1 == entitiesList.end())
-                {
-                    RemoveEntity(*it, entitiesList);
-                    break;
-                }
-
-                RemoveEntity(*it, entitiesList);
-                if (it != entitiesList.begin())
-                    --it;
-            }
+            RemoveEntity(entities[i], entities, liveEntities, projectileEntities);
+            --i;
         }
     }
 }
 
-void EntityManager::UpdateAllEntities(double dt)
+std::vector<LiveEntity*> EntityManager::GetHostileLiveEntities(LiveEntity::Faction faction) const
 {
-    UpdateEntitiesList(entitiesToAdd, entities);
-    UpdateEntitiesList(liveEntitiesToAdd, liveEntities);
+    std::vector<LiveEntity*> hostileEnt;
 
-    ProcessEntityList(entities, dt);
-    ProcessEntityList(liveEntities, dt);
-}
-
-std::vector<std::shared_ptr<LiveEntity>> EntityManager::GetHostileLiveEntities(LiveEntity::Faction fraction)
-{
-    std::vector<std::shared_ptr<LiveEntity>> hostileEnt;
-
-    for (auto it = liveEntities.begin(); it != liveEntities.end(); ++it)
-    {
-        if ((*it)->GetFaction() != fraction)
-            hostileEnt.push_back(*it);
-    }
+    for (auto& entity : liveEntities)
+        if (entity->GetFaction() != faction)
+            hostileEnt.push_back(entity);
 
     return hostileEnt;
 }
@@ -82,7 +71,8 @@ std::shared_ptr<Player> EntityManager::CreatePlayer(const MathLib::vec2f & posit
                                                     float health)
 {
     auto entity = factory.CreateEntity<Player>(position, health);
-    AddEntity<LiveEntity>(entity, liveEntitiesToAdd);
+    entitiesToAdd.push_back(entity);
+    liveEntities.push_back(entity.get());
     return entity;
 }
 
@@ -104,8 +94,15 @@ std::shared_ptr<Enemy> EntityManager::CreateEnemy(const MathLib::vec2f & positio
     }
 
     auto entity = factory.CreateEntity<Enemy>(position, health, expCount, std::move(ai));
-    AddEntity<LiveEntity>(entity, liveEntitiesToAdd);
+    entity->SetSpellController(GoingHome::GetGamePtr()->GetSpellsDatabase()->GetSpellByName("projectile").CreateSpellController(entity.get()), Player::CS_MainSlot);
+    entitiesToAdd.push_back(entity);
+    liveEntities.push_back(entity.get());
     return entity;
+}
+
+std::vector<Projectile*> EntityManager::GetProjectiles() const
+{
+    return projectileEntities;
 }
 
 std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f & position,
@@ -115,7 +112,8 @@ std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f
                                                             const LiveEntity* producer)
 {
     auto entity = factory.CreateEntity<Projectile>(position, speed, damage, lifetime, producer);
-    AddEntity<Entity>(entity, entitiesToAdd);
+    entitiesToAdd.push_back(entity);
+    projectileEntities.push_back(entity.get());
     return entity;
 }
 
@@ -123,7 +121,7 @@ std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(const Math
                                                                       int expCount)
 {
     auto entity = factory.CreateEntity<ExperiencePoint>(position, expCount);
-    AddEntity<Entity>(entity, entitiesToAdd);
+    entitiesToAdd.push_back(entity);
     return entity;
 }
 
@@ -134,7 +132,7 @@ std::shared_ptr<MineDetectorEntity> EntityManager::CreateDetectorMine(const Live
                                                                       float triggerDistance)
 {
     auto entity = factory.CreateEntity<MineDetectorEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance);
-    AddEntity<Entity>(entity, entitiesToAdd);
+    entitiesToAdd.push_back(entity);
     return entity;
 }
 
@@ -146,21 +144,21 @@ std::shared_ptr<MineTimedEntity> EntityManager::CreateTimedMine(const LiveEntity
                                                                 double timeToExplode)
 {
     auto entity = factory.CreateEntity<MineTimedEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance, timeToExplode);
-    AddEntity<Entity>(entity, entitiesToAdd);
+    entitiesToAdd.push_back(entity);
     return entity;
 }
 
 std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode * sprite)
 {
     auto entity = factory.CreateEntity<BackgroundBlinker>(sprite);
-    AddEntity<Entity>(entity, entitiesToAdd);
+    entitiesToAdd.push_back(entity);
     return entity;
 }
 
 std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode * sprite)
 {
     auto entity = factory.CreateEntity<BackgroundWanderer>(sprite);
-    AddEntity<Entity>(entity, entitiesToAdd);
+    entitiesToAdd.push_back(entity);
     return entity;
 }
 
@@ -169,6 +167,6 @@ std::shared_ptr<VisualStickerEntity> EntityManager::CreateVisualStickerEntity(co
                                                                               ShiftEngine::SpriteSceneNode * sprite)
 {
     auto entity = factory.CreateEntity<VisualStickerEntity>(owner, position, sprite);
-    AddEntity<Entity>(entity, entitiesToAdd);
+    entitiesToAdd.push_back(entity);
     return entity;
 }

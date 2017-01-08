@@ -1,13 +1,25 @@
-#include "AIStatePursuit.h"
+#include "AIStateAttack.h"
 
 #include "../../Game.h"
-
-#include <MathLib/math.h>
 
 using namespace GoingHome;
 using namespace MathLib;
 
-void AIStatePursuit::Do(double dt, LiveEntity* entity)
+AIStateAttack::AIStateAttack(LiveEntity * entity)
+    : entity(entity)
+{
+    if (!entity)
+        throw std::invalid_argument("entity is nullptr");
+}
+
+AIStateAttack::~AIStateAttack()
+{
+    ISpellController* controller = entity->GetSpellController(LiveEntity::CS_MainSlot);
+    if (controller)
+        controller->SpellKeyUp();
+}
+
+void AIStateAttack::Do(double /*dt*/, LiveEntity * /*liveEntity*/)
 {
     auto hostileEnemies = GetGamePtr()->GetEntityMgr()->GetHostileLiveEntities(entity->GetFaction());
 
@@ -27,12 +39,11 @@ void AIStatePursuit::Do(double dt, LiveEntity* entity)
     if (!nearestEnemy)
         return;
 
-    // we assume that entity is behind border of pursuiting
+    // we assume that entity is behind border of attacking
     vec2f directionVector = normalize(nearestEnemy->GetPosition() - entity->GetPosition());
-    if (directionVector.length())
-    {
-        vec2f position = entity->GetPosition();
-        position += normalize(directionVector) * (dt / 2.0);
-        entity->SetPosition(position);
-    }
+    entity->SetTargetDirection(directionVector);
+
+    ISpellController* controller = entity->GetSpellController(LiveEntity::CS_MainSlot);
+    if (controller)
+        controller->SpellKeyDown();
 }

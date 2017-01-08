@@ -2,7 +2,7 @@
 
 #include "AIState.h"
 
-class AIStateDodge final
+class AIStateDeath final
     : public AIState
 {
 public:
@@ -13,6 +13,6 @@ public:
 
     AIStateType GetType() const override { return stateType; }
 
-    static const AIStateType stateType = AIStateType::Dodge;
+    static const AIStateType stateType = AIStateType::Death;
 
 };

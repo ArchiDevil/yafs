@@ -3,18 +3,7 @@
 #include "States/AIState.h"
 #include "../Entities/LiveEntity.h"
 
-#include <vector>
 #include <memory>
-
-enum class AIStateType
-{
-    Idle,
-    Pursuit,
-    Attack,
-    Escape,
-    Dodge,
-    Death
-};
 
 class AIBase
 {
@@ -23,7 +12,6 @@ public:
     virtual void Update(double dt, LiveEntity * entity) { dt; entity; }
 
 protected:
-    AIStateType currentState = AIStateType::Idle;
-    std::shared_ptr<AIState> currentAction = nullptr;
+    std::unique_ptr<AIState> currentAction;
 
 };

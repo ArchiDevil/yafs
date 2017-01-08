@@ -48,3 +48,8 @@ void Projectile::SetDamage(float val)
 {
     damage = val;
 }
+
+MathLib::vec2f Projectile::GetSpeed() const
+{
+    return speed;
+}

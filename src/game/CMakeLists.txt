@@ -26,15 +26,18 @@ set(LS  AI/AIBase.h
 source_group("Header Files\\AI" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  AI/States/AIStateDodge.cpp
+set(LS  AI/States/AIStateAttack.cpp
         AI/States/AIStateEscape.cpp
         AI/States/AIStatePursuit.cpp)
 source_group("Source Files\\AI\\States" FILES ${LS})
 list(APPEND SRC ${LS})
 
 set(LS  AI/States/AIState.h
+        AI/States/AIStateAttack.h
+        AI/States/AIStateDeath.h
         AI/States/AIStateDodge.h
         AI/States/AIStateEscape.h
+        AI/States/AIStateIdle.h
         AI/States/AIStatePursuit.h)
 source_group("Header Files\\AI\\States" FILES ${LS})
 list(APPEND SRC ${LS})

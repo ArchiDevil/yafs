@@ -3,6 +3,7 @@ set(SRC math.h
         math/AABB.h
         math/intersections.cpp
         math/intersections.h
+        math/line.h
         math/matrix.h
         math/matrixFuncs.h
         math/OOBB.cpp

@@ -16,6 +16,8 @@ public:
     float GetDamage() const;
     void SetDamage(float val);
 
+    MathLib::vec2f GetSpeed() const;
+
 private:
     MathLib::vec2f speed;
     double remainingTime = 0.0;
