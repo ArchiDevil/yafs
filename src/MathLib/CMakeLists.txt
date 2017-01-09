@@ -3,7 +3,7 @@ set(SRC math.h
         math/AABB.h
         math/intersections.cpp
         math/intersections.h
-        math/line.h
+        math/line2d.h
         math/matrix.h
         math/matrixFuncs.h
         math/OOBB.cpp
@@ -13,8 +13,7 @@ set(SRC math.h
         math/ray.h
         math/vector2.h
         math/vector3.h
-        math/vector4.h
-        math/vectorsFuncs.h)
+        math/vector4.h)
 
 add_library(MathLib STATIC ${SRC})
 
