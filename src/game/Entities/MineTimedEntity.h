@@ -7,11 +7,12 @@ class MineTimedEntity final
 {
 public:
     MineTimedEntity(const LiveEntity * owner,
-                    const MathLib::vec2f& position,
+                    MathLib::vec2f position,
                     float explosionDamage,
                     float explosionRadius,
                     float triggerDistance,
-                    double timeToExplode);
+                    double timeToExplode,
+                    const std::shared_ptr<Physics::Entity>& physicsEntity);
     void Update(double dt) override;
 
 private:

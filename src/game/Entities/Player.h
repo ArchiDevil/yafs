@@ -8,13 +8,16 @@ class Player final
     : public LiveEntity
 {
 public:
-    Player(const MathLib::vec2f & position, float health);
+    Player(MathLib::vec2f position,
+           float health,
+           const std::shared_ptr<Physics::Entity>& physicsEntity);
+
     virtual ~Player() = default;
 
     void Update(double dt) override;
-    void SetMoveVelocity(const MathLib::vec2f &velocity);
+    void SetMoveVector(const MathLib::vec2f &vector);
 
 private:
-    MathLib::vec2f moveVelocity = {};
+    MathLib::vec2f moveVector = {};
 
 };

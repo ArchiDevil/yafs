@@ -19,7 +19,7 @@ std::unique_ptr<ISpellController> ProjectileSpellDescription::CreateSpellControl
 {
     return std::make_unique<DirectedPeriodicCastSpellController>(caster,
                                                                  PeriodicCastInfo {ISpellDescription::cooldown, energy},
-                                                                 std::make_unique<ProjectileSpellEntity>(spread, 1.0f, damage, 2.0));
+                                                                 std::make_unique<ProjectileSpellEntity>(spread, 4.0f, damage, 2.0));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ std::unique_ptr<ISpellController> MultiProjectileSpellDescription::CreateSpellCo
 {
     return std::make_unique<DirectedPeriodicCastSpellController>(caster,
                                                                  PeriodicCastInfo {ISpellDescription::cooldown, energy},
-                                                                 std::make_unique<MultiProjectileSpellEntity>(spread, 1.0f, damage, 2.0, per_bullet_spread));
+                                                                 std::make_unique<MultiProjectileSpellEntity>(spread, 4.0f, damage, 2.0, per_bullet_spread));
 }
 
 //////////////////////////////////////////////////////////////////////////

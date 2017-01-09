@@ -52,7 +52,7 @@ void Physics::Solver::UpdateEntity(double dt, size_t currentIndex, Entity& entit
     }
 
     const float frictionCoef = 0.1f;
-    resultingForce += -entity.GetSpeed() * frictionCoef;
+    resultingForce += -entity.GetVelocity() * frictionCoef;
 
     entity.Update(dt, resultingForce);
 }

@@ -17,12 +17,10 @@ void BackgroundWanderer::Update(double dt)
     if (currentState == WandererState::Moving)
     {
         const float speed = 0.2f;
-        Entity::position += MathLib::normalize(targetPosition - Entity::position) * speed * dt;
+        auto pos = Entity::GetPosition() + MathLib::normalize(targetPosition - Entity::GetPosition()) * speed * dt;
+        Entity::SetPosition(pos);
 
-        // TODO: handle it automatically, this is ugly
-        UpdateGraphicsSpritePosition();
-
-        if (MathLib::distance(Entity::position, targetPosition) < MOVE_EPS)
+        if (MathLib::distance(Entity::GetPosition(), targetPosition) < MOVE_EPS)
         {
             currentState = WandererState::Waiting;
             targetPosition = {};
@@ -46,9 +44,8 @@ void BackgroundWanderer::Update(double dt)
             MathLib::vec2f vecToTransform = {1.0f, 0.0f};
             vecToTransform = MathLib::vec2Transform(vecToTransform, MathLib::matrixRotationZ(angle));
             vecToTransform *= radius;
-            targetPosition = Entity::position + vecToTransform;
+            targetPosition = Entity::GetPosition() + vecToTransform;
             currentState = WandererState::Moving;
         }
     }
-
 }

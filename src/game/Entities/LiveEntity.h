@@ -3,6 +3,8 @@
 #include "Entity.h"
 #include "../Spells/ISpellController.h"
 
+#include <PhysicsEngine/PhysicsEngine.h>
+
 #include <array>
 #include <vector>
 
@@ -11,9 +13,8 @@ class ISpellController;
 
 class LiveEntity
     : public Entity
-    , observer<ExperiencePointPositionEvent>
-    , observer<ExplosionEvent>
-    , observer<ProjectilePositionEvent>
+    , private observer<ExplosionEvent>
+    , public Physics::IPhysicsEntityHolder
 {
 public:
     enum ControllerSlot
@@ -26,21 +27,27 @@ public:
         CS_Count // must be last
     };
 
-    LiveEntity(const MathLib::vec2f & position, float health, const std::wstring & textureName, int expCount);
+    LiveEntity(MathLib::vec2f position,
+               float health,
+               const std::wstring & textureName,
+               int expCount,
+               const std::shared_ptr<Physics::Entity>& physicsEntity);
+
     virtual ~LiveEntity() = default;
 
+    virtual void    TakeDamage(float damageCount) override;
     virtual void    Update(double dt) override;
+    virtual void    Kill() override;
 
     void            StartSpellInSlot(ControllerSlot slot);
     void            StopSpellInSlot(ControllerSlot slot);
 
-    bool            observer<ProjectilePositionEvent>::handleEvent(const ProjectilePositionEvent & event) override;
-    bool            observer<ExperiencePointPositionEvent>::handleEvent(const ExperiencePointPositionEvent & event) override;
     bool            observer<ExplosionEvent>::handleEvent(const ExplosionEvent & event) override;
 
     MathLib::vec2f  GetTargetDirection() const;
     void            SetTargetDirection(const MathLib::vec2f & val);
     int             GetExperienceCount() const;
+    void            AddExperience(int experienceCount);
 
     // buff system is TBD but this is just for spells task purposes
     void            AddBuff(const std::shared_ptr<IBuff> & buff);
@@ -59,8 +66,6 @@ protected:
     std::array<std::unique_ptr<ISpellController>, CS_Count> controllers; // just two controllers
     std::vector<std::shared_ptr<IBuff>> buffs;
 
-    scoped_subscriber<ExperiencePointPositionEvent> experiencePointSubscriber = {&EntityEventManager::GetInstance(), this};
-    scoped_subscriber<ExplosionEvent> explosionSubscriber = {&EntityEventManager::GetInstance(), this};
-    scoped_subscriber<ProjectilePositionEvent> projectileSubscriber = {&EntityEventManager::GetInstance(), this};
+    scoped_subscriber<ExplosionEvent> explosionSubscriber = { &EntityEventManager::GetInstance(), this };
 
 };

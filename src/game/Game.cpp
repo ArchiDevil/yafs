@@ -1,5 +1,10 @@
 #include "game.h"
 
+#include "Entities/EntityManager.h"
+#include "Entities/Player.h"
+#include "BackgroundManager.h"
+#include "Spells/SpellsDatabase.h"
+
 //#include "Entities/PlayerGameObject.h"
 //#include "Entities/GameObjectsManager.h"
 //#include "GameEventHandler.h"
@@ -10,32 +15,38 @@ namespace GoingHome
 
 Game::Game()
 {
-    entityMgr.reset(new EntityManager());
-    player = entityMgr->CreatePlayer({}, 10.0f).get();
+    physicsMgr.reset(new Physics::PhysicsManager());
+    entityMgr.reset(new EntityManager(physicsMgr.get()));
+    player = entityMgr->CreatePlayer({}, 10.0f, 0.2f).get();
     backgroundMgr.reset(new BackgroundManager(entityMgr.get()));
     spellsDatabase.reset(new SpellsDatabase());
     spellsDatabase->LoadSpellsFromFile("resources/gamedata/spells/test_spells.json");
     //gameEventHandler.reset(new GameEventHandler());
 }
 
-Player * Game::GetPlayerPtr()
+Player * Game::GetPlayerPtr() const
 {
     return player;
 }
 
-EntityManager * Game::GetEntityMgr()
+EntityManager * Game::GetEntityMgr() const
 {
     return entityMgr.get();
 }
 
-BackgroundManager * Game::GetBackgroundMgr()
+BackgroundManager * Game::GetBackgroundMgr() const
 {
     return backgroundMgr.get();
 }
 
-SpellsDatabase* Game::GetSpellsDatabase()
+SpellsDatabase* Game::GetSpellsDatabase() const
 {
     return spellsDatabase.get();
+}
+
+Physics::PhysicsManager* Game::GetPhysicsMgr() const
+{
+    return physicsMgr.get();
 }
 
 static Game * GamePtr = nullptr;

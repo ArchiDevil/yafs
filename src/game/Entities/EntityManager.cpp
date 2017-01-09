@@ -4,6 +4,11 @@
 
 using namespace MathLib;
 
+EntityManager::EntityManager(Physics::PhysicsManager* physicsMgr)
+    : physicsMgr(physicsMgr)
+{
+}
+
 void EntityManager::AddEntity(const std::shared_ptr<Entity> & ent)
 {
     entitiesToAdd.push_back(ent);
@@ -41,61 +46,74 @@ void EntityManager::RemoveEntity(std::shared_ptr<Entity> & ent)
     entities.pop_back();
 }
 
-std::shared_ptr<Player> EntityManager::CreatePlayer(const MathLib::vec2f & position,
-                                                    float health)
+std::shared_ptr<Player> EntityManager::CreatePlayer(MathLib::vec2f position,
+                                                    float health,
+                                                    float size)
 {
-    auto entity = factory.CreateEntity<Player>(position, health);
+    auto physicsEntity = physicsMgr->CreateEntity(position, size, {});
+    auto entity = factory.CreateEntity<Player>(position, health, physicsEntity);
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<Enemy> EntityManager::CreateEnemy(const MathLib::vec2f & position,
+std::shared_ptr<Enemy> EntityManager::CreateEnemy(MathLib::vec2f position,
                                                   float health,
-                                                  int expCount)
+                                                  int expCount,
+                                                  float size)
 {
-    auto entity = factory.CreateEntity<Enemy>(position, health, expCount);
+    auto physicsEntity = physicsMgr->CreateEntity(position, size, {});
+    auto entity = factory.CreateEntity<Enemy>(position, health, expCount, physicsEntity);
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<Projectile> EntityManager::CreateProjectile(const MathLib::vec2f & position,
-                                                            const MathLib::vec2f & speed,
+std::shared_ptr<Projectile> EntityManager::CreateProjectile(MathLib::vec2f position,
+                                                            MathLib::vec2f speed,
                                                             float damage,
                                                             double lifetime,
-                                                            const LiveEntity* producer)
+                                                            const LiveEntity* producer,
+                                                            float size)
 {
-    auto entity = factory.CreateEntity<Projectile>(position, speed, damage, lifetime, producer);
+    auto physicsEntity = physicsMgr->CreateEntity(position, size, speed);
+    auto entity = factory.CreateEntity<Projectile>(position, damage, lifetime, producer, physicsEntity, size);
+
     AddEntity(entity);
     return entity;
 }
 
-std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(const MathLib::vec2f & position,
-                                                                      int expCount)
+std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(MathLib::vec2f position,
+                                                                      int expCount,
+                                                                      float size)
 {
-    auto entity = factory.CreateEntity<ExperiencePoint>(position, expCount);
+    auto physicsEntity = physicsMgr->CreateEntity(position, size, {});
+    auto entity = factory.CreateEntity<ExperiencePoint>(position, expCount, physicsEntity, size);
     AddEntity(entity);
     return entity;
 }
 
 std::shared_ptr<MineDetectorEntity> EntityManager::CreateDetectorMine(const LiveEntity * owner,
-                                                                      const MathLib::vec2f& position,
+                                                                      MathLib::vec2f position,
                                                                       float explosionDamage,
                                                                       float explosionRadius,
-                                                                      float triggerDistance)
+                                                                      float triggerDistance,
+                                                                      float size)
 {
-    auto entity = factory.CreateEntity<MineDetectorEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance);
+    auto physicsEntity = physicsMgr->CreateEntity(position, size, {});
+    auto entity = factory.CreateEntity<MineDetectorEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance, physicsEntity);
     AddEntity(entity);
     return entity;
 }
 
 std::shared_ptr<MineTimedEntity> EntityManager::CreateTimedMine(const LiveEntity * owner,
-                                                                const MathLib::vec2f& position,
+                                                                MathLib::vec2f position,
                                                                 float explosionDamage,
                                                                 float explosionRadius,
                                                                 float triggerDistance,
-                                                                double timeToExplode)
+                                                                double timeToExplode,
+                                                                float size)
 {
-    auto entity = factory.CreateEntity<MineTimedEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance, timeToExplode);
+    auto physicsEntity = physicsMgr->CreateEntity(position, size, {});
+    auto entity = factory.CreateEntity<MineTimedEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance, timeToExplode, physicsEntity);
     AddEntity(entity);
     return entity;
 }
@@ -115,7 +133,7 @@ std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(Shif
 }
 
 std::shared_ptr<VisualStickerEntity> EntityManager::CreateVisualStickerEntity(const LiveEntity * owner,
-                                                                              const MathLib::vec2f& position,
+                                                                              MathLib::vec2f position,
                                                                               ShiftEngine::SpriteSceneNode * sprite)
 {
     auto entity = factory.CreateEntity<VisualStickerEntity>(owner, position, sprite);

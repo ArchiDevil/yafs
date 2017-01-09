@@ -1,10 +1,14 @@
 #include "GameState.h"
 #include "../Entities/EntityFactory.h"
 #include "../Entities/EntityManager.h"
+#include "../Spells/SpellsDatabase.h"
+#include "../BackgroundManager.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <Utilities/inputConverter.h>
 
+using namespace GoingHome;
+using namespace ShiftEngine;
 using namespace MathLib;
 
 GameState::GameState(IniWorker * iw/*, MyGUI::Gui * guiModule, MyGUI::DirectX11Platform * guiPlatform*/)
@@ -23,17 +27,17 @@ bool GameState::initState()
     // to receive events for GUI
     subscribe(&InputEngine::GetInstance());
 
-    GoingHome::CreateGame();
+    CreateGame();
 
-    ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
-    Player* playerPtr = GoingHome::GetGamePtr()->GetPlayerPtr();
-    SpellsDatabase* database = GoingHome::GetGamePtr()->GetSpellsDatabase();
-    EntityManager* entityMgrPtr = GoingHome::GetGamePtr()->GetEntityMgr();
+    SceneGraph * pScene = GetSceneGraph();
+    Player* playerPtr = GetGamePtr()->GetPlayerPtr();
+    SpellsDatabase* database = GetGamePtr()->GetSpellsDatabase();
+    EntityManager* entityMgrPtr = GetGamePtr()->GetEntityMgr();
 
     //pGame->gameHud.reset(new GameHUD(guiModule));
     //LOG_INFO("HUD has been created");
 
-    ShiftEngine::CameraSceneNode * pCamera = pScene->AddCameraSceneNode(ShiftEngine::CameraViewType::Orthographic);
+    CameraSceneNode * pCamera = pScene->AddCameraSceneNode(CameraViewType::Orthographic);
     pCamera->SetLocalPosition({0.0f, 0.0f, 0.0f});
     pCamera->SetScreenWidth(1024.0f / 600.0f * 6.0f);
     pCamera->SetScreenHeight(600.0f / 600.0f * 6.0f);
@@ -41,7 +45,7 @@ bool GameState::initState()
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
     // just for example, let's create some enemies
-    Enemy* testEnemy = entityMgrPtr->CreateEnemy({1.0f, 1.0f}, 2.0f, 100).get();
+    Enemy* testEnemy = entityMgrPtr->CreateEnemy({1.0f, 1.0f}, 2.0f, 100, 0.2f).get();
     testEnemy->MoveTo({0.0f, 0.0f});
 
     playerPtr->SetSpellController(database->GetSpellByName("projectile").CreateSpellController(playerPtr),      Player::CS_MainSlot);
@@ -56,31 +60,29 @@ bool GameState::initState()
 
 bool GameState::update(double dt)
 {
-    ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
+    SceneGraph * pScene = GetSceneGraph();
+    Game* pGame = GetGamePtr();
 
-    // for example
-    static double totalTime = 0.0;
-    totalTime += dt;
+    pGame->GetBackgroundMgr()->Update(dt);
+    pGame->GetPhysicsMgr()->Update(dt);
+    pGame->GetEntityMgr()->UpdateAllEntities(dt);
 
-    GoingHome::GetGamePtr()->GetBackgroundMgr()->Update(dt);
-    GoingHome::GetGamePtr()->GetEntityMgr()->UpdateAllEntities(dt);
-
-    auto playerPosition = GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition();
+    auto playerPosition = pGame->GetPlayerPtr()->GetPosition();
     pScene->GetActiveCamera()->SetLocalPosition({playerPosition.x, playerPosition.y, 0.0f});
 
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);
 
-    GoingHome::GetGamePtr()->GetEntityMgr()->UpdateAllEntities(dt);
+    pGame->GetEntityMgr()->UpdateAllEntities(dt);
 
     return true;
 }
 
 bool GameState::render(double dt)
 {
-    ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
-    ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
-    ShiftEngine::Renderer * pRenderer = ShiftEngine::GetRenderer();
+    SceneGraph * pScene = GetSceneGraph();
+    IContextManager * pCtxMgr = GetContextManager();
+    Renderer * pRenderer = GetRenderer();
 
 #if defined (DEBUG) || (_DEBUG)
     const int infoSize = 7;
@@ -92,7 +94,7 @@ bool GameState::render(double dt)
     di[3] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
     di[4] << "Texture bindings: " << pRenderer->GetTextureBindings();
     di[5] << "Draw calls: " << pRenderer->GetDrawCalls();
-    di[6] << "Player position: " << GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition().x << " " << GoingHome::GetGamePtr()->GetPlayerPtr()->GetPosition().y;
+    di[6] << "Player position: " << GetGamePtr()->GetPlayerPtr()->GetPosition().x << " " << GetGamePtr()->GetPlayerPtr()->GetPosition().y;
 #else
     const int infoSize = 1;
     std::ostringstream di[infoSize];
@@ -103,10 +105,10 @@ bool GameState::render(double dt)
     // RENDER //
     ////////////
 
-    ShiftEngine::FontManager * pFntMgr = pCtxMgr->GetFontManager();
+    FontManager * pFntMgr = pCtxMgr->GetFontManager();
     pFntMgr->SetFont(L"2");
 
-    pCtxMgr->SetBlendingState(ShiftEngine::BlendingState::AlphaEnabled);
+    pCtxMgr->SetBlendingState(BlendingState::AlphaEnabled);
 
     pCtxMgr->BeginScene(); //no more needed here, cause clear frame should be called from renderer
 
@@ -116,7 +118,7 @@ bool GameState::render(double dt)
         pFntMgr->DrawTextTL(di[i].str(), 5.0f, 5.0f + i * 16.0f);
 
     std::ostringstream experienceCount;
-    experienceCount << "Experience: " << GoingHome::GetGamePtr()->GetPlayerPtr()->GetExperienceCount();
+    experienceCount << "Experience: " << GetGamePtr()->GetPlayerPtr()->GetExperienceCount();
     pFntMgr->DrawTextTL(experienceCount.str(),
                         pCtxMgr->GetEngineSettings().screenWidth - 160.0f,
                         pCtxMgr->GetEngineSettings().screenHeight - 40.0f);
@@ -130,7 +132,7 @@ bool GameState::render(double dt)
 
 void GameState::onKill()
 {
-    GoingHome::TerminateGame();
+    TerminateGame();
 }
 
 void GameState::onSuspend()
@@ -146,7 +148,7 @@ void GameState::ProcessInput(double dt)
     dt;
 
     InputEngine & inputEngine = InputEngine::GetInstance();
-    auto settings = ShiftEngine::GetContextManager()->GetEngineSettings();
+    auto settings = GetContextManager()->GetEngineSettings();
 
     inputEngine.GetKeys();
     auto mouseInfo = inputEngine.GetMouseInfo();
@@ -157,7 +159,7 @@ void GameState::ProcessInput(double dt)
     if (inputEngine.IsKeyUp(DIK_V))
         switchWireframe();
 
-    Player* player = GoingHome::GetGamePtr()->GetPlayerPtr();
+    Player* player = GetGamePtr()->GetPlayerPtr();
 
     const float x = (float)mouseInfo.clientX - settings.screenWidth / 2;
     const float y = settings.screenHeight / 2 - (float)mouseInfo.clientY;
@@ -207,7 +209,7 @@ void GameState::ProcessInput(double dt)
     {
         xVelocity = 1.0f;
     }
-    player->SetMoveVelocity({xVelocity, yVelocity});
+    player->SetMoveVector({xVelocity, yVelocity});
 
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
     //bool guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);
@@ -254,23 +256,23 @@ bool GameState::handleEvent(const InputEvent& /*event*/)
 void GameState::switchWireframe()
 {
 #if defined DEBUG || defined _DEBUG
-    ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
+    IContextManager * pCtxMgr = GetContextManager();
 
     static bool Wflag = false;
     Wflag = !Wflag;
     if (Wflag)
-        pCtxMgr->SetRasterizerState(ShiftEngine::RasterizerState::Wireframe);
+        pCtxMgr->SetRasterizerState(RasterizerState::Wireframe);
     else
-        pCtxMgr->SetRasterizerState(ShiftEngine::RasterizerState::Normal);
+        pCtxMgr->SetRasterizerState(RasterizerState::Normal);
 #endif
 }
 
 MathLib::Ray GameState::getUnprojectedRay(const MathLib::vec2i & clientMouseCoords) const
 {
-    ShiftEngine::SceneGraph * pScene = ShiftEngine::GetSceneGraph();
-    ShiftEngine::IContextManager * pCtxMgr = ShiftEngine::GetContextManager();
+    SceneGraph * pScene = GetSceneGraph();
+    IContextManager * pCtxMgr = GetContextManager();
 
-    ShiftEngine::GraphicEngineSettings settings = pCtxMgr->GetEngineSettings();
+    GraphicEngineSettings settings = pCtxMgr->GetEngineSettings();
     vec2<unsigned int> sizes = vec2<unsigned int>(settings.screenWidth, settings.screenHeight);
 
     // do the raycasting
