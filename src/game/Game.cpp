@@ -17,7 +17,7 @@ Game::Game()
 {
     physicsMgr.reset(new Physics::PhysicsManager());
     entityMgr.reset(new EntityManager(physicsMgr.get()));
-    player = entityMgr->CreatePlayer({}, 10.0f).get();
+    player = entityMgr->CreatePlayer({}, 10.0f, 0.2f).get();
     backgroundMgr.reset(new BackgroundManager(entityMgr.get()));
     spellsDatabase.reset(new SpellsDatabase());
     spellsDatabase->LoadSpellsFromFile("resources/gamedata/spells/test_spells.json");

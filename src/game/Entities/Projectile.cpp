@@ -9,14 +9,15 @@ Projectile::Projectile(const MathLib::vec2f position,
                        float damage,
                        double lifetime,
                        const LiveEntity * producer,
-                       const std::shared_ptr<Physics::Entity>& physicsEntity)
+                       const std::shared_ptr<Physics::Entity>& physicsEntity,
+                       float size)
     : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
     , IPhysicsEntityHolder(physicsEntity)
     , producer(producer)
     , remainingTime(lifetime)
     , damage(damage)
 {
-    sprite->SetLocalScale(0.33f);
+    sprite->SetLocalScale(size);
 }
 
 void Projectile::Update(double dt)

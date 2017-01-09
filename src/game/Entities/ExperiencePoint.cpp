@@ -11,12 +11,13 @@ const std::wstring experienceTextureName = L"experience_sprite.png";
 
 ExperiencePoint::ExperiencePoint(MathLib::vec2f position,
                                  int expCount,
-                                 const std::shared_ptr<Physics::Entity>& physicsEntity)
+                                 const std::shared_ptr<Physics::Entity>& physicsEntity,
+                                 float size)
     : Entity(position, GetSceneGraph()->AddSpriteNode(experienceTextureName))
     , IPhysicsEntityHolder(physicsEntity)
     , expCount(expCount)
 {
-    sprite->SetLocalScale(0.75f);
+    sprite->SetLocalScale(size);
 }
 
 void ExperiencePoint::Update(double dt)

@@ -47,9 +47,10 @@ void EntityManager::RemoveEntity(std::shared_ptr<Entity> & ent)
 }
 
 std::shared_ptr<Player> EntityManager::CreatePlayer(MathLib::vec2f position,
-                                                    float health)
+                                                    float health,
+                                                    float size)
 {
-    auto physicsEntity = physicsMgr->CreateEntity(position, 0.2f, {});
+    auto physicsEntity = physicsMgr->CreateEntity(position, size, {});
     auto entity = factory.CreateEntity<Player>(position, health, physicsEntity);
     AddEntity(entity);
     return entity;
@@ -57,9 +58,10 @@ std::shared_ptr<Player> EntityManager::CreatePlayer(MathLib::vec2f position,
 
 std::shared_ptr<Enemy> EntityManager::CreateEnemy(MathLib::vec2f position,
                                                   float health,
-                                                  int expCount)
+                                                  int expCount,
+                                                  float size)
 {
-    auto physicsEntity = physicsMgr->CreateEntity(position, 0.2f, {});
+    auto physicsEntity = physicsMgr->CreateEntity(position, size, {});
     auto entity = factory.CreateEntity<Enemy>(position, health, expCount, physicsEntity);
     AddEntity(entity);
     return entity;
@@ -69,20 +71,22 @@ std::shared_ptr<Projectile> EntityManager::CreateProjectile(MathLib::vec2f posit
                                                             MathLib::vec2f speed,
                                                             float damage,
                                                             double lifetime,
-                                                            const LiveEntity* producer)
+                                                            const LiveEntity* producer,
+                                                            float size)
 {
-    auto physicsEntity = physicsMgr->CreateEntity(position, 0.2f, speed);
-    auto entity = factory.CreateEntity<Projectile>(position, damage, lifetime, producer, physicsEntity);
+    auto physicsEntity = physicsMgr->CreateEntity(position, size, speed);
+    auto entity = factory.CreateEntity<Projectile>(position, damage, lifetime, producer, physicsEntity, size);
 
     AddEntity(entity);
     return entity;
 }
 
 std::shared_ptr<ExperiencePoint> EntityManager::CreateExperiencePoint(MathLib::vec2f position,
-                                                                      int expCount)
+                                                                      int expCount,
+                                                                      float size)
 {
-    auto physicsEntity = physicsMgr->CreateEntity(position, 0.2f, {});
-    auto entity = factory.CreateEntity<ExperiencePoint>(position, expCount, physicsEntity);
+    auto physicsEntity = physicsMgr->CreateEntity(position, size, {});
+    auto entity = factory.CreateEntity<ExperiencePoint>(position, expCount, physicsEntity, size);
     AddEntity(entity);
     return entity;
 }
@@ -91,9 +95,10 @@ std::shared_ptr<MineDetectorEntity> EntityManager::CreateDetectorMine(const Live
                                                                       MathLib::vec2f position,
                                                                       float explosionDamage,
                                                                       float explosionRadius,
-                                                                      float triggerDistance)
+                                                                      float triggerDistance,
+                                                                      float size)
 {
-    auto physicsEntity = physicsMgr->CreateEntity(position, 0.2f, {});
+    auto physicsEntity = physicsMgr->CreateEntity(position, size, {});
     auto entity = factory.CreateEntity<MineDetectorEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance, physicsEntity);
     AddEntity(entity);
     return entity;
@@ -104,9 +109,10 @@ std::shared_ptr<MineTimedEntity> EntityManager::CreateTimedMine(const LiveEntity
                                                                 float explosionDamage,
                                                                 float explosionRadius,
                                                                 float triggerDistance,
-                                                                double timeToExplode)
+                                                                double timeToExplode,
+                                                                float size)
 {
-    auto physicsEntity = physicsMgr->CreateEntity(position, 0.2f, {});
+    auto physicsEntity = physicsMgr->CreateEntity(position, size, {});
     auto entity = factory.CreateEntity<MineTimedEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance, timeToExplode, physicsEntity);
     AddEntity(entity);
     return entity;

@@ -19,7 +19,7 @@ void ProjectileSpellEntity::Cast(const LiveEntity * caster, const vec2f & direct
     vec2f internalDirection = MathLib::normalize(direction);
     float angleFactor = (float)(rand() % (int)(angleSpread * 200) - (angleSpread * 100)) / 100.0f;
     internalDirection = vec2Transform(internalDirection, matrixRotationZ(angleFactor));
-    GetGamePtr()->GetEntityMgr()->CreateProjectile(caster->GetPosition(), internalDirection * speed, damage, lifetime, caster);
+    GetGamePtr()->GetEntityMgr()->CreateProjectile(caster->GetPosition(), internalDirection * speed, damage, lifetime, caster, 0.2f);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ DetectorMinePeriodicCastSpellEntity::DetectorMinePeriodicCastSpellEntity(float e
 
 void DetectorMinePeriodicCastSpellEntity::Cast(const LiveEntity * caster)
 {
-    GetGamePtr()->GetEntityMgr()->CreateDetectorMine(caster, caster->GetPosition(), explosionDamage, 2.0f, 1.0f);
+    GetGamePtr()->GetEntityMgr()->CreateDetectorMine(caster, caster->GetPosition(), explosionDamage, 2.0f, 1.0f, 0.2f);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ TimedMinePeriodicCastSpellEntity::TimedMinePeriodicCastSpellEntity(float explosi
 
 void TimedMinePeriodicCastSpellEntity::Cast(const LiveEntity * caster)
 {
-    GetGamePtr()->GetEntityMgr()->CreateTimedMine(caster, caster->GetPosition(), explosionDamage, 2.0f, 1.0f, time);
+    GetGamePtr()->GetEntityMgr()->CreateTimedMine(caster, caster->GetPosition(), explosionDamage, 2.0f, 1.0f, time, 0.2f);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -15,7 +15,8 @@ public:
                float damage,
                double lifetime,
                const LiveEntity * producer,
-               const std::shared_ptr<Physics::Entity>& physicsEntity);
+               const std::shared_ptr<Physics::Entity>& physicsEntity,
+               float size);
 
     virtual ~Projectile() = default;
 

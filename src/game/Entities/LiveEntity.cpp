@@ -64,7 +64,7 @@ void LiveEntity::Kill()
 {
     Entity::Kill();
     IPhysicsEntityHolder::physicsEntity = nullptr;
-    GetGamePtr()->GetEntityMgr()->CreateExperiencePoint(Entity::GetPosition(), experienceCount);
+    GetGamePtr()->GetEntityMgr()->CreateExperiencePoint(Entity::GetPosition(), experienceCount, 0.2f);
 }
 
 void LiveEntity::StartSpellInSlot(ControllerSlot slot)

@@ -12,7 +12,8 @@ class ExperiencePoint final
 public:
     ExperiencePoint(MathLib::vec2f position,
                     int expCount,
-                    const std::shared_ptr<Physics::Entity>& physicsEntity);
+                    const std::shared_ptr<Physics::Entity>& physicsEntity,
+                    float size);
 
     void Update(double dt) override;
     int GetExperienceCount() const;
