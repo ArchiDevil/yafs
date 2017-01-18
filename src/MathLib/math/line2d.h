@@ -106,13 +106,25 @@ line2d<T> lineFromTwoPoints(const vec2<T>& p1, const vec2<T>& p2)
 template<typename T>
 constexpr T distanceFromPointToLine(const line2d<T>& l, const vec2<T>& p)
 {
-    return (l.a * p.x + l.b * p.y + l.c) / sqrt(l.a * l.a + l.b * l.b);
+    return abs(l.a * p.x + l.b * p.y + l.c) / sqrt(l.a * l.a + l.b * l.b);
 }
 
 template<typename T>
 constexpr T angleBetweenTwoLines(const line2d<T>& l1, const line2d<T>& l2)
 {
     return angle(l1.direction(), l2.direction());
+}
+
+// finds intersection point between point and line
+template<typename T>
+vec2<T> intersectionOfLineAndPoint(const vec2<T> & point, const line2d<T>& line)
+{
+    auto c2 = line.a * point.y - line.b * point.x;
+
+    vec2<T> res;
+    res.y = (line.c * line.b - line.a * c2) / -(line.b * line.b + line.a * line.a);
+    res.x = -(line.b * res.y + line.c) / line.a;
+    return res;
 }
 
 }

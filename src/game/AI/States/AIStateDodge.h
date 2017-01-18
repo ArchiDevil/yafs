@@ -6,13 +6,15 @@ class AIStateDodge final
     : public AIState
 {
 public:
-    void Do(double dt, LiveEntity * entity) override
-    {
-        dt; entity;
-    }
+    AIStateDodge(float dodgeDistance, float dodgeDistanceToProjectileLine);
+
+    void Do(double dt, LiveEntity * entity) override;
 
     AIStateType GetType() const override { return stateType; }
 
     static const AIStateType stateType = AIStateType::Dodge;
 
+private:
+    float dodgeDistance;
+    float dodgeDistanceToProjectileLine;
 };

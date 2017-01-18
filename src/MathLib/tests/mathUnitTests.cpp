@@ -273,6 +273,14 @@ namespace UnitTests
                 Assert::IsTrue(p1.intersects(p2));
                 Assert::IsFalse(p1.intersects(p3));
             }
+
+            {
+                vec2f point = { 1.0f, 0.0f };
+                line2d<float> line = { 3.0f, 1.0f, 7.0f };
+                vec2f dot = intersectionOfLineAndPoint(point, line);
+                if (dot != vec2f(-2.0f, -1.0f))
+                    Assert::Fail(L"intersectionOfLineAndPoint computed incorrectly");
+            }
         }
     };
 }

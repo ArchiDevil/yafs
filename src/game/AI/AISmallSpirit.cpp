@@ -22,6 +22,8 @@ void AISmallSpirit::Update(double dt, LiveEntity * entity)
 {
     const float pursuitDistance = 4.0f;
     const float attackDistance = 2.0f;
+    const float dodgeDistance = 1.0f;
+    const float dodgeDistanceToProjectileLine = 0.6f;
 
     static double elapsedTime = 0.0;
     elapsedTime += dt;
@@ -52,11 +54,19 @@ void AISmallSpirit::Update(double dt, LiveEntity * entity)
 
         for (auto& projectile : entityMgr->GetProjectiles())
         {
-            auto directionVector = normalize(entity->GetPosition() - projectile->GetPosition());
-            if (angle(directionVector, projectile->GetSpeed()) < M_PIF / 6.0f)
+            if (projectile->GetProducer() != entity)
             {
-                dangerousProjectilesFound = true;
-                break;
+                float distanceToProjectile = distance(entity->GetPosition(), projectile->GetPosition());
+                if (distanceToProjectile < dodgeDistance)
+                {
+                    auto projectileLine = lineFromPointAndDirectionVector(projectile->GetPosition(), projectile->GetSpeed());
+                    float distanceToProjectileLine = distanceFromPointToLine(projectileLine, entity->GetPosition());
+                    if (distanceToProjectileLine < dodgeDistanceToProjectileLine)
+                    {
+                        dangerousProjectilesFound = true;
+                        break;
+                    }
+                }
             }
         }
 
@@ -67,7 +77,7 @@ void AISmallSpirit::Update(double dt, LiveEntity * entity)
         }
         else if (dangerousProjectilesFound)
         {
-            setAction<AIStateDodge>();
+            setAction<AIStateDodge>(dodgeDistance, dodgeDistanceToProjectileLine);
         }
         else if (attackTargetFound)
         {
