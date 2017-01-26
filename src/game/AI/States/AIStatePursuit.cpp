@@ -1,6 +1,7 @@
 #include "AIStatePursuit.h"
 
 #include "../../Game.h"
+#include "../../Entities/EntityManager.h"
 
 #include <MathLib/math.h>
 

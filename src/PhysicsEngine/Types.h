@@ -12,10 +12,16 @@ class Entity;
 class IPhysicsEntityHolder
 {
 public:
+    IPhysicsEntityHolder(const std::shared_ptr<Entity>& entity)
+        : physicsEntity(entity)
+    {
+        if (entity) entity->SetParent(this);
+    }
+
     virtual void OnCollision(IPhysicsEntityHolder* /*other*/) {}
-    void SetEntity(std::shared_ptr<Entity> entity) { physicsEntity = entity; }
 
 protected:
+    // TODO: consider removing shared ptr and changing it to something more lightweight
     std::shared_ptr<Entity> physicsEntity;
 };
 

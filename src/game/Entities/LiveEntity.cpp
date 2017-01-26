@@ -1,6 +1,9 @@
 #include "LiveEntity.h"
 
+#include <GraphicsEngine/ShiftEngine.h>
+
 #include "../Game.h"
+#include "EntityManager.h"
 #include "Projectile.h"
 #include "ExperiencePoint.h"
 #include "Buffs.h"
@@ -9,8 +12,14 @@ using namespace MathLib;
 using namespace GoingHome;
 using namespace ShiftEngine;
 
-LiveEntity::LiveEntity(const vec2f & position, float health, const std::wstring & textureName, int expCount, Faction fact)
+LiveEntity::LiveEntity(vec2f position,
+                       float health,
+                       const std::wstring & textureName,
+                       int expCount,
+                       const std::shared_ptr<Physics::Entity>& physicsEntity,
+                       Faction fact)
     : Entity(position, GetSceneGraph()->AddSpriteNode(textureName))
+    , IPhysicsEntityHolder(physicsEntity)
     , maxHealth(health)
     , health(health)
     , experienceCount(expCount)
@@ -18,49 +27,14 @@ LiveEntity::LiveEntity(const vec2f & position, float health, const std::wstring 
 {
 }
 
-bool LiveEntity::handleEvent(const ProjectilePositionEvent & event)
-{
-    if (event.projectile->GetProducer() == this || IsDead())
-        return true;
-
-    if (CalculateCollision(*event.projectile))
-    {
-        health -= event.projectile->GetDamage();
-        event.projectile->Kill();
-
-        if (health <= 0)
-        {
-            Kill();
-            GetGamePtr()->GetEntityMgr()->CreateExperiencePoint(position, experienceCount);
-        }
-    }
-
-    return true;
-}
-
-bool LiveEntity::handleEvent(const ExperiencePointPositionEvent & event)
-{
-    if (!IsDead() && CalculateCollision(*event.expPoint))
-    {
-        experienceCount += event.expPoint->GetExperienceCount();
-        event.expPoint->Kill();
-        return false;
-    }
-
-    return true;
-}
-
 bool LiveEntity::handleEvent(const ExplosionEvent & event)
 {
-    if (!IsDead() && MathLib::distance(Entity::GetPosition(), event.epicenter) < event.radius)  // radius of entity is not supported
-    {                                                                                           // if you want to add it, just add it to the radius
-        // woops, duplicate with projectile event
+    if (MathLib::distance(Entity::GetPosition(), event.epicenter) < event.radius)   // radius of entity is not supported
+    {                                                                               // if you want to add it, just add it to the radius
+        // whoops, duplicate with projectile event
         health -= event.damage;
         if (health <= 0)
-        {
             Kill();
-            GetGamePtr()->GetEntityMgr()->CreateExperiencePoint(position, experienceCount);
-        }
         return false;
     }
 
@@ -79,12 +53,21 @@ void LiveEntity::SetTargetDirection(const MathLib::vec2f & val)
 
 void LiveEntity::Update(double dt)
 {
+    Entity::SetPosition(IPhysicsEntityHolder::physicsEntity->GetPosition());
+
     for (auto& controller : controllers)
         if (controller)
             controller->Update(dt);
 
     ((notifier<LiveEntityPositionEvent>)EntityEventManager::GetInstance())
         .notifyAll(LiveEntityPositionEvent(this));
+}
+
+void LiveEntity::Kill()
+{
+    Entity::Kill();
+    IPhysicsEntityHolder::physicsEntity = nullptr;
+    GetGamePtr()->GetEntityMgr()->CreateExperiencePoint(Entity::GetPosition(), experienceCount, 0.2f);
 }
 
 void LiveEntity::StartSpellInSlot(ControllerSlot slot)
@@ -104,6 +87,14 @@ ISpellController* LiveEntity::GetSpellController(ControllerSlot slot) const
     return controllers[slot].get();
 }
 
+void LiveEntity::TakeDamage(float damageCount)
+{
+    health -= damageCount;
+
+    if (health <= 0)
+        Kill();
+}
+
 float LiveEntity::CalculateDamage(float damage)
 {
     float damageModifier = 0.0f;
@@ -121,6 +112,11 @@ void LiveEntity::SetSpellController(std::unique_ptr<ISpellController> && control
 int LiveEntity::GetExperienceCount() const
 {
     return experienceCount;
+}
+
+void LiveEntity::AddExperience(int expCount)
+{
+    experienceCount += expCount;
 }
 
 float LiveEntity::GetMaxHealth() const
@@ -148,4 +144,14 @@ void LiveEntity::RemoveBuff(const std::shared_ptr<IBuff> & buff)
 {
     buff->OnDeactivation(this);
     buffs.erase(std::find(buffs.begin(), buffs.end(), buff));
+}
+
+MathLib::vec2f LiveEntity::GetPosition() const
+{
+    return IPhysicsEntityHolder::physicsEntity->GetPosition();
+}
+
+void LiveEntity::SetPosition(MathLib::vec2f pos)
+{
+    IPhysicsEntityHolder::physicsEntity->SetPosition(pos);
 }

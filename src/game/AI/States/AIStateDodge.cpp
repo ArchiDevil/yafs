@@ -1,7 +1,7 @@
 #include "AIStateDodge.h"
 
 #include "../../Game.h"
-
+#include "../../Entities/EntityManager.h"
 #include <MathLib/math.h>
 
 using namespace GoingHome;

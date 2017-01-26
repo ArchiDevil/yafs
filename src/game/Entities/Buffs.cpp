@@ -2,6 +2,8 @@
 
 #include <GraphicsEngine/ShiftEngine.h>
 
+#include "EntityManager.h"
+
 float ShieldBuff::GetDamageModificationRatio() const
 {
     if (active)

@@ -1,6 +1,8 @@
 #include "AIStateEscape.h"
 
 #include "../../Game.h"
+#include "../../Entities/EntityManager.h"
+
 
 using namespace GoingHome;
 using namespace MathLib;

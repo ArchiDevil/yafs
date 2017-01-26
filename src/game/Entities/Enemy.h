@@ -16,7 +16,13 @@ public:
         SmallSpirit,
     };
 
-    Enemy(const MathLib::vec2f & position, float health, int expCount, std::unique_ptr<AIBase> && ai);
+public:
+    Enemy(MathLib::vec2f position,
+          float health,
+          int expCount,
+          const std::shared_ptr<Physics::Entity>& physicsEntity,
+          std::unique_ptr<AIBase> && ai);
+
     virtual ~Enemy() = default;
 
     void Update(double dt) override;

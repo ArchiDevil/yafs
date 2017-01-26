@@ -5,14 +5,19 @@
 
 const std::wstring textureName = L"sprite.png";
 
-Projectile::Projectile(const MathLib::vec2f & position, const MathLib::vec2f & speed, float damage, double lifetime, const LiveEntity * producer)
+Projectile::Projectile(const MathLib::vec2f position,
+                       float damage,
+                       double lifetime,
+                       const LiveEntity * producer,
+                       const std::shared_ptr<Physics::Entity>& physicsEntity,
+                       float size)
     : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
-    , speed(speed)
+    , IPhysicsEntityHolder(physicsEntity)
     , producer(producer)
     , remainingTime(lifetime)
     , damage(damage)
 {
-    sprite->SetLocalScale(0.33f);
+    sprite->SetLocalScale(size);
 }
 
 void Projectile::Update(double dt)
@@ -24,14 +29,10 @@ void Projectile::Update(double dt)
         return;
     }
 
-    position += speed * dt;
-    UpdateGraphicsSpritePosition();
+    Entity::SetPosition(IPhysicsEntityHolder::physicsEntity->GetPosition());
 
     float overallIntensity = (float)remainingTime / 3.0f;
-    sprite->SetMaskColor({overallIntensity, overallIntensity, overallIntensity, 1.0f});
-
-    ((notifier<ProjectilePositionEvent>)EntityEventManager::GetInstance())
-        .notifyAll(ProjectilePositionEvent(this));
+    sprite->SetMaskColor({ overallIntensity, overallIntensity, overallIntensity, 1.0f });
 }
 
 const LiveEntity* Projectile::GetProducer() const
@@ -39,17 +40,26 @@ const LiveEntity* Projectile::GetProducer() const
     return producer;
 }
 
-float Projectile::GetDamage() const
+MathLib::vec2f Projectile::GetPosition() const
 {
-    return damage;
-}
-
-void Projectile::SetDamage(float val)
-{
-    damage = val;
+    return IPhysicsEntityHolder::physicsEntity->GetPosition();
 }
 
 MathLib::vec2f Projectile::GetSpeed() const
 {
-    return speed;
+    return IPhysicsEntityHolder::physicsEntity->GetVelocity();
+}
+
+void Projectile::OnCollision(Physics::IPhysicsEntityHolder* other)
+{
+    Projectile* projectileCollider = dynamic_cast<Projectile*>(other);
+    if (projectileCollider)
+        return;
+
+    Entity *collider = dynamic_cast<Entity*>(other);
+    if (collider && producer != collider)
+    {
+        collider->TakeDamage(damage);
+        Entity::Kill();
+    }
 }

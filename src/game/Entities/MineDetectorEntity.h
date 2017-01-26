@@ -9,11 +9,16 @@ class MineDetectorEntity final
     , observer<LiveEntityPositionEvent>
 {
 public:
-    MineDetectorEntity(const LiveEntity * owner, const MathLib::vec2f& position, float explosionDamage, float explosionRadius, float triggerDistance);
-    void Update(double dt) override;
+    MineDetectorEntity(const LiveEntity * owner,
+                       MathLib::vec2f position,
+                       float explosionDamage,
+                       float explosionRadius,
+                       float triggerDistance,
+                       const std::shared_ptr<Physics::Entity>& physicsEntity);
+
     bool observer<LiveEntityPositionEvent>::handleEvent(const LiveEntityPositionEvent & event) override;
 
 private:
-    scoped_subscriber<LiveEntityPositionEvent> liveEntityPositionEvent = {&EntityEventManager::GetInstance(), this};
+    scoped_subscriber<LiveEntityPositionEvent> liveEntityPositionEvent = { &EntityEventManager::GetInstance(), this };
 
 };
