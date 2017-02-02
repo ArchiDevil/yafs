@@ -24,7 +24,8 @@ public:
     std::shared_ptr<Enemy>              CreateEnemy(MathLib::vec2f position,
                                                     float health,
                                                     int expCount,
-                                                    float size);
+                                                    float size,
+                                                    Enemy::EnemyType type);
 
     std::shared_ptr<Projectile>         CreateProjectile(MathLib::vec2f position,
                                                          MathLib::vec2f speed,
@@ -60,14 +61,19 @@ public:
                                                                   MathLib::vec2f position,
                                                                   ShiftEngine::SpriteSceneNode * sprite);
 
-private:
-    void AddEntity(const std::shared_ptr<Entity> & ent);
-    void RemoveEntity(std::shared_ptr<Entity> & ent);
+    std::vector<LiveEntity*> GetHostileLiveEntities(LiveEntity::Faction fraction) const;
+    std::vector<Projectile*> GetProjectiles() const;
 
+private:
     Physics::PhysicsManager * physicsMgr = nullptr;
 
     std::vector<std::shared_ptr<Entity>> entities;
     std::vector<std::shared_ptr<Entity>> entitiesToAdd;
+
+    // this is here just for fast returning result in GetHostileLiveEntities
+    std::vector<LiveEntity*> liveEntities;
+    std::vector<Projectile*> projectileEntities;
+
     EntityFactory factory;
 
 };

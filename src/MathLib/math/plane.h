@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vectorsFuncs.h"
+#include "vector2.h"
 
 namespace MathLib
 {
@@ -25,7 +25,7 @@ struct plane
 
     constexpr bool operator != (const plane & ref) const
     {
-        return (*this == ref);
+        return !(*this == ref);
     }
 
     T a = 0.0, b = 0.0, c = 0.0, d = 0.0;

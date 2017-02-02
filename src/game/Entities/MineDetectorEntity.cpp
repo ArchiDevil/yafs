@@ -16,7 +16,7 @@ MineDetectorEntity::MineDetectorEntity(const LiveEntity * owner,
 
 bool MineDetectorEntity::handleEvent(const LiveEntityPositionEvent & event)
 {
-    if (event.producer == MineEntity::owner)
+    if (event.producer == MineEntity::owner && IsDead())
         return true;
 
     if (MathLib::distance(Entity::GetPosition(), event.producer->GetPosition()) < MineEntity::triggerDistance)

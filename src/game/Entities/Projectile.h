@@ -21,6 +21,8 @@ public:
     virtual ~Projectile() = default;
 
     const LiveEntity *  GetProducer() const;
+    MathLib::vec2f GetPosition() const override;
+    MathLib::vec2f GetSpeed() const;
 
     // Entity
     void                Update(double dt) override;

@@ -16,11 +16,14 @@ LiveEntity::LiveEntity(vec2f position,
                        float health,
                        const std::wstring & textureName,
                        int expCount,
-                       const std::shared_ptr<Physics::Entity>& physicsEntity)
+                       const std::shared_ptr<Physics::Entity>& physicsEntity,
+                       Faction fact)
     : Entity(position, GetSceneGraph()->AddSpriteNode(textureName))
     , IPhysicsEntityHolder(physicsEntity)
+    , maxHealth(health)
     , health(health)
     , experienceCount(expCount)
+    , faction(fact)
 {
 }
 
@@ -116,6 +119,21 @@ void LiveEntity::AddExperience(int expCount)
     experienceCount += expCount;
 }
 
+float LiveEntity::GetMaxHealth() const
+{
+    return maxHealth;
+}
+
+float LiveEntity::GetHealth() const
+{
+    return health;
+}
+
+LiveEntity::Faction LiveEntity::GetFaction() const
+{
+    return faction;
+}
+
 void LiveEntity::AddBuff(const std::shared_ptr<IBuff> & buff)
 {
     buffs.push_back(buff);
@@ -126,4 +144,14 @@ void LiveEntity::RemoveBuff(const std::shared_ptr<IBuff> & buff)
 {
     buff->OnDeactivation(this);
     buffs.erase(std::find(buffs.begin(), buffs.end(), buff));
+}
+
+MathLib::vec2f LiveEntity::GetPosition() const
+{
+    return IPhysicsEntityHolder::physicsEntity->GetPosition();
+}
+
+void LiveEntity::SetPosition(MathLib::vec2f pos)
+{
+    IPhysicsEntityHolder::physicsEntity->SetPosition(pos);
 }

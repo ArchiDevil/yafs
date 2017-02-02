@@ -127,4 +127,35 @@ using vec4f = vec4<float>;
 using vec4d = vec4<double>;
 using vec4i = vec4<int>;
 
+//dot product between two vectors
+template <typename T>
+constexpr T dot(const vec4<T> & vec1, const vec4<T> & vec2)
+{
+    return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z + vec1.w * vec2.w;
+}
+
+//normalizes vector
+template<typename T>
+constexpr vec4<T> normalize(const vec4<T> & vec)
+{
+    return vec * ((T)1.0 / vec.length());
+}
+
+//angle between two vectors
+template<typename T>
+T angle(const vec4<T> &vec1, const vec4<T> &vec2)
+{
+    return acos((T)dot(vec1, vec2) / (T)vec1.length() / (T)vec2.length());
+}
+
+//distance between two points
+template<typename T>
+T distance(const vec4<T> & vec1, const vec4<T> & vec2)
+{
+    return (T)sqrt((T)(vec1.x - vec2.x)*(vec1.x - vec2.x) +
+        (T)(vec1.y - vec2.y)*(vec1.y - vec2.y) +
+                   (T)(vec1.z - vec2.z)*(vec1.z - vec2.z) +
+                   (T)(vec1.w - vec2.w)*(vec1.w - vec2.w));
+}
+
 }

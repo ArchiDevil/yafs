@@ -122,4 +122,73 @@ using vec3f = vec3<float>;
 using vec3d = vec3<double>;
 using vec3i = vec3<int>;
 
+//dot product between two vectors
+template <typename T>
+constexpr T dot(const vec3<T> & vec1, const vec3<T> & vec2)
+{
+    return vec1.x * vec2.x + vec1.y * vec2.y + vec1.z * vec2.z;
+}
+
+//cross product between two vectors
+template<typename T>
+constexpr vec3<T> cross(const vec3<T> & vec1, const vec3<T> & vec2)
+{
+    return vec3<T>(vec1.y * vec2.z - vec1.z * vec2.y, vec1.z * vec2.x - vec1.x * vec2.z, vec1.x * vec2.y - vec1.y * vec2.x);
+}
+
+//normalizes vector
+template<typename T>
+constexpr vec3<T> normalize(const vec3<T> & vec)
+{
+    return vec * ((T)1.0 / vec.length());
+}
+
+//angle between two vectors
+template<typename T>
+T angle(const vec3<T> &vec1, const vec3<T> &vec2)
+{
+    return acos((T)dot(vec1, vec2) / (T)vec1.length() / (T)vec2.length());
+}
+
+//normalized vector projected onto X
+template<typename T>
+vec3<T> projX(const vec3<T> &vec)
+{
+    vec3<T> out = vec;
+    out.x = 0.0f;
+    out = normalize(out);
+    return out;
+}
+
+//normalized vector projected onto Y
+template<typename T>
+vec3<T> projY(const vec3<T> &vec)
+{
+    vec3<T> out = vec;
+    out.y = 0.0f;
+    out = normalize(out);
+    return out;
+}
+
+//normalized vector projected onto Z
+template<typename T>
+vec3<T> projZ(const vec3<T> &vec)
+{
+    vec3<T> out = vec;
+    out.z = 0.0f;
+    out = normalize(out);
+    return out;
+}
+
+//distance between two points
+template<typename T>
+T distance(const vec3<T> & vec1, const vec3<T> & vec2)
+{
+    return (T)sqrt((T)(vec1.x - vec2.x)*(vec1.x - vec2.x) +
+                   (T)(vec1.y - vec2.y)*(vec1.y - vec2.y) +
+                   (T)(vec1.z - vec2.z)*(vec1.z - vec2.z));
+}
+
+
+
 }

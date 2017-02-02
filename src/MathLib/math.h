@@ -6,12 +6,12 @@
 #include "math/AABB.h"
 #include "math/ray.h"
 #include "math/intersections.h"
+#include "math/line2d.h"
 #include "math/plane.h"
 #include "math/quaternion.h"
 #include "math/matrix.h"
 
 #include "math/matrixFuncs.h"
-#include "math/vectorsFuncs.h"
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -82,9 +82,30 @@ constexpr T raddeg(T radians)
 
 template<class T,
     class = typename std::enable_if<std::is_floating_point<T>::value>::type>
-bool isEqual(T a, T b)
+bool areEqual(T a, T b)
 {
     return std::abs(a - b) < std::numeric_limits<T>::epsilon();
+}
+
+template<typename T>
+vec3<T> getUnprojectedVector(const vec3<T> & v, const matrix<T, 4> & projMat, const matrix<T, 4> & viewMat, const vec2<unsigned int> & screenSize)
+{
+    matrix<T, 4> rm = viewMat * projMat;
+    matrix<T, 4> resultMatrix = matrixInverse(rm);
+    vec3f result;
+
+    int TopLeftX = 0;
+    int TopLeftY = 0;
+    unsigned int Width = screenSize.x;
+    unsigned int Height = screenSize.y;
+    float MinDepth = 0.0f;
+    float MaxDepth = 1.0f;
+
+    result.x = (v.x - TopLeftX) / Width * 2.0f - 1.0f;
+    result.y = -(2.0f * (v.y - TopLeftY) / Height - 1.0f);
+    result.z = (v.z - MinDepth) / (MaxDepth - MinDepth);
+    result = vec3Transform(result, resultMatrix);
+    return result;
 }
 
 }

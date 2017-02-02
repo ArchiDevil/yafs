@@ -40,6 +40,16 @@ const LiveEntity* Projectile::GetProducer() const
     return producer;
 }
 
+MathLib::vec2f Projectile::GetPosition() const
+{
+    return IPhysicsEntityHolder::physicsEntity->GetPosition();
+}
+
+MathLib::vec2f Projectile::GetSpeed() const
+{
+    return IPhysicsEntityHolder::physicsEntity->GetVelocity();
+}
+
 void Projectile::OnCollision(Physics::IPhysicsEntityHolder* other)
 {
     Projectile* projectileCollider = dynamic_cast<Projectile*>(other);

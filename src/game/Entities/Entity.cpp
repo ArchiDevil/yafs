@@ -35,7 +35,6 @@ bool Entity::IsDead() const
 void Entity::Kill()
 {
     isToDelete = true;
-    sprite.reset();
 }
 
 void Entity::UpdateGraphicsSpritePosition()

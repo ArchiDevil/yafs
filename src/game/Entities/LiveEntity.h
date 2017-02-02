@@ -17,6 +17,12 @@ class LiveEntity
     , public Physics::IPhysicsEntityHolder
 {
 public:
+    enum Faction
+    {
+        FactionPlayer,
+        FactionEnemy
+    };
+
     enum ControllerSlot
     {
         CS_MainSlot,
@@ -31,7 +37,8 @@ public:
                float health,
                const std::wstring & textureName,
                int expCount,
-               const std::shared_ptr<Physics::Entity>& physicsEntity);
+               const std::shared_ptr<Physics::Entity>& physicsEntity,
+               Faction fact = FactionEnemy);
 
     virtual ~LiveEntity() = default;
 
@@ -49,6 +56,10 @@ public:
     int             GetExperienceCount() const;
     void            AddExperience(int experienceCount);
 
+    float           GetMaxHealth() const;
+    float           GetHealth() const;
+    Faction         GetFaction() const;
+
     // buff system is TBD but this is just for spells task purposes
     void            AddBuff(const std::shared_ptr<IBuff> & buff);
     void            RemoveBuff(const std::shared_ptr<IBuff> & buff);
@@ -56,8 +67,14 @@ public:
     void            SetSpellController(std::unique_ptr<ISpellController> && controller, ControllerSlot slot);
     ISpellController* GetSpellController(ControllerSlot slot) const;
 
+    MathLib::vec2f GetPosition() const override;
+    void SetPosition(MathLib::vec2f pos) override;
+
 protected:
     float           CalculateDamage(float damage);
+
+    const float     maxHealth;
+    const Faction   faction = FactionEnemy;
 
     float           health = 1.0f;
     int             experienceCount = 0;
