@@ -1,14 +1,12 @@
 #pragma once
 
-#include "Entity.h"
+#include "PhysicsEntity.h"
 
 #include <PhysicsEngine/PhysicsEngine.h>
 
 class ExperiencePoint final
-    : public Entity
-    , public Physics::IPhysicsEntityHolder
+    : public PhysicsEntity
 {
-
 public:
     ExperiencePoint(MathLib::vec2f position,
                     int expCount,
@@ -24,4 +22,5 @@ public:
 private:
     int expCount;
     double remainingTime = 10.0;
+
 };

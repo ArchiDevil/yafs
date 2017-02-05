@@ -12,18 +12,12 @@ MineEntity::MineEntity(const LiveEntity * owner,
                        float explosionRadius,
                        float triggerDistance,
                        const std::shared_ptr<Physics::Entity>& physicsEntity)
-    : Entity(position, GetSceneGraph()->AddSpriteNode(mineSpriteName))
-    , IPhysicsEntityHolder(physicsEntity)
+    : PhysicsEntity(position, GetSceneGraph()->AddSpriteNode(mineSpriteName), physicsEntity)
     , owner(owner)
     , explosionDamage(explosionDamage)
     , explosionRadius(explosionRadius)
     , triggerDistance(triggerDistance)
 {
-}
-
-void MineEntity::Update(double)
-{
-    Entity::SetPosition(IPhysicsEntityHolder::physicsEntity->GetPosition());
 }
 
 void MineEntity::TakeDamage(float /*damageCount*/)

@@ -11,8 +11,7 @@ Projectile::Projectile(const MathLib::vec2f position,
                        const LiveEntity * producer,
                        const std::shared_ptr<Physics::Entity>& physicsEntity,
                        float size)
-    : Entity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName))
-    , IPhysicsEntityHolder(physicsEntity)
+    : PhysicsEntity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName), physicsEntity)
     , producer(producer)
     , remainingTime(lifetime)
     , damage(damage)
@@ -29,7 +28,7 @@ void Projectile::Update(double dt)
         return;
     }
 
-    Entity::SetPosition(IPhysicsEntityHolder::physicsEntity->GetPosition());
+    PhysicsEntity::Update(dt);
 
     float overallIntensity = (float)remainingTime / 3.0f;
     sprite->SetMaskColor({ overallIntensity, overallIntensity, overallIntensity, 1.0f });

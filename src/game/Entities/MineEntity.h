@@ -1,13 +1,12 @@
 #pragma once
 
-#include "Entity.h"
+#include "PhysicsEntity.h"
 
 #include <PhysicsEngine/PhysicsEngine.h>
 #include <Utilities/observer.h>
 
 class MineEntity
-    : public Entity
-    , Physics::IPhysicsEntityHolder
+    : public PhysicsEntity
 {
 public:
     MineEntity(const LiveEntity * owner,
@@ -18,8 +17,7 @@ public:
                const std::shared_ptr<Physics::Entity>& physicsEntity);
     virtual ~MineEntity() = default;
 
-    virtual void    Update(double dt) override;
-    void            TakeDamage(float damageCount) override;
+    void TakeDamage(float damageCount) override;
 
 protected:
     void Explode();

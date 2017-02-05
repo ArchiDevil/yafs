@@ -28,7 +28,6 @@ public:
 
 protected:
     void UpdateGraphicsSpritePosition();
-    bool CalculateCollision(const Entity & ent) const;
 
     struct sprites_deleter
     {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.h"
+#include "PhysicsEntity.h"
 #include "../Spells/ISpellController.h"
 
 #include <PhysicsEngine/PhysicsEngine.h>
@@ -12,9 +12,8 @@ class IBuff;
 class ISpellController;
 
 class LiveEntity
-    : public Entity
+    : public PhysicsEntity
     , private observer<ExplosionEvent>
-    , public Physics::IPhysicsEntityHolder
 {
 public:
     enum Faction
@@ -66,9 +65,6 @@ public:
 
     void            SetSpellController(std::unique_ptr<ISpellController> && controller, ControllerSlot slot);
     ISpellController* GetSpellController(ControllerSlot slot) const;
-
-    MathLib::vec2f GetPosition() const override;
-    void SetPosition(MathLib::vec2f pos) override;
 
 protected:
     float           CalculateDamage(float damage);

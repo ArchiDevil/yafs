@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PhysicsEntity.h"
 #include "LiveEntity.h"
 
 #include <MathLib/math.h>
@@ -7,8 +8,7 @@
 #include <PhysicsEngine/PhysicsEngine.h>
 
 class Projectile final
-    : public Entity
-    , public Physics::IPhysicsEntityHolder
+    : public PhysicsEntity
 {
 public:
     Projectile(const MathLib::vec2f position,
