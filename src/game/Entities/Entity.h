@@ -20,7 +20,7 @@ public:
     // but this works for now, and will work before any architecture changes
     virtual void TakeDamage(float damageCount) { damageCount; }
 
-    MathLib::vec2f GetPosition() const;
+    virtual MathLib::vec2f GetPosition() const;
     virtual void SetPosition(MathLib::vec2f position);
 
     bool IsDead() const;

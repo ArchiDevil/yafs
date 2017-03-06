@@ -13,8 +13,7 @@ ExperiencePoint::ExperiencePoint(MathLib::vec2f position,
                                  int expCount,
                                  const std::shared_ptr<Physics::Entity>& physicsEntity,
                                  float size)
-    : Entity(position, GetSceneGraph()->AddSpriteNode(experienceTextureName))
-    , IPhysicsEntityHolder(physicsEntity)
+    : PhysicsEntity(position, GetSceneGraph()->AddSpriteNode(experienceTextureName), physicsEntity)
     , expCount(expCount)
 {
     sprite->SetLocalScale(size);
@@ -22,6 +21,8 @@ ExperiencePoint::ExperiencePoint(MathLib::vec2f position,
 
 void ExperiencePoint::Update(double dt)
 {
+    PhysicsEntity::Update(dt);
+
     remainingTime -= dt;
     if (remainingTime < 0.0)
         Kill();

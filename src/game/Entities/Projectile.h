@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PhysicsEntity.h"
 #include "LiveEntity.h"
 
 #include <MathLib/math.h>
@@ -7,8 +8,7 @@
 #include <PhysicsEngine/PhysicsEngine.h>
 
 class Projectile final
-    : public Entity
-    , public Physics::IPhysicsEntityHolder
+    : public PhysicsEntity
 {
 public:
     Projectile(const MathLib::vec2f position,
@@ -21,6 +21,8 @@ public:
     virtual ~Projectile() = default;
 
     const LiveEntity *  GetProducer() const;
+    MathLib::vec2f GetPosition() const override;
+    MathLib::vec2f GetSpeed() const;
 
     // Entity
     void                Update(double dt) override;

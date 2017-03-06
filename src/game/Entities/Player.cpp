@@ -15,7 +15,7 @@ const std::wstring playerTextureName = L"player_sprite.png";
 Player::Player(vec2f position,
                float health,
                const std::shared_ptr<Physics::Entity>& physicsEntity)
-    : LiveEntity(position, health, playerTextureName, 0, physicsEntity)
+    : LiveEntity(position, health, playerTextureName, 0, physicsEntity, LiveEntity::FactionPlayer)
 {
 }
 

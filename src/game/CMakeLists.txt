@@ -17,6 +17,32 @@ set(LS  gameStates/gameState.h
 source_group("Header Files\\Game States" FILES ${LS})
 list(APPEND SRC ${LS})
 
+set(LS  AI/AISmallSpirit.cpp)
+source_group("Source Files\\AI" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  AI/AIBase.h
+        AI/AISmallSpirit.h)
+source_group("Header Files\\AI" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  AI/States/AIStateAttack.cpp
+        AI/States/AIStateDodge.cpp
+        AI/States/AIStateEscape.cpp
+        AI/States/AIStatePursuit.cpp)
+source_group("Source Files\\AI\\States" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  AI/States/AIState.h
+        AI/States/AIStateAttack.h
+        AI/States/AIStateDeath.h
+        AI/States/AIStateDodge.h
+        AI/States/AIStateEscape.h
+        AI/States/AIStateIdle.h
+        AI/States/AIStatePursuit.h)
+source_group("Header Files\\AI\\States" FILES ${LS})
+list(APPEND SRC ${LS})
+
 set(LS  Entities/BackgroundBlinker.cpp
         Entities/BackgroundWanderer.cpp
         Entities/Buffs.cpp
@@ -29,6 +55,7 @@ set(LS  Entities/BackgroundBlinker.cpp
         Entities/MineEntity.cpp
         Entities/MineDetectorEntity.cpp
         Entities/MineTimedEntity.cpp
+        Entities/PhysicsEntity.cpp
         Entities/Player.cpp
         Entities/Projectile.cpp)
 source_group("Source Files\\Entities" FILES ${LS})
@@ -47,6 +74,7 @@ set(LS  Entities/BackgroundBlinker.h
         Entities/MineEntity.h
         Entities/MineDetectorEntity.h
         Entities/MineTimedEntity.h
+        Entities/PhysicsEntity.h
         Entities/Player.h
         Entities/Projectile.h
         Entities/VisualEntity.h

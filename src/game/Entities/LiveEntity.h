@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.h"
+#include "PhysicsEntity.h"
 #include "../Spells/ISpellController.h"
 
 #include <PhysicsEngine/PhysicsEngine.h>
@@ -12,11 +12,16 @@ class IBuff;
 class ISpellController;
 
 class LiveEntity
-    : public Entity
+    : public PhysicsEntity
     , private observer<ExplosionEvent>
-    , public Physics::IPhysicsEntityHolder
 {
 public:
+    enum Faction
+    {
+        FactionPlayer,
+        FactionEnemy
+    };
+
     enum ControllerSlot
     {
         CS_MainSlot,
@@ -31,7 +36,8 @@ public:
                float health,
                const std::wstring & textureName,
                int expCount,
-               const std::shared_ptr<Physics::Entity>& physicsEntity);
+               const std::shared_ptr<Physics::Entity>& physicsEntity,
+               Faction fact = FactionEnemy);
 
     virtual ~LiveEntity() = default;
 
@@ -49,6 +55,10 @@ public:
     int             GetExperienceCount() const;
     void            AddExperience(int experienceCount);
 
+    float           GetMaxHealth() const;
+    float           GetHealth() const;
+    Faction         GetFaction() const;
+
     // buff system is TBD but this is just for spells task purposes
     void            AddBuff(const std::shared_ptr<IBuff> & buff);
     void            RemoveBuff(const std::shared_ptr<IBuff> & buff);
@@ -58,6 +68,9 @@ public:
 
 protected:
     float           CalculateDamage(float damage);
+
+    const float     maxHealth;
+    const Faction   faction = FactionEnemy;
 
     float           health = 1.0f;
     int             experienceCount = 0;

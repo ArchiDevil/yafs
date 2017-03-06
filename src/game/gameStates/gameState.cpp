@@ -1,6 +1,7 @@
 #include "GameState.h"
 #include "../Entities/EntityFactory.h"
 #include "../Entities/EntityManager.h"
+#include "../AI/AISmallSpirit.h"
 #include "../Spells/SpellsDatabase.h"
 #include "../BackgroundManager.h"
 
@@ -45,8 +46,7 @@ bool GameState::initState()
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
     // just for example, let's create some enemies
-    Enemy* testEnemy = entityMgrPtr->CreateEnemy({1.0f, 1.0f}, 2.0f, 100, 0.2f).get();
-    testEnemy->MoveTo({0.0f, 0.0f});
+    Enemy* testEnemy = entityMgrPtr->CreateEnemy({1.0f, 1.0f}, 5.0f, 100, 0.2f, Enemy::EnemyType::SmallSpirit).get();
 
     playerPtr->SetSpellController(database->GetSpellByName("projectile").CreateSpellController(playerPtr),      Player::CS_MainSlot);
     playerPtr->SetSpellController(database->GetSpellByName("multiprojectile").CreateSpellController(playerPtr), Player::CS_AdditionalSlot);
