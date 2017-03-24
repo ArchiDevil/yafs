@@ -277,9 +277,9 @@ namespace UnitTests
             {
                 vec2f point = { 1.0f, 0.0f };
                 line2d<float> line = { 3.0f, 1.0f, 7.0f };
-                vec2f dot = intersectionOfLineAndPoint(point, line);
+                vec2f dot = projectLineOnPoint(point, line);
                 if (dot != vec2f(-2.0f, -1.0f))
-                    Assert::Fail(L"intersectionOfLineAndPoint computed incorrectly");
+                    Assert::Fail(L"projectLineOnPoint computed incorrectly");
             }
         }
     };

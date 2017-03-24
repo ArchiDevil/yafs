@@ -66,12 +66,6 @@ struct line2d
 };
 
 template<typename T>
-line2d<T> lineFromPointAndDirectionVector(const vec2<T>& p, const vec2<T>& v)
-{
-    return lineFromTwoPoints(p, p + v);
-}
-
-template<typename T>
 line2d<T> lineFromPointAndNormalVector(const vec2<T>& p, const vec2<T>& n)
 {
     T d1 = n.x * p.x;
@@ -104,6 +98,12 @@ line2d<T> lineFromTwoPoints(const vec2<T>& p1, const vec2<T>& p2)
 }
 
 template<typename T>
+line2d<T> lineFromPointAndDirectionVector(const vec2<T>& p, const vec2<T>& v)
+{
+    return lineFromTwoPoints(p, p + v);
+}
+
+template<typename T>
 constexpr T distanceFromPointToLine(const line2d<T>& l, const vec2<T>& p)
 {
     return abs(l.a * p.x + l.b * p.y + l.c) / sqrt(l.a * l.a + l.b * l.b);
@@ -115,16 +115,27 @@ constexpr T angleBetweenTwoLines(const line2d<T>& l1, const line2d<T>& l2)
     return angle(l1.direction(), l2.direction());
 }
 
-// finds intersection point between point and line
 template<typename T>
-vec2<T> intersectionOfLineAndPoint(const vec2<T> & point, const line2d<T>& line)
+vec2<T> projectLineOnPoint(const vec2<T>& point, const line2d<T>& line)
 {
     auto c2 = line.a * point.y - line.b * point.x;
 
     vec2<T> res;
-    res.y = (line.c * line.b - line.a * c2) / -(line.b * line.b + line.a * line.a);
+    res.y = -(line.c * line.b - line.a * c2) / (line.b * line.b + line.a * line.a);
     res.x = -(line.b * res.y + line.c) / line.a;
     return res;
+}
+
+// Check if projected point lies between two points on line segment
+template<typename T>
+bool isPointInsideLineSegment(const vec2<T>& point, const vec2<T>& p1, const vec2<T>&p2)
+{
+    T distance1 = distance(p1, point);
+    T distance2 = distance(p2, point);
+
+    T segmentSize = distance(p1, p2);
+
+    return distance1 <= segmentSize && distance2 <= segmentSize;
 }
 
 }

@@ -44,10 +44,8 @@ void AIStateDodge::Do(double dt, LiveEntity* entity)
     float distanceToProjectileLine = distanceFromPointToLine(projectileLine, position);
     if (distanceToProjectileLine < dodgeDistanceToProjectileLine)
     {
-        auto intersection = intersectionOfLineAndPoint(position, projectileLine);
-
-        vec2f dodgeVector = position - intersection;
-
+        auto projection = projectLineOnPoint(position, projectileLine);
+        vec2f dodgeVector = position - projection;
         position += normalize(dodgeVector) * (dt / 2.0);
         entity->SetPosition(position);
     }
