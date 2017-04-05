@@ -19,25 +19,25 @@ class oobb2d
 
     bool intersectsWithPoint(vec2<T> point)
     {
-        vec2<T> xDir{ 1.0, 0.0 };
-        vec2<T> yDir{ 0.0, 1.0 };
+        // we need 3x3 matrix here, not 4x4
+        matrix<T, 3> translationMatrix = matrixTranslation(center.x, center.y);
+        matrix<T, 3> scalingMatrix = matrixScaling(sizes.x, sizes.y);
+        matrix<T, 3> rotationMatrix = matrixRotationZ(angle);
+        matrix<T, 3> total = scalingMatrix * rotationMatrix * translationMatrix;
+        point = normalize(vec2Transform(point, total));
 
-        matrix<T, 4> rotator = matrixRotationZ(angle);
-        xDir = normalize(vec2Transform(xDir, rotator));
-        yDir = normalize(vec2Transform(yDir, rotator));
-
-        line2d<T> lines[] = {
-            lineFromPointAndNormalVector(xDir + sizes.x,  xDir),
-            lineFromPointAndNormalVector(xDir - sizes.x, -xDir),
-            lineFromPointAndNormalVector(yDir + sizes.y,  yDir),
-            lineFromPointAndNormalVector(yDir - sizes.y, -xDir)
-        };
-
-        return false;
+        return (point.x >= -0.5f || point.x <= 0.5f)
+            && (point.y >= -0.5f || point.y <= 0.5f);
     }
 
-    bool intersectsWithSphere(vec2<T> center, T radius)
+    bool intersectsWithSphere(vec2<T> sphereCenter, T sphereRadius)
     {
+        matrix<T, 3> translationMatrix = matrixTranslation(center.x, center.y);
+        matrix<T, 3> scalingMatrix = matrixScaling(sizes.x, sizes.y);
+        matrix<T, 3> rotationMatrix = matrixRotationZ(angle);
+        matrix<T, 3> total = scalingMatrix * rotationMatrix * translationMatrix;
+        point = normalize(vec2Transform(sphereCenter, total));
+
         return false;
     }
 
