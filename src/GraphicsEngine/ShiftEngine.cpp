@@ -9,15 +9,13 @@ namespace ShiftEngine
 
 std::unique_ptr<IContextManager> ContextManagerInstance;
 std::unique_ptr<SceneGraph> SceneGraphInstance;
-std::unique_ptr<Renderer> RendererInstance;
 
 bool InitDX11Api(HWND hwnd, GraphicEngineSettings settings, PathSettings paths, SceneGraphType sceneGraphType)
 {
     ContextManagerInstance.reset(new D3D11ContextManager(hwnd));
     if (!ContextManagerInstance->Initialize(settings, paths))
         return false;
-    RendererInstance.reset(new Renderer(ContextManagerInstance->GetShaderManager()));
-    SceneGraphInstance.reset(new SceneGraph(sceneGraphType));
+    SceneGraphInstance = std::make_unique<ShiftEngine::SceneGraph>(sceneGraphType);
     return true;
 }
 
@@ -45,15 +43,9 @@ SceneGraph * GetSceneGraph()
     return SceneGraphInstance.get();
 }
 
-Renderer * GetRenderer()
-{
-    return RendererInstance.get();
-}
-
 void ShutdownEngine()
 {
     SceneGraphInstance.reset();
-    RendererInstance.reset();
     ContextManagerInstance.reset();
 }
 

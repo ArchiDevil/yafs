@@ -6,7 +6,6 @@
 #include "ShiftEngine.h"
 
 #include "SceneGraph/CameraSceneNode.h"
-#include "SceneGraph/LightSceneNode.h"
 
 #include <sstream>
 #include <cassert>
@@ -15,8 +14,7 @@
 using namespace ShiftEngine;
 using namespace MathLib;
 
-Renderer::Renderer(IShaderManager * _pShaderManager)
-    : pShaderManager(_pShaderManager)
+Renderer::Renderer()
 {
     FPSTimer.start();
     FPSTimer.tick();
@@ -40,107 +38,9 @@ void Renderer::DrawAll(RenderQueue & rq, double /*dt*/)
     FPSCounter++;
 }
 
-void Renderer::drawSky(RenderQueue &rq)
-{
-    SkySceneNode * skyNode = rq.GetActiveSky();
-    if (skyNode)
-    {
-        GetContextManager()->SetUserDebugEventBegin(L"Sky drawing");
-
-        currentState.shaderChanges++;
-        auto pos = rq.GetActiveCamera()->GetWorldPosition();
-        skyNode->SetLocalPosition(MathLib::vec3f(pos.x, pos.y, pos.z));
-        skyNode->SetLocalScale(MathLib::vec3f(10.0f, 10.0f, 10.0f));
-        GetContextManager()->SetZState(false);
-
-        Material * mat = skyNode->GetMaterialPtr();
-        currentState.currentProgram = mat->program;
-
-        bindEngineUniforms(skyNode, rq);
-        bindCustomUniforms(skyNode, rq);
-
-        currentState.currentProgram->Apply(true);
-        currentState.polygonsCount += skyNode->Render();
-        currentState.drawCalls++;
-
-        GetContextManager()->SetUserDebugEventEnd();
-    }
-}
-
-bool sortFunctor(MeshSceneNode * left, MeshSceneNode * right)
-{
-    bool leftTr = left->GetMaterialPtr()->GetMaterialInfo()->GetFlags()->isTransparent;
-    bool rightTr = right->GetMaterialPtr()->GetMaterialInfo()->GetFlags()->isTransparent;
-    if (!leftTr && rightTr)
-        return true;
-    else
-        return false;
-}
-
 void Renderer::Process(RenderQueue &rq)
 {
     currentState.Reset();
-
-    //sky first
-    drawSky(rq);
-    auto & renderVec = rq.GetRenderableNodes();
-
-    std::sort(renderVec.begin(), renderVec.end(), sortFunctor);
-
-    GetContextManager()->SetZState(true);
-
-    GetContextManager()->SetUserDebugEventBegin(L"Objects drawing");
-
-    for (auto iter = renderVec.begin(); iter != renderVec.end(); ++iter)
-    {
-        MeshSceneNode * currentNode = (*iter);
-        if (!currentNode->GetDataPtr())
-            continue;
-
-        //bind material
-        Material * mat = currentNode->GetMaterialPtr();
-
-        if (!mat->program)
-        {
-            //PANIC COMPILE SHADER!!!
-            mat->program = pShaderManager->CreateProgramFromMaterialFlags(mat->info, *currentNode->GetDataPtr()->GetVertexSemantic());
-            mat->LinkMaterial();
-        }
-
-        if (mat->program != currentState.currentProgram)
-        {
-            currentState.currentProgram = mat->program;
-            currentState.shaderChanged = true;
-            currentState.shaderChanges++;
-        }
-
-        //check already set textures
-        for (int i = 0; i < ST_Elems; i++)
-        {
-            if (mat->builtinTextures[i].first != UINT_MAX &&
-                currentState.texturesCache[(engineTextures)i] != mat->builtinTextures[i].second)
-            {
-                if (!currentState.currentProgram->SetTextureByIndex(mat->builtinTextures[i].first, mat->builtinTextures[i].second))
-                {
-                    LOG_ERROR("Unable to set texture for material");
-                }
-                currentState.texturesCache[(engineTextures)i] = mat->builtinTextures[i].second;
-                currentState.textureBindings++;
-            }
-        }
-
-        bindEngineUniforms(currentNode, rq);
-        bindCustomUniforms(currentNode, rq);
-
-        currentState.currentProgram->Apply(currentState.shaderChanged);
-        currentState.polygonsCount += currentNode->Render();
-        currentState.drawCalls++;
-
-        currentState.shaderChanged = false;
-    }
-
-    GetContextManager()->SetUserDebugEventEnd();
-
     drawSprites(rq.GetSpriteNodes(), *rq.GetActiveCamera());
 }
 
@@ -152,167 +52,6 @@ void Renderer::PreProcess()
 void Renderer::PostProcess()
 {
     throw std::exception("The method or operation is not implemented.");
-}
-
-void Renderer::bindEngineUniforms(MeshSceneNode * currentNode, const RenderQueue & list)
-{
-    if (!currentNode || !currentNode->GetMaterialPtr() || !currentNode->GetMaterialPtr()->program)
-        return;
-
-    Material * curMaterial = currentNode->GetMaterialPtr();
-    const MaterialInfo * curMaterialInfo = curMaterial->GetMaterialInfo();
-    IProgramPtr & program = curMaterial->program;
-
-    const auto & uniforms = curMaterial->GetUniforms();
-    size_t uniformsNum = uniforms.size();
-    for (size_t i = 0; i != uniformsNum; ++i)
-    {
-        auto uniformId = uniforms[i];
-        auto uniformIndex = curMaterial->GetUniformIndex(uniformId);
-
-        switch (uniformId)
-        {
-        case SV_MatWorld:
-            currentState.matricesBindings++;
-            program->SetMatrixConstantByIndex(uniformIndex, currentNode->GetWorldMatrix());
-            break;
-        case SV_MatView:
-            if (currentState.shaderChanged)
-            {
-                currentState.matricesBindings++;
-                program->SetMatrixConstantByIndex(uniformIndex, list.GetActiveCamera()->GetViewMatrix());
-            }
-            break;
-        case SV_MatProj:
-            if (currentState.shaderChanged)
-            {
-                currentState.matricesBindings++;
-                program->SetMatrixConstantByIndex(uniformIndex, list.GetActiveCamera()->GetProjectionMatrix());
-            }
-            break;
-        case SV_EyePos:
-            if (currentState.shaderChanged)
-            {
-                currentState.uniformsBindings++;
-                program->SetVectorConstantByIndex(uniformIndex, list.GetActiveCamera()->GetWorldPosition().ptr());
-            }
-            break;
-        case SV_AmbientColor:
-            if (currentState.shaderChanged)
-            {
-                currentState.uniformsBindings++;
-                program->SetVectorConstantByIndex(uniformIndex, list.GetAmbientColor().ptr());
-            }
-            break;
-        case SV_LightsArray:
-            if (currentState.shaderChanged)
-            {
-                currentState.uniformsBindings++;
-                bindLights(list.GetLights(), 0, list.GetLights().size(), curMaterial);
-            }
-            break;
-        case SV_LightsCount:
-            if (currentState.shaderChanged)
-            {
-                currentState.uniformsBindings++;
-                float lightsCount = (float)list.GetLights().size();
-                program->SetScalarConstantByIndex(uniformIndex, &lightsCount);
-            }
-            break;
-        case SV_DiffuseColor:
-            currentState.uniformsBindings++;
-            program->SetVectorConstantByIndex(uniformIndex, curMaterialInfo->diffuseColor.ptr());
-            break;
-        case SV_SpecularColor:
-            currentState.uniformsBindings++;
-            program->SetVectorConstantByIndex(uniformIndex, curMaterialInfo->specularColor.ptr());
-            break;
-        case SV_EmissionColor:
-            currentState.uniformsBindings++;
-            program->SetVectorConstantByIndex(uniformIndex, curMaterialInfo->emissionColor.ptr());
-            break;
-        case SV_Transparency:
-            currentState.uniformsBindings++;
-            program->SetScalarConstantByIndex(uniformIndex, &curMaterialInfo->opacity);
-            break;
-        case SV_Shininess:
-            currentState.uniformsBindings++;
-            program->SetScalarConstantByIndex(uniformIndex, &curMaterialInfo->shininess);
-            break;
-        default:
-            assert(false);
-            break;
-        }
-    }
-}
-
-void Renderer::bindCustomUniforms(MeshSceneNode * currentNode, const RenderQueue & /*list*/)
-{
-    auto mat = currentNode->GetMaterialPtr();
-
-    if (!currentState.shaderChanged)
-        return;
-
-    if (!mat->floatParams.empty())
-    {
-        for (auto & elem : mat->floatParams)
-        {
-            mat->program->SetScalarConstantByName(elem.first.c_str(), &elem.second);
-            currentState.uniformsBindings++;
-        }
-    }
-
-    if (!mat->float2Params.empty())
-    {
-        for (auto & elem : mat->float2Params)
-        {
-            mat->program->SetVectorConstantByName(elem.first.c_str(), elem.second.ptr());
-            currentState.uniformsBindings++;
-        }
-    }
-
-    if (!mat->float3Params.empty())
-    {
-        for (auto & elem : mat->float3Params)
-        {
-            mat->program->SetVectorConstantByName(elem.first.c_str(), elem.second.ptr());
-            currentState.uniformsBindings++;
-        }
-    }
-
-    if (!mat->float4Params.empty())
-    {
-        for (auto & elem : mat->float4Params)
-        {
-            mat->program->SetVectorConstantByName(elem.first.c_str(), elem.second.ptr());
-            currentState.uniformsBindings++;
-        }
-    }
-}
-
-void Renderer::bindLights(const LightsVector & lv, unsigned int startIndex, unsigned int count, Material * matPtr)
-{
-    if (!matPtr)
-        return;
-
-    if (currentState.shaderChanged)
-    {
-        std::vector<LightInfo> li;
-        LightInfo temp;
-        for (size_t i = startIndex; i < startIndex + count; i++)
-        {
-            temp.Type = lv[i]->GetType();
-            temp.Color = lv[i]->GetColor();
-            temp.Direction = lv[i]->GetDirection();
-            temp.Position = lv[i]->GetWorldPosition();
-            temp.Radius = lv[i]->GetRadius();
-            li.push_back(temp);
-        }
-
-        currentState.uniformsBindings += 4 + 1 + 1;
-
-        matPtr->BindLights(li);
-    }
 }
 
 size_t Renderer::GetTextureBindings() const
@@ -360,7 +99,6 @@ void Renderer::drawSprites(SpritesVault & sprites, CameraSceneNode & currentCame
     contextMgr->SetZState(true);
     contextMgr->SetRasterizerState(RasterizerState::NoCulling);
     currentState.shaderChanges++;
-    currentState.currentProgram = spriteProgram;
     currentState.shaderChanged = true;
 
     GetContextManager()->SetUserDebugEventBegin(L"Sprites drawing");
@@ -418,9 +156,6 @@ void Renderer::drawSprites(SpritesVault & sprites, CameraSceneNode & currentCame
 
 void Renderer::loadSpritesPrerequisites()
 {
-    if(!spriteMesh)
-        spriteProgram = GetContextManager()->LoadShader(L"SpriteShader.fx");
-
     if (!spriteMesh)
     {
         std::array<PlainSpriteVertex, 4> ver = {};
@@ -431,11 +166,9 @@ void Renderer::loadSpritesPrerequisites()
 
         std::vector<uint32_t> ind = {0, 1, 2, 1, 3, 2};
 
-        IMeshManager * pMeshManager = GetContextManager()->GetMeshManager();
         spriteMesh = pMeshManager->CreateMeshFromVertices((uint8_t*)ver.data(),
                                                           ver.size() * sizeof(PlainSpriteVertex),
                                                           ind,
-                                                          &plainSpriteVertexSemantic,
                                                           {});
     }
 }

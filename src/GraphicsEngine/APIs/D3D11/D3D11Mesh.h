@@ -5,10 +5,7 @@
 #include <string>
 #include <memory>
 
-#include "D3D11VertexDeclaration.h"
-
 #include "../../IMeshData.h"
-#include "../../VertexTypes.h"
 #include "../../MiscTypes.h"
 
 namespace ShiftEngine
@@ -27,9 +24,8 @@ public:
                        size_t vDataSize,
                        const uint32_t * iData,
                        size_t iDataSize,
-                       const VertexSemantic * semantic,
-                       const IVertexDeclarationPtr & declaration,
-                       const MathLib::AABB & bbox) override;
+                       const MathLib::AABB & bbox,
+                       size_t vertexSize) override;
     size_t Draw() override;
     void Clear() override;
 

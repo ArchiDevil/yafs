@@ -5,8 +5,6 @@
 #include <vector>
 #include <wrl.h>
 
-#include "../../IProgram.h"
-
 #include "D3D11Texture.h"
 #include "D3D11ShaderProgram.h"
 #include "D3D11VertexDeclaration.h"

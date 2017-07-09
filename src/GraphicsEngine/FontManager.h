@@ -1,8 +1,6 @@
 #pragma once
 
 #include "TextLib/cFont.h"
-#include "IProgram.h"
-#include "IMeshData.h"
 
 #include <map>
 #include <vector>
@@ -41,8 +39,6 @@ private:
     std::map<std::wstring, std::unique_ptr<cFont>> Fonts;
     cFont * pCurrentFont = nullptr;
     std::wstring currentFont = L"";
-    IProgramPtr textShader = nullptr;
-    IMeshDataPtr batchedMesh = nullptr;
 };
 
 }

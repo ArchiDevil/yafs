@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ISceneNode.h"
-#include "../IMeshData.h"
 #include "../ITexture.h"
 
 namespace ShiftEngine

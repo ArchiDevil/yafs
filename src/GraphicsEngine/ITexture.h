@@ -30,12 +30,12 @@ public:
 
     virtual ~ITexture() = default;
 
-    int GetHeight() const
+    size_t GetHeight() const
     {
         return height;
     }
 
-    int GetWidth() const
+    size_t GetWidth() const
     {
         return width;
     }
@@ -48,8 +48,8 @@ public:
     virtual void Bind(unsigned int index, BindingPoint point) = 0;
 
 private:
-    int width;
-    int height;
+    size_t width;
+    size_t height;
     TextureType type;
 };
 

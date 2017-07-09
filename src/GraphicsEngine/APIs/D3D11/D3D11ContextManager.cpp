@@ -12,23 +12,6 @@ using namespace ShiftEngine;
 D3D11ContextManager::D3D11ContextManager(HWND hwnd)
     : windowHandle(hwnd)
 {
-    //MOVE TO ICONTEXTMANAGER CONSTRUCTOR
-    defaultVertexSemantic.addSemantic(ET_FLOAT, 3, ES_Position);
-    defaultVertexSemantic.addSemantic(ET_FLOAT, 3, ES_Normal);
-    defaultVertexSemantic.addSemantic(ET_FLOAT, 2, ES_Texcoord);
-
-    extendedVertexSemantic.addSemantic(ET_FLOAT, 3, ES_Position);
-    extendedVertexSemantic.addSemantic(ET_FLOAT, 3, ES_Normal);
-    extendedVertexSemantic.addSemantic(ET_FLOAT, 3, ES_Texcoord);
-    extendedVertexSemantic.addSemantic(ET_FLOAT, 1, ES_Color);
-
-    colorVertexSemantic.addSemantic(ET_FLOAT, 3, ES_Position);
-    colorVertexSemantic.addSemantic(ET_FLOAT, 3, ES_Normal);
-    colorVertexSemantic.addSemantic(ET_FLOAT, 1, ES_Color);
-
-    plainSpriteVertexSemantic.addSemantic(ET_FLOAT, 2, ES_Position);
-    plainSpriteVertexSemantic.addSemantic(ET_FLOAT, 2, ES_Texcoord);
-    //plainSpriteVertexSemantic.addVertexSemantic(ET_FLOAT, 1, ES_Color);
 }
 
 ShiftEngine::D3D11ContextManager::~D3D11ContextManager()
@@ -59,14 +42,17 @@ void ShiftEngine::D3D11ContextManager::SetUserDebugEventEnd()
 #endif
 }
 
+void ShiftEngine::D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
+{
+
+}
+
 bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettings _Paths)
 {
     engineSettings = _Settings;
     enginePaths = _Paths;
 
     if (enginePaths.FontsPath.empty() ||
-        enginePaths.MaterialsPath.empty() ||
-        enginePaths.MeshPath.empty() ||
         enginePaths.ShaderPath.empty() ||
         enginePaths.TexturePath.empty())
         LOG_ERROR("Some settings paths are not filled");
@@ -182,12 +168,8 @@ bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettin
     const float BlendFactor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     graphicsContext.DeviceContext->OMSetBlendState(graphicsContext.bsNormal.Get(), BlendFactor, 0xffffffff);
 
-    shaderManager = new D3D11ShaderManager(graphicsContext.Device);
-    shaderGenerator = new D3D11ShaderGenerator();
-    meshManager = new D3D11MeshManager(graphicsContext.Device);
     textureManager = new D3D11TextureManager(graphicsContext.Device, graphicsContext.DeviceContext, enginePaths.TexturePath);
-    materialManager = new MaterialManager(textureManager, shaderManager);
-    fontManager = new FontManager();
+    // fontManager = new FontManager();
 
     graphicsContext.DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -218,11 +200,6 @@ bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettin
 
     graphicsContext.DeviceContext->PSSetSamplers(0, 1, &sampler);
 
-    GetVertexDeclaration(defaultVertexSemantic);
-    GetVertexDeclaration(extendedVertexSemantic);
-    GetVertexDeclaration(colorVertexSemantic);
-    GetVertexDeclaration(plainSpriteVertexSemantic);
-
     return true;
 }
 
@@ -252,7 +229,7 @@ void D3D11ContextManager::BeginScene()
 void D3D11ContextManager::EndScene()
 {
     SetUserDebugEventBegin(L"Text drawing");
-    fontManager->DrawBatchedText();
+    //fontManager->DrawBatchedText();
     SetUserDebugEventEnd();
 
     if (engineSettings.screenRate > 0)
@@ -268,8 +245,6 @@ void D3D11ContextManager::ResetPipeline()
     graphicsContext.DeviceContext->IASetVertexBuffers(0, 1, &nullB, &null, &null);
     graphicsContext.DeviceContext->IASetIndexBuffer(nullB, DXGI_FORMAT_UNKNOWN, NULL);
     graphicsContext.DeviceContext->IASetInputLayout(nullptr);
-    currentVertexDeclaration = nullptr;
-    currentProgram = nullptr;
 }
 
 ITexturePtr D3D11ContextManager::LoadTexture(const std::wstring & FileName)
@@ -281,35 +256,6 @@ ITexturePtr D3D11ContextManager::LoadTexture(const std::wstring & FileName)
         out = textureManager->GetErrorTexture();
     }
     return out;
-}
-
-IProgramPtr D3D11ContextManager::LoadShader(const std::wstring & FileName)
-{
-    return shaderManager->CreateProgramFromFile(enginePaths.ShaderPath + FileName);
-}
-
-IMeshDataPtr D3D11ContextManager::LoadMesh(const std::wstring & FileName)
-{
-    IMeshDataPtr out = meshManager->LoadMesh(enginePaths.MeshPath + FileName);
-    if (out == nullptr)
-    {
-        LOG_ERROR("Unable to load: ", utils::narrow(FileName), ", trying to use default cube mesh");
-        out = meshManager->LoadErrorMesh();
-    }
-    return out;
-}
-
-MaterialPtr D3D11ContextManager::LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName)
-{
-    auto ptr = materialManager->LoadMaterial(enginePaths.MaterialsPath + FileName, mtlName);
-
-    if (ptr == nullptr)
-    {
-        LOG_ERROR("Unable to load ", utils::narrow(FileName));
-        return materialManager->LoadMaterial(enginePaths.MaterialsPath + L"error.mtl");
-    }
-
-    return ptr;
 }
 
 void D3D11ContextManager::SetZState(bool enabled)
@@ -331,31 +277,22 @@ const PathSettings & D3D11ContextManager::GetPaths() const
     return enginePaths;
 }
 
-int D3D11ContextManager::DrawMesh(IMeshDataPtr & mesh)
+int D3D11ContextManager::DrawMesh()
 {
-    if (mesh && mesh->GetVertexDeclaration())
-    {
-        if (mesh->GetVertexDeclaration().get() != currentVertexDeclaration)
-        {
-            mesh->GetVertexDeclaration()->Bind();
-            currentVertexDeclaration = mesh->GetVertexDeclaration().get();
-        }
-        return mesh->Draw();
-    }
-    else
-    {
-        return 0;
-    }
-}
-
-IShaderManager * D3D11ContextManager::GetShaderManager()
-{
-    return shaderManager;
-}
-
-IShaderGenerator * D3D11ContextManager::GetShaderGenerator()
-{
-    return shaderGenerator;
+    //if (mesh && mesh->GetVertexDeclaration())
+    //{
+    //    if (mesh->GetVertexDeclaration().get() != currentVertexDeclaration)
+    //    {
+    //        mesh->GetVertexDeclaration()->Bind();
+    //        currentVertexDeclaration = mesh->GetVertexDeclaration().get();
+    //    }
+    //    return mesh->Draw();
+    //}
+    //else
+    //{
+    //    return 0;
+    //}
+    return 0;
 }
 
 void D3D11ContextManager::SetBlendingState(BlendingState bs)
@@ -380,11 +317,6 @@ void D3D11ContextManager::SetBlendingState(BlendingState bs)
     currentBlendingState = bs;
 }
 
-BlendingState D3D11ContextManager::GetBlendingState() const
-{
-    return currentBlendingState;
-}
-
 void D3D11ContextManager::SetRasterizerState(RasterizerState rs)
 {
     currentRasterizerState = rs;
@@ -404,160 +336,14 @@ void D3D11ContextManager::SetRasterizerState(RasterizerState rs)
     }
 }
 
-RasterizerState D3D11ContextManager::GetRasterizerState() const
-{
-    return currentRasterizerState;
-}
-
-FontManager * D3D11ContextManager::GetFontManager()
-{
-    return fontManager;
-}
-
-IVertexDeclarationPtr D3D11ContextManager::CreateVDFromDescription(const VertexSemantic & semantic)
-{
-    ID3D11Device * pDevice = graphicsContext.Device.Get();
-    ID3D11InputLayout * outIL = nullptr;
-
-    const size_t bufferSize = 2048;
-    char shaderCode[bufferSize] = {};
-    std::stringstream stream;
-
-    auto repr = semantic.getInnerRepresentation();
-
-    //writing shader
-    for (size_t i = 0; i < repr.size(); i++)
-    {
-        switch (repr[i].semantic)
-        {
-        case ES_Position:
-            repr[i].name = "POSITION";
-            break;
-        case ES_Normal:
-            repr[i].name = "NORMAL";
-            break;
-        case ES_Texcoord:
-            repr[i].name = "TEXCOORD";
-            break;
-        case ES_Color:
-            repr[i].name = "COLOR";
-            break;
-        case ES_Binormal:
-            repr[i].name = "BINORMAL";
-            break;
-        case ES_Tangent:
-            repr[i].name = "TANGENT";
-            break;
-        case ES_Custom:
-            break;                      //name should be specified by user
-        default:
-            throw;
-        }
-
-        if (repr[i].count > 4)
-        {
-            LOG_ERROR("Unable to create input layout for vertex declaration. Reason - wrong byteWidth in vd description. Value is", std::to_string(repr[i].count));
-            outIL = nullptr;
-        }
-        stream << "float" << repr[i].count << " in_" << i << " : " << repr[i].name << ";\n";
-    }
-
-    sprintf_s(shaderCode, "struct vs_in {\n %s }; struct vs_out {float4 Pos : SV_Position;}; vs_out f(vs_in input){vs_out o; o.Pos = float4(0.0f, 0.0f, 0.0f, 0.0f); return o;};", stream.str().c_str());
-    //end of writing shader
-
-    ID3DBlob * compiledShader = nullptr;    //sue this signature to validate Input Layout
-    ID3DBlob * errorMessages = nullptr;
-    if (FAILED(D3DCompile(shaderCode, bufferSize, NULL, NULL, NULL, "f", "vs_5_0", 0, 0, &compiledShader, &errorMessages)))
-    {
-        LOG_ERROR(std::string((char*)errorMessages->GetBufferPointer()));
-        LOG_FATAL_ERROR("Internal fatal error");
-        outIL = nullptr;
-    }
-
-    std::vector<D3D11_INPUT_ELEMENT_DESC> ilDescription(repr.size());
-    unsigned int align = 0;
-
-    for (size_t i = 0; i < repr.size(); i++)
-    {
-        //TEMP
-        switch (repr[i].semantic)
-        {
-        case ES_Position:
-            ilDescription[i].SemanticName = "POSITION";
-            break;
-        case ES_Normal:
-            ilDescription[i].SemanticName = "NORMAL";
-            break;
-        case ES_Texcoord:
-            ilDescription[i].SemanticName = "TEXCOORD";
-            break;
-        case ES_Color:
-            ilDescription[i].SemanticName = "COLOR";
-            break;
-        case ES_Binormal:
-            ilDescription[i].SemanticName = "BINORMAL";
-            break;
-        case ES_Tangent:
-            ilDescription[i].SemanticName = "TANGENT";
-            break;
-        case ES_Custom:
-        default:
-            throw;
-        }
-        //TEMP
-
-        ilDescription[i].AlignedByteOffset = align;
-        if (repr[i].count == 1)
-            ilDescription[i].Format = DXGI_FORMAT_R32_FLOAT;
-        if (repr[i].count == 2)
-            ilDescription[i].Format = DXGI_FORMAT_R32G32_FLOAT;
-        if (repr[i].count == 3)
-            ilDescription[i].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-        if (repr[i].count == 4)
-            ilDescription[i].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-        ilDescription[i].InputSlot = 0;
-        ilDescription[i].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-        ilDescription[i].InstanceDataStepRate = 0;
-        ilDescription[i].SemanticIndex = 0;
-        align += repr[i].count * 4;
-    }
-
-    if (FAILED(pDevice->CreateInputLayout(ilDescription.data(), repr.size(), compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), &outIL)))
-    {
-        compiledShader->Release();
-        outIL = nullptr;
-        LOG_FATAL_ERROR("Unable to create input layout");
-        return nullptr;
-    }
-
-    compiledShader->Release();
-
-    //HACK: slow but I'm lazy to rework
-    declarations[semantic] = std::make_shared<D3D11VertexDeclaration>(outIL, graphicsContext.DeviceContext);
-    return declarations[semantic];
-}
+//FontManager * D3D11ContextManager::GetFontManager()
+//{
+//    return fontManager;
+//}
 
 ITextureManager * D3D11ContextManager::GetTextureManager()
 {
     return textureManager;
-}
-
-IMeshManager * D3D11ContextManager::GetMeshManager()
-{
-    return meshManager;
-}
-
-IVertexDeclarationPtr D3D11ContextManager::GetVertexDeclaration(const VertexSemantic & semantic)
-{
-    auto iter = declarations.find(semantic);
-    if (iter == declarations.end())
-    {
-        return CreateVDFromDescription(semantic);
-    }
-    else
-    {
-        return iter->second;
-    }
 }
 
 ID3D11Device* D3D11ContextManager::GetDevicePtr() const

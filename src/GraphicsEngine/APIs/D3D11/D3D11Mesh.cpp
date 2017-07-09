@@ -4,29 +4,29 @@
 
 using namespace ShiftEngine;
 
-D3D11MeshData::D3D11MeshData(Microsoft::WRL::ComPtr<ID3D11Buffer> _VB /*= nullptr*/, 
+D3D11MeshData::D3D11MeshData(Microsoft::WRL::ComPtr<ID3D11Buffer> _VB /*= nullptr*/,
                              Microsoft::WRL::ComPtr<ID3D11Buffer> _IB /*= nullptr*/,
-                             Microsoft::WRL::ComPtr<ID3D11Device> pDevice /*= nullptr*/, 
+                             Microsoft::WRL::ComPtr<ID3D11Device> pDevice /*= nullptr*/,
                              Microsoft::WRL::ComPtr<ID3D11DeviceContext> pDeviceContext /*= nullptr*/)
     : VertexBuffer(_VB)
     , IndexBuffer(_IB)
     , pDevice(pDevice)
     , pDeviceContext(pDeviceContext)
-{}
+{
+}
 
-bool D3D11MeshData::CreateBuffers(bool dynamic, 
-                                               const uint8_t * vData, 
-                                               size_t vDataSize, 
-                                               const uint32_t * iData, 
-                                               size_t iDataSize, 
-                                               const VertexSemantic * semantic, 
-                                               const IVertexDeclarationPtr & declaration, 
-                                               const MathLib::AABB & _bbox)
+bool D3D11MeshData::CreateBuffers(bool dynamic,
+                                  const uint8_t * vData,
+                                  size_t vDataSize,
+                                  const uint32_t * iData,
+                                  size_t iDataSize,
+                                  const MathLib::AABB & _bbox,
+                                  size_t in_vertexSize)
 {
     assert(pDevice);
     assert(pDeviceContext);
 
-    if (!vData || !vDataSize || !semantic)
+    if (!vData || !vDataSize)
         return false;
 
     D3D11_BUFFER_DESC vBuffDesc;
@@ -84,9 +84,7 @@ bool D3D11MeshData::CreateBuffers(bool dynamic,
             return false;
     }
 
-    vertexSemantic = semantic;
-    vertexDeclaration = declaration;
-    vertexSize = vertexSemantic->getVertexSize();
+    vertexSize = in_vertexSize;
     verticesCount = vDataSize / vertexSize;
     indicesCount = iDataSize / sizeof(uint32_t);
     bbox = _bbox;

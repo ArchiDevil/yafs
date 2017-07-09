@@ -10,10 +10,7 @@ using namespace ShiftEngine;
 
 FontManager::FontManager()
     : currentFont(L"")
-    , textShader(nullptr)
 {
-    IContextManager* pCntMng = GetContextManager();
-    textShader = pCntMng->LoadShader(L"text.fx");
     LoadFonts();
     if (!Fonts.empty())
         currentFont = Fonts.begin()->first;

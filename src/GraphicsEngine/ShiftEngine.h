@@ -1,9 +1,10 @@
 #pragma once
 
+#include <Windows.h>
+
 #include "IContextManager.h"
-#include "Renderer.h"
 #include "SceneGraph/SceneGraph.h"
-#include "Utils.h"
+#include "MiscTypes.h"
 
 namespace ShiftEngine
 {
@@ -13,5 +14,4 @@ void ShutdownEngine();
 
 IContextManager * GetContextManager();
 SceneGraph * GetSceneGraph();
-Renderer * GetRenderer();
 }

@@ -12,11 +12,8 @@ namespace ShiftEngine
 
 class D3D11Texture : public ITexture
 {
-    friend class Renderer;
-
     friend class D3D11ContextManager;
     friend class D3D11TextureManager;
-    friend class D3D11Program;
 
 public:
     D3D11Texture(Microsoft::WRL::ComPtr<ID3D11DeviceContext> pDeviceContext,

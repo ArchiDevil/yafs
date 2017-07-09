@@ -5,7 +5,7 @@ if(CMAKE_CONFIGURATION_TYPES)
    set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING "Reset the configurations to what we need" FORCE)
  endif()
 
-project(GoingHome)
+project(YAFS)
 
 if(MSVC60 OR MSVC70 OR MSVC71 OR MSVC80 OR CMAKE_COMPILER_2005 OR MSVC90 OR MSVC10 OR MSVC11 OR MSVC12)
     message(FATAL_ERROR "Visual Studios below 2015 are not supported")
