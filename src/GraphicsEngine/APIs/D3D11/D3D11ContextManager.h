@@ -32,7 +32,7 @@ class D3D11ContextManager : public IContextManager
 {
 public:
     D3D11ContextManager(HWND hwnd);
-    ~D3D11ContextManager();
+    ~D3D11ContextManager() = default;
 
     bool                                Initialize(GraphicEngineSettings _Settings, PathSettings _Paths) override;
     std::wstring                        GetGPUDescription() override;
@@ -54,13 +54,12 @@ private:
     void                                SetBlendingState(BlendingState bs);
     void                                SetRasterizerState(RasterizerState rs);
     int                                 DrawMesh();
-    ID3D11Device*                       GetDevicePtr() const;
 
     HWND                                windowHandle;
     PathSettings                        enginePaths;
     GraphicEngineSettings               engineSettings;
 
-    D3D11Context                        graphicsContext;
+    std::unique_ptr<D3D11Context>       graphicsContext;
     // FontManager*                        fontManager = nullptr;
     D3D11TextureManager *               textureManager = nullptr;
 
