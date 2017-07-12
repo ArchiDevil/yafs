@@ -1,11 +1,17 @@
 #include "D3D11ContextManager.h"
 
+#include "../../RenderQueue.h"
+#include "../../SceneGraph/SpriteSceneNode.h"
+#include "../../SceneGraph/CameraSceneNode.h"
+
 #include <Utilities/logger.hpp>
 #include <Utilities/ut.h>
 
 #include <sstream>
 
 #include <D3Dcompiler.h>
+
+using namespace MathLib;
 
 namespace ShiftEngine
 {
@@ -51,10 +57,13 @@ void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
         alignas(16) float thirdRow[3];
     };
 
+    decltype(auto) sprites = queue.GetSpriteNodes();
+    decltype(auto) currentCamera = queue.GetActiveCamera();
+
     auto spriteSortFunctor = [](SpriteSceneNode* left, SpriteSceneNode* right) { return left->GetDrawingMode() < right->GetDrawingMode(); };
 
-    if (!spriteProgram || !spriteMesh)
-        loadSpritesPrerequisites();
+    if (!spriteVS || !spriteVS)
+        LoadSpritesPrerequisites();
 
     SetZState(true);
     SetRasterizerState(RasterizerState::NoCulling);
@@ -74,7 +83,7 @@ void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
                 continue;
             }
 
-            if (contextMgr->GetBlendingState() == BlendingState::AlphaEnabled && sprite->GetDrawingMode() == SpriteSceneNode::SpriteDrawingMode::Additive)
+            if (currentBlendingState == BlendingState::AlphaEnabled && sprite->GetDrawingMode() == SpriteSceneNode::SpriteDrawingMode::Additive)
                 SetBlendingState(BlendingState::Additive);
 
             const ITexturePtr & texture = sprite->GetTexture();
@@ -87,18 +96,23 @@ void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
             mat4f matResult = currentCamera.GetViewMatrix() * currentCamera.GetProjectionMatrix();
             matResult = matWorld * matResult;
 
-            spriteProgram->SetMatrixConstantByName("WVPMatrix", (float*)matResult);
-
             //TODO: ugly-ugly shit, need to do something with it D:<
-            textureMatrixWithPadding texMatrix;
-            memcpy(texMatrix.firstRow, sprite->GetTextureMatrix()[0], sizeof(float) * 3);
-            memcpy(texMatrix.secondRow, sprite->GetTextureMatrix()[1], sizeof(float) * 3);
-            memcpy(texMatrix.thirdRow, sprite->GetTextureMatrix()[2], sizeof(float) * 3);
+            SpriteCB cbufferToFill;
+            memcpy(cbufferToFill.WVPMatrix, (float*)matResult, sizeof(float) * 16);
+            memcpy(cbufferToFill.TextureMatrix[0], sprite->GetTextureMatrix()[0], sizeof(float) * 3);
+            memcpy(cbufferToFill.TextureMatrix[1], sprite->GetTextureMatrix()[1], sizeof(float) * 3);
+            memcpy(cbufferToFill.TextureMatrix[2], sprite->GetTextureMatrix()[2], sizeof(float) * 3);
+            memcpy(cbufferToFill.MaskColor, maskColor.el, sizeof(float) * 4);
 
-            spriteProgram->SetMatrixConstantByName("TextureMatrix", (float*)&texMatrix);
-            spriteProgram->SetTextureByIndex(0, texture); // there is only one texture for sprites
-            spriteProgram->SetVectorConstantByName("MaskColor", maskColor.ptr());
-            DrawMesh(spriteMesh);
+            D3D11_MAPPED_SUBRESOURCE ss;
+            graphicsContext->DeviceContext->Map(spriteCB.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ss);
+            memcpy(ss.pData, &cbufferToFill, sizeof(SpriteCB));
+            graphicsContext->DeviceContext->Unmap(spriteCB.Get(), 0);
+
+            graphicsContext->DeviceContext->VSSetConstantBuffers(0, 1, spriteCB.GetAddressOf());
+            graphicsContext->DeviceContext->PSSetConstantBuffers(0, 1, spriteCB.GetAddressOf());
+            texture->Bind(0, BindingPoint::Pixel);
+            DrawMesh();
         }
     }
 
@@ -115,7 +129,7 @@ bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettin
         enginePaths.TexturePath.empty())
         LOG_ERROR("Some settings paths are not filled");
 
-    graphicsContext = std::make_unique<D3D11Context>(windowHandle);
+    graphicsContext = std::make_unique<D3D11Context>(windowHandle, engineSettings);
     zBufferState = true;
 
     textureManager = new D3D11TextureManager(graphicsContext->Device, graphicsContext->DeviceContext, enginePaths.TexturePath);
@@ -265,6 +279,28 @@ void D3D11ContextManager::SetRasterizerState(RasterizerState rs)
 ITextureManager * D3D11ContextManager::GetTextureManager()
 {
     return textureManager;
+}
+
+void D3D11ContextManager::LoadSpritesPrerequisites()
+{
+    D3D11_BUFFER_DESC desc;
+    desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    desc.ByteWidth = sizeof(SpriteCB);
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    desc.MiscFlags = 0;
+    desc.StructureByteStride = 0;
+    desc.Usage = D3D11_USAGE_DYNAMIC;
+
+    HRESULT hr = graphicsContext->Device->CreateBuffer(&desc, nullptr, &spriteCB);
+    if (FAILED(hr))
+    {
+        LOG_FATAL_ERROR("Internal error: ", std::hex, hr, std::dec);
+    }
+}
+
+void D3D11ContextManager::SetWireframeState(bool state)
+{
+    SetRasterizerState(state ? RasterizerState::Wireframe : RasterizerState::Normal);
 }
 
 }

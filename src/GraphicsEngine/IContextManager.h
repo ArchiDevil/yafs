@@ -20,5 +20,6 @@ public:
     virtual const GraphicEngineSettings &   GetEngineSettings() const = 0;
     virtual const PathSettings &            GetPaths() const = 0;
     virtual void                            DrawAll(RenderQueue& queue, double dt) = 0;
+    virtual void                            SetWireframeState(bool state) = 0;
 };
 }

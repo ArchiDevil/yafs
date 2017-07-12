@@ -1,6 +1,4 @@
-set(SRC BackgroundManager.cpp
-        BackgroundManager.h
-        Common.h
+set(SRC Common.h
         Game.cpp
         Game.h
         GoingHomeApplication.cpp
@@ -96,6 +94,14 @@ set(LS  Spells/ISpellController.h
         Spells/SpellsDatabase.h
         Spells/SpellsDescription.h)
 source_group("Header Files\\Spells" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  LevelManagement/LevelManager.cpp)
+source_group("Source Files\\Level Management" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  LevelManagement/LevelManager.h)
+source_group("Header Files\\Level Management" FILES ${LS})
 list(APPEND SRC ${LS})
 
 if(${EX_PLATFORM} EQUAL 64)

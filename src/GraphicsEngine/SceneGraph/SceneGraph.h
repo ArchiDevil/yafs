@@ -59,8 +59,6 @@ public:
     void MoveNodeCallback(ISceneNode * node);
 
 private:
-    void CreateSpriteRequisites();
-
     ISceneNode *                    rootNode = nullptr;
     CameraSceneNode *               activeCamera = nullptr;
     SceneGraphType                  type = SGT_Plain;

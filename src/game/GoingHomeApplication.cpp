@@ -1,5 +1,7 @@
 #include "GoingHomeApplication.h"
 
+#include <Utilities/logger.hpp>
+
 //TEMPORARY
 
 int PerfCounter = 0;
@@ -40,11 +42,9 @@ bool GoingHomeApplication::Initialize()
 
     // Load paths settings
     ShiftEngine::PathSettings path;
-    path.MeshPath      = settingsLoader.GetWString("MeshPath");
     path.TexturePath   = settingsLoader.GetWString("TexturePath");
     path.ShaderPath    = settingsLoader.GetWString("ShaderPath");
     path.FontsPath     = settingsLoader.GetWString("FontsPath");
-    path.MaterialsPath = settingsLoader.GetWString("MaterialsPath");
 
     // Graphics engine initialization
     if (!ShiftEngine::InitEngine(settings, path, GetHWND(), ShiftEngine::SceneGraphType::SGT_Plain))
@@ -110,12 +110,12 @@ bool GoingHomeApplication::Frame()
     AllTime += elapsedTime;
     gameTimer.tick();
 
-    int curFPS = ShiftEngine::GetRenderer()->GetFPS();
+    //int curFPS = ShiftEngine::GetRenderer()->GetFPS();
 
-    if (curFPS > maxFPS)
-        maxFPS = curFPS;
-    if (curFPS < minFPS)
-        minFPS = curFPS;
+    //if (curFPS > maxFPS)
+    //    maxFPS = curFPS;
+    //if (curFPS < minFPS)
+    //    minFPS = curFPS;
 
     return stateMachine.Frame(elapsedTime);
 }

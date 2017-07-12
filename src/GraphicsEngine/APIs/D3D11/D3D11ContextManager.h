@@ -28,11 +28,11 @@ enum class RasterizerState
     NoCulling
 };
 
-class D3D11ContextManager : public IContextManager
+class D3D11ContextManager final : public IContextManager
 {
 public:
     D3D11ContextManager(HWND hwnd);
-    ~D3D11ContextManager() = default;
+    ~D3D11ContextManager() override = default;
 
     bool                                Initialize(GraphicEngineSettings _Settings, PathSettings _Paths) override;
     std::wstring                        GetGPUDescription() override;
@@ -42,6 +42,7 @@ public:
     const GraphicEngineSettings &       GetEngineSettings() const override;
     const PathSettings &                GetPaths() const override;
     void                                DrawAll(RenderQueue& queue, double dt) override;
+    void                                SetWireframeState(bool state) override;
 
 private:
     void                                BeginScene();
@@ -54,20 +55,32 @@ private:
     void                                SetBlendingState(BlendingState bs);
     void                                SetRasterizerState(RasterizerState rs);
     int                                 DrawMesh();
+    void                                LoadSpritesPrerequisites();
 
-    HWND                                windowHandle;
-    PathSettings                        enginePaths;
-    GraphicEngineSettings               engineSettings;
+    HWND                                        windowHandle;
+    PathSettings                                enginePaths;
+    GraphicEngineSettings                       engineSettings;
 
-    std::unique_ptr<D3D11Context>       graphicsContext;
+    std::unique_ptr<D3D11Context>               graphicsContext;
     // FontManager*                        fontManager = nullptr;
-    D3D11TextureManager *               textureManager = nullptr;
+    D3D11TextureManager *                       textureManager = nullptr;
 
-    RasterizerState                     currentRasterizerState = RasterizerState::Normal;
-    BlendingState                       currentBlendingState = BlendingState::None;
+    RasterizerState                             currentRasterizerState = RasterizerState::Normal;
+    BlendingState                               currentBlendingState = BlendingState::None;
 
-    bool                                zBufferState = true;
-    bool                                cullingEnabled = true;
+    bool                                        zBufferState = true;
+    bool                                        cullingEnabled = true;
+
+    struct SpriteCB
+    {
+        float WVPMatrix[4][4];
+        float TextureMatrix[4][4];
+        float MaskColor[4];
+    };
+
+    Microsoft::WRL::ComPtr<ID3D11VertexShader>  spriteVS = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader>   spritePS = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>        spriteCB = nullptr;
 };
 
 }   //end of ShiftEngine namespace

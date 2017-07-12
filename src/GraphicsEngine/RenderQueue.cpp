@@ -8,9 +8,6 @@ RenderQueue::RenderQueue(const MathLib::vec3f & _ambientColor)
     : ambientColor(_ambientColor)
 {}
 
-RenderQueue::~RenderQueue()
-{}
-
 SpritesVault & RenderQueue::GetSpriteNodes()
 {
     return sprites;
@@ -21,9 +18,9 @@ void RenderQueue::SetCameraNode(CameraSceneNode * node)
     activeCamera = node;
 }
 
-CameraSceneNode * RenderQueue::GetActiveCamera() const
+CameraSceneNode& RenderQueue::GetActiveCamera() const
 {
-    return activeCamera;
+    return *activeCamera;
 }
 
 void RenderQueue::AddSpriteNode(SpriteSceneNode * node, int renderingLayer)

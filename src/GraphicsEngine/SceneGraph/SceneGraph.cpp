@@ -52,8 +52,6 @@ SpriteSceneNode * SceneGraph::AddSpriteNode(const std::wstring & textureName,
                                             const MathLib::vec2f & leftTopTextureCoords/* = {0.0f, 0.0f}*/,
                                             const MathLib::vec2f & rightBottomTextureCoords/* = {1.0f, 1.0f}*/)
 {
-    CreateSpriteRequisites();
-
     ITexturePtr texture = GetContextManager()->LoadTexture(textureName);
     SpriteSceneNode * out = new SpriteSceneNode(texture, leftTopTextureCoords, rightBottomTextureCoords, this, spriteLayer);
     rootNode->AddChild(out);
@@ -63,8 +61,6 @@ SpriteSceneNode * SceneGraph::AddSpriteNode(const std::wstring & textureName,
 AnimatedSpriteSceneNode * SceneGraph::AddAnimatedSpriteNode(const std::wstring & textureName,
                                                             int spriteLayer/* = 0*/)
 {
-    CreateSpriteRequisites();
-
     ITexturePtr texture = GetContextManager()->LoadTexture(textureName);
     AnimatedSpriteSceneNode * out = new AnimatedSpriteSceneNode(texture, this, spriteLayer);
     rootNode->AddChild(out);

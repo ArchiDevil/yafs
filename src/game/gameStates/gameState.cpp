@@ -3,7 +3,6 @@
 #include "../Entities/EntityManager.h"
 #include "../AI/AISmallSpirit.h"
 #include "../Spells/SpellsDatabase.h"
-#include "../BackgroundManager.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <Utilities/inputConverter.h>
@@ -63,7 +62,6 @@ bool GameState::update(double dt)
     SceneGraph * pScene = GetSceneGraph();
     Game* pGame = GetGamePtr();
 
-    pGame->GetBackgroundMgr()->Update(dt);
     pGame->GetPhysicsMgr()->Update(dt);
     pGame->GetEntityMgr()->UpdateAllEntities(dt);
 
@@ -82,19 +80,18 @@ bool GameState::render(double dt)
 {
     SceneGraph * pScene = GetSceneGraph();
     IContextManager * pCtxMgr = GetContextManager();
-    Renderer * pRenderer = GetRenderer();
 
 #if defined (DEBUG) || (_DEBUG)
     const int infoSize = 7;
     std::ostringstream di[infoSize];
 
-    di[0] << "FPS: " << pRenderer->GetFPS();
-    di[1] << "Shader changes: " << pRenderer->GetShaderChanges();
-    di[2] << "Matrix bindings: " << pRenderer->GetMatricesBindings();
-    di[3] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
-    di[4] << "Texture bindings: " << pRenderer->GetTextureBindings();
-    di[5] << "Draw calls: " << pRenderer->GetDrawCalls();
-    di[6] << "Player position: " << GetGamePtr()->GetPlayerPtr()->GetPosition().x << " " << GetGamePtr()->GetPlayerPtr()->GetPosition().y;
+    //di[0] << "FPS: " << pRenderer->GetFPS();
+    //di[1] << "Shader changes: " << pRenderer->GetShaderChanges();
+    //di[2] << "Matrix bindings: " << pRenderer->GetMatricesBindings();
+    //di[3] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
+    //di[4] << "Texture bindings: " << pRenderer->GetTextureBindings();
+    //di[5] << "Draw calls: " << pRenderer->GetDrawCalls();
+    //di[6] << "Player position: " << GetGamePtr()->GetPlayerPtr()->GetPosition().x << " " << GetGamePtr()->GetPlayerPtr()->GetPosition().y;
 #else
     const int infoSize = 1;
     std::ostringstream di[infoSize];
@@ -105,27 +102,21 @@ bool GameState::render(double dt)
     // RENDER //
     ////////////
 
-    FontManager * pFntMgr = pCtxMgr->GetFontManager();
-    pFntMgr->SetFont(L"2");
-
-    pCtxMgr->SetBlendingState(BlendingState::AlphaEnabled);
-
-    pCtxMgr->BeginScene(); //no more needed here, cause clear frame should be called from renderer
+    //FontManager * pFntMgr = pCtxMgr->GetFontManager();
+    //pFntMgr->SetFont(L"2");
 
     pScene->DrawAll(dt);
 
-    for (int i = 0; i < infoSize; i++)
-        pFntMgr->DrawTextTL(di[i].str(), 5.0f, 5.0f + i * 16.0f);
+    //for (int i = 0; i < infoSize; i++)
+    //    pFntMgr->DrawTextTL(di[i].str(), 5.0f, 5.0f + i * 16.0f);
 
     std::ostringstream experienceCount;
     experienceCount << "Experience: " << GetGamePtr()->GetPlayerPtr()->GetExperienceCount();
-    pFntMgr->DrawTextTL(experienceCount.str(),
-                        pCtxMgr->GetEngineSettings().screenWidth - 160.0f,
-                        pCtxMgr->GetEngineSettings().screenHeight - 40.0f);
+    //pFntMgr->DrawTextTL(experienceCount.str(),
+    //                    pCtxMgr->GetEngineSettings().screenWidth - 160.0f,
+    //                    pCtxMgr->GetEngineSettings().screenHeight - 40.0f);
 
                     //guiPlatform->getRenderManagerPtr()->drawOneFrame();
-
-    pCtxMgr->EndScene();
 
     return true; //return false if something wrong
 }
@@ -260,10 +251,7 @@ void GameState::switchWireframe()
 
     static bool Wflag = false;
     Wflag = !Wflag;
-    if (Wflag)
-        pCtxMgr->SetRasterizerState(RasterizerState::Wireframe);
-    else
-        pCtxMgr->SetRasterizerState(RasterizerState::Normal);
+    pCtxMgr->SetWireframeState(Wflag);
 #endif
 }
 

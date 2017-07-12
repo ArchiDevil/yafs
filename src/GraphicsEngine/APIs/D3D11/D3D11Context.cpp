@@ -48,10 +48,10 @@ ShiftEngine::D3D11Context::D3D11Context(HWND windowHandle, const GraphicEngineSe
                                                3,
                                                D3D11_SDK_VERSION,
                                                &desc,
-                                               &settings.SwapChain,
-                                               &settings.Device,
+                                               &SwapChain,
+                                               &Device,
                                                &featureLevel,
-                                               &settings.DeviceContext
+                                               &DeviceContext
     );
 
     if (FAILED(hr))
@@ -64,8 +64,8 @@ ShiftEngine::D3D11Context::D3D11Context(HWND windowHandle, const GraphicEngineSe
 
     ID3D11Texture2D * tempTex = nullptr;
 
-    settings.SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&tempTex));
-    settings.Device->CreateRenderTargetView(tempTex, 0, &settings.DefaultRT->view);
+    SwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&tempTex));
+    Device->CreateRenderTargetView(tempTex, 0, &DefaultRT->view);
     tempTex->Release();
 
     D3D11_TEXTURE2D_DESC depthStencilDesc;                              //описание глубинно-стенсильного буфера

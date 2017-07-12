@@ -30,13 +30,12 @@ class RenderQueue
 {
 public:
     RenderQueue(const MathLib::vec3f & ambientColor);
-    ~RenderQueue();
 
     void SetCameraNode(CameraSceneNode * node);
     void AddSpriteNode(SpriteSceneNode * node, int renderingLayer);
 
-    SpritesVault & GetSpriteNodes();
-    CameraSceneNode * GetActiveCamera() const;
+    SpritesVault& GetSpriteNodes();
+    CameraSceneNode& GetActiveCamera() const;
     MathLib::vec3f GetAmbientColor() const;
 
 private:
