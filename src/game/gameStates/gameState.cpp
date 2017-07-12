@@ -4,6 +4,7 @@
 #include "../AI/AISmallSpirit.h"
 #include "../Spells/SpellsDatabase.h"
 #include "../BackgroundManager.h"
+#include "../SceneManager.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <Utilities/inputConverter.h>
@@ -46,7 +47,7 @@ bool GameState::initState()
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
     // just for example, let's create some enemies
-    Enemy* testEnemy = entityMgrPtr->CreateEnemy({1.0f, 1.0f}, 5.0f, 100, 0.2f, Enemy::EnemyType::SmallSpirit).get();
+    SceneManager::LoadScene("bliss");
 
     playerPtr->SetSpellController(database->GetSpellByName("projectile").CreateSpellController(playerPtr),      Player::CS_MainSlot);
     playerPtr->SetSpellController(database->GetSpellByName("multiprojectile").CreateSpellController(playerPtr), Player::CS_AdditionalSlot);
@@ -145,8 +146,6 @@ void GameState::onResume()
 
 void GameState::ProcessInput(double dt)
 {
-    dt;
-
     InputEngine & inputEngine = InputEngine::GetInstance();
     auto settings = GetContextManager()->GetEngineSettings();
 

@@ -5,7 +5,9 @@ set(SRC BackgroundManager.cpp
         Game.h
         GoingHomeApplication.cpp
         GoingHomeApplication.h
-        main.cpp)
+        main.cpp
+        SceneManager.cpp
+        SceneManager.h)
 
 set(LS  gameStates/gameState.cpp
         gameStates/MainMenuState.cpp)
