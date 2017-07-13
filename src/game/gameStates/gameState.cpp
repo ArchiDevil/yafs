@@ -95,7 +95,7 @@ bool GameState::render(double dt)
 #else
     const int infoSize = 1;
     std::ostringstream di[infoSize];
-    di[0] << "FPS: " << pRenderer->GetFPS();
+    //di[0] << "FPS: " << pRenderer->GetFPS();
 #endif
 
     ////////////

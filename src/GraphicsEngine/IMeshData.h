@@ -13,7 +13,7 @@ class IMeshData
 public:
     virtual ~IMeshData() = default;
 
-    virtual uint32_t Draw() = 0;
+    virtual size_t Draw() = 0;
     virtual void Clear() = 0;
 
     size_t GetVerticesCount() const

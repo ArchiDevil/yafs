@@ -48,6 +48,8 @@ void D3D11ContextManager::SetUserDebugEventEnd()
 
 void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
 {
+    BeginScene();
+
     struct textureMatrixWithPadding
     {
         // this is 3x3 matrix and this requires 
@@ -62,13 +64,16 @@ void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
 
     auto spriteSortFunctor = [](SpriteSceneNode* left, SpriteSceneNode* right) { return left->GetDrawingMode() < right->GetDrawingMode(); };
 
-    if (!spriteVS || !spriteVS)
+    if (!spriteVS || !spritePS)
         LoadSpritesPrerequisites();
 
     SetZState(true);
     SetRasterizerState(RasterizerState::NoCulling);
 
     SetUserDebugEventBegin(L"Sprites drawing");
+
+    graphicsContext->DeviceContext->VSSetShader(spriteVS.Get(), nullptr, 0);
+    graphicsContext->DeviceContext->PSSetShader(spritePS.Get(), nullptr, 0);
 
     for (auto& spriteLayerPair : sprites)
     {
@@ -112,11 +117,13 @@ void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
             graphicsContext->DeviceContext->VSSetConstantBuffers(0, 1, spriteCB.GetAddressOf());
             graphicsContext->DeviceContext->PSSetConstantBuffers(0, 1, spriteCB.GetAddressOf());
             texture->Bind(0, BindingPoint::Pixel);
-            DrawMesh();
+            DrawSprite();
         }
     }
 
     SetUserDebugEventEnd();
+
+    EndScene();
 }
 
 bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettings _Paths)
@@ -212,22 +219,15 @@ const PathSettings & D3D11ContextManager::GetPaths() const
     return enginePaths;
 }
 
-int D3D11ContextManager::DrawMesh()
+int D3D11ContextManager::DrawSprite()
 {
-    //if (mesh && mesh->GetVertexDeclaration())
-    //{
-    //    if (mesh->GetVertexDeclaration().get() != currentVertexDeclaration)
-    //    {
-    //        mesh->GetVertexDeclaration()->Bind();
-    //        currentVertexDeclaration = mesh->GetVertexDeclaration().get();
-    //    }
-    //    return mesh->Draw();
-    //}
-    //else
-    //{
-    //    return 0;
-    //}
-    return 0;
+    unsigned int stride = sizeof(SpriteVertex);
+    unsigned int offset = 0;
+
+    graphicsContext->DeviceContext->IASetInputLayout(spriteLayout.Get());
+    graphicsContext->DeviceContext->IASetVertexBuffers(0, 1, spriteGeometry.GetAddressOf(), &stride, &offset);
+    graphicsContext->DeviceContext->Draw(6, 0);
+    return 6;
 }
 
 void D3D11ContextManager::SetBlendingState(BlendingState bs)
@@ -283,6 +283,54 @@ ITextureManager * D3D11ContextManager::GetTextureManager()
 
 void D3D11ContextManager::LoadSpritesPrerequisites()
 {
+    uint32_t compileFlags = D3DCOMPILE_PACK_MATRIX_ROW_MAJOR;
+#ifdef _DEBUG
+    compileFlags |= D3DCOMPILE_DEBUG;
+    compileFlags |= D3DCOMPILE_ENABLE_STRICTNESS;
+    compileFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
+    compileFlags |= D3DCOMPILE_WARNINGS_ARE_ERRORS;
+#else
+    compileFlags |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
+#endif
+
+    std::string filename = utils::narrow(enginePaths.ShaderPath + L"sprite.hlsl");
+    std::ifstream in(filename);
+    if (in.fail())
+        LOG_FATAL_ERROR("Unable to open ", filename);
+
+    std::stringstream buffer;
+    buffer << in.rdbuf();
+
+    Microsoft::WRL::ComPtr<ID3DBlob> blob = nullptr;
+    Microsoft::WRL::ComPtr<ID3DBlob> errors = nullptr;
+    HRESULT hr = D3DCompile(buffer.str().c_str(), buffer.str().size(), nullptr, nullptr, nullptr, "PS", "ps_4_0", 0, 0, &blob, &errors);
+    if (FAILED(hr))
+    {
+        LOG_ERROR("Internal error while compiling sprite shader: ", std::hex, hr, std::dec);
+        const char* errorMsg = (const char*)errors->GetBufferPointer();
+        LOG_FATAL_ERROR(errorMsg);
+    }
+
+    hr = graphicsContext->Device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &spritePS);
+    if (FAILED(hr))
+    {
+        LOG_FATAL_ERROR("Internal error while compiling sprite shader: ", std::hex, hr, std::dec);
+    }
+
+    hr = D3DCompile(buffer.str().c_str(), buffer.str().size(), nullptr, nullptr, nullptr, "VS", "vs_4_0", 0, 0, &blob, &errors);
+    if (FAILED(hr))
+    {
+        LOG_ERROR("Internal error while compiling sprite shader: ", std::hex, hr, std::dec);
+        const char* errorMsg = (const char*)errors->GetBufferPointer();
+        LOG_FATAL_ERROR(errorMsg);
+    }
+
+    hr = graphicsContext->Device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &spriteVS);
+    if (FAILED(hr))
+    {
+        LOG_FATAL_ERROR("Internal error while compiling sprite shader: ", std::hex, hr, std::dec);
+    }
+
     D3D11_BUFFER_DESC desc;
     desc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
     desc.ByteWidth = sizeof(SpriteCB);
@@ -291,7 +339,46 @@ void D3D11ContextManager::LoadSpritesPrerequisites()
     desc.StructureByteStride = 0;
     desc.Usage = D3D11_USAGE_DYNAMIC;
 
-    HRESULT hr = graphicsContext->Device->CreateBuffer(&desc, nullptr, &spriteCB);
+    hr = graphicsContext->Device->CreateBuffer(&desc, nullptr, &spriteCB);
+    if (FAILED(hr))
+    {
+        LOG_FATAL_ERROR("Internal error: ", std::hex, hr, std::dec);
+    }
+
+    D3D11_INPUT_ELEMENT_DESC inputElements[] =
+    {
+        { "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+    };
+    hr = graphicsContext->Device->CreateInputLayout(inputElements, sizeof(inputElements) / sizeof(inputElements[0]), blob->GetBufferPointer(), blob->GetBufferSize(), &spriteLayout);
+    if (FAILED(hr))
+    {
+        LOG_FATAL_ERROR("Internal error: ", std::hex, hr, std::dec);
+    }
+
+    desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    desc.ByteWidth = 6 * sizeof(SpriteVertex);
+    desc.CPUAccessFlags = 0;
+    desc.MiscFlags = 0;
+    desc.StructureByteStride = 0;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+
+    std::vector<SpriteVertex> vertices =
+    {
+        { { -0.5f, -0.5f }, { 0.0f, 0.0f } },
+        { { 0.5f, -0.5f },  { 1.0f, 0.0f } },
+        { { -0.5f, 0.5f },  { 0.0f, 1.0f } },
+
+        { { 0.5f, -0.5f },  { 1.0f, 0.0f } },
+        { { 0.5f, 0.5f },   { 1.0f, 1.0f } },
+        { { -0.5f, 0.5f },  { 0.0f, 1.0f } }
+    };
+
+    D3D11_SUBRESOURCE_DATA initialData;
+    initialData.pSysMem = vertices.data();
+    initialData.SysMemPitch = sizeof(vertices) * sizeof(SpriteVertex);
+
+    hr = graphicsContext->Device->CreateBuffer(&desc, &initialData, &spriteGeometry);
     if (FAILED(hr))
     {
         LOG_FATAL_ERROR("Internal error: ", std::hex, hr, std::dec);

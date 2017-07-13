@@ -54,7 +54,7 @@ private:
     void                                SetZState(bool enabled);
     void                                SetBlendingState(BlendingState bs);
     void                                SetRasterizerState(RasterizerState rs);
-    int                                 DrawMesh();
+    int                                 DrawSprite();
     void                                LoadSpritesPrerequisites();
 
     HWND                                        windowHandle;
@@ -74,13 +74,21 @@ private:
     struct SpriteCB
     {
         float WVPMatrix[4][4];
-        float TextureMatrix[4][4];
+        float TextureMatrix[3][4];
         float MaskColor[4];
+    };
+
+    struct SpriteVertex
+    {
+        float position[2];
+        float texcoord[2];
     };
 
     Microsoft::WRL::ComPtr<ID3D11VertexShader>  spriteVS = nullptr;
     Microsoft::WRL::ComPtr<ID3D11PixelShader>   spritePS = nullptr;
     Microsoft::WRL::ComPtr<ID3D11Buffer>        spriteCB = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>        spriteGeometry = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout>   spriteLayout = nullptr;
 };
 
 }   //end of ShiftEngine namespace
