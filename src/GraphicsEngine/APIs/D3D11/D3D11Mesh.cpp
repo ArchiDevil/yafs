@@ -20,8 +20,8 @@ bool D3D11MeshData::CreateBuffers(bool dynamic,
                                   size_t vDataSize,
                                   const uint32_t * iData,
                                   size_t iDataSize,
-                                  const MathLib::AABB & _bbox,
-                                  size_t in_vertexSize)
+                                  VertexType type,
+                                  const MathLib::AABB & _bbox)
 {
     assert(pDevice);
     assert(pDeviceContext);
@@ -84,18 +84,12 @@ bool D3D11MeshData::CreateBuffers(bool dynamic,
             return false;
     }
 
-    vertexSize = in_vertexSize;
+    vertexSize = GetVertexSizeForVertexType(type);
     verticesCount = vDataSize / vertexSize;
     indicesCount = iDataSize / sizeof(uint32_t);
     bbox = _bbox;
 
     return true;
-}
-
-void D3D11MeshData::Clear()
-{
-    VertexBuffer.Reset();
-    IndexBuffer.Reset();
 }
 
 size_t D3D11MeshData::Draw()
@@ -113,11 +107,11 @@ size_t D3D11MeshData::Draw()
     {
         pDeviceContext->IASetIndexBuffer(IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
         pDeviceContext->DrawIndexed(indicesCount, 0, 0);
+        return indicesCount / 3;
     }
     else
     {
         pDeviceContext->Draw(verticesCount, 0);
+        return verticesCount;
     }
-
-    return indicesCount / 3;
 }

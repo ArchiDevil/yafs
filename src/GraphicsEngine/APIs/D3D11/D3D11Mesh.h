@@ -24,10 +24,10 @@ public:
                        size_t vDataSize,
                        const uint32_t * iData,
                        size_t iDataSize,
-                       const MathLib::AABB & bbox,
-                       size_t vertexSize) override;
+                       VertexType type,
+                       const MathLib::AABB & bbox) override;
+    
     size_t Draw() override;
-    void Clear() override;
 
 private:
     Microsoft::WRL::ComPtr<ID3D11Device> pDevice = nullptr;

@@ -1,8 +1,9 @@
 #include "D3D11ContextManager.h"
 
-#include "../../RenderQueue.h"
-#include "../../SceneGraph/SpriteSceneNode.h"
-#include "../../SceneGraph/CameraSceneNode.h"
+#include <RenderQueue.h>
+#include <SceneGraph/SpriteSceneNode.h>
+#include <SceneGraph/CameraSceneNode.h>
+#include <IMeshData.h>
 
 #include <Utilities/logger.hpp>
 #include <Utilities/ut.h>
@@ -50,15 +51,6 @@ void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
 {
     BeginScene();
 
-    struct textureMatrixWithPadding
-    {
-        // this is 3x3 matrix and this requires 
-        // padding (16 bytes alignment) for HLSL shader
-        alignas(16) float firstRow[3];
-        alignas(16) float secondRow[3];
-        alignas(16) float thirdRow[3];
-    };
-
     decltype(auto) sprites = queue.GetSpriteNodes();
     decltype(auto) currentCamera = queue.GetActiveCamera();
 
@@ -72,8 +64,13 @@ void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
 
     SetUserDebugEventBegin(L"Sprites drawing");
 
+    graphicsContext->DeviceContext->IASetInputLayout(spriteLayout.Get());
+
     graphicsContext->DeviceContext->VSSetShader(spriteVS.Get(), nullptr, 0);
     graphicsContext->DeviceContext->PSSetShader(spritePS.Get(), nullptr, 0);
+
+    graphicsContext->DeviceContext->VSSetConstantBuffers(0, 1, spriteCB.GetAddressOf());
+    graphicsContext->DeviceContext->PSSetConstantBuffers(0, 1, spriteCB.GetAddressOf());
 
     for (auto& spriteLayerPair : sprites)
     {
@@ -98,8 +95,7 @@ void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
 
             const vec4f & maskColor = sprite->GetMaskColor();
             const mat4f & matWorld = sprite->GetWorldMatrix();
-            mat4f matResult = currentCamera.GetViewMatrix() * currentCamera.GetProjectionMatrix();
-            matResult = matWorld * matResult;
+            mat4f matResult = matWorld * currentCamera.GetViewMatrix() * currentCamera.GetProjectionMatrix();
 
             //TODO: ugly-ugly shit, need to do something with it D:<
             SpriteCB cbufferToFill;
@@ -114,8 +110,6 @@ void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
             memcpy(ss.pData, &cbufferToFill, sizeof(SpriteCB));
             graphicsContext->DeviceContext->Unmap(spriteCB.Get(), 0);
 
-            graphicsContext->DeviceContext->VSSetConstantBuffers(0, 1, spriteCB.GetAddressOf());
-            graphicsContext->DeviceContext->PSSetConstantBuffers(0, 1, spriteCB.GetAddressOf());
             texture->Bind(0, BindingPoint::Pixel);
             DrawSprite();
         }
@@ -139,26 +133,11 @@ bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettin
     graphicsContext = std::make_unique<D3D11Context>(windowHandle, engineSettings);
     zBufferState = true;
 
-    textureManager = new D3D11TextureManager(graphicsContext->Device, graphicsContext->DeviceContext, enginePaths.TexturePath);
+    textureManager = std::make_unique<D3D11TextureManager>(graphicsContext->Device, graphicsContext->DeviceContext, enginePaths.TexturePath);
+    meshManager = std::make_unique<D3D11MeshManager>(graphicsContext->Device);
     // fontManager = new FontManager();
 
     return true;
-}
-
-std::wstring D3D11ContextManager::GetGPUDescription()
-{
-    DXGI_ADAPTER_DESC adapterDesc;
-    IDXGIFactory * factory;
-    IDXGIAdapter * adapter;
-    // Create a DirectX graphics interface factory.
-    CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
-    // Use the factory to create an adapter for the primary graphics interface (video card).
-    factory->EnumAdapters(0, &adapter);
-    adapter->GetDesc(&adapterDesc);
-    std::wstring buffer = adapterDesc.Description;
-    factory->Release();
-    adapter->Release();
-    return buffer;
 }
 
 void D3D11ContextManager::BeginScene()
@@ -221,13 +200,7 @@ const PathSettings & D3D11ContextManager::GetPaths() const
 
 int D3D11ContextManager::DrawSprite()
 {
-    unsigned int stride = sizeof(SpriteVertex);
-    unsigned int offset = 0;
-
-    graphicsContext->DeviceContext->IASetInputLayout(spriteLayout.Get());
-    graphicsContext->DeviceContext->IASetVertexBuffers(0, 1, spriteGeometry.GetAddressOf(), &stride, &offset);
-    graphicsContext->DeviceContext->Draw(6, 0);
-    return 6;
+    return spriteMesh->Draw();
 }
 
 void D3D11ContextManager::SetBlendingState(BlendingState bs)
@@ -278,7 +251,7 @@ void D3D11ContextManager::SetRasterizerState(RasterizerState rs)
 
 ITextureManager * D3D11ContextManager::GetTextureManager()
 {
-    return textureManager;
+    return textureManager.get();
 }
 
 void D3D11ContextManager::LoadSpritesPrerequisites()
@@ -303,7 +276,7 @@ void D3D11ContextManager::LoadSpritesPrerequisites()
 
     Microsoft::WRL::ComPtr<ID3DBlob> blob = nullptr;
     Microsoft::WRL::ComPtr<ID3DBlob> errors = nullptr;
-    HRESULT hr = D3DCompile(buffer.str().c_str(), buffer.str().size(), nullptr, nullptr, nullptr, "PS", "ps_4_0", 0, 0, &blob, &errors);
+    HRESULT hr = D3DCompile(buffer.str().c_str(), buffer.str().size(), nullptr, nullptr, nullptr, "PS", "ps_4_0", compileFlags, 0, &blob, &errors);
     if (FAILED(hr))
     {
         LOG_ERROR("Internal error while compiling sprite shader: ", std::hex, hr, std::dec);
@@ -317,7 +290,7 @@ void D3D11ContextManager::LoadSpritesPrerequisites()
         LOG_FATAL_ERROR("Internal error while compiling sprite shader: ", std::hex, hr, std::dec);
     }
 
-    hr = D3DCompile(buffer.str().c_str(), buffer.str().size(), nullptr, nullptr, nullptr, "VS", "vs_4_0", 0, 0, &blob, &errors);
+    hr = D3DCompile(buffer.str().c_str(), buffer.str().size(), nullptr, nullptr, nullptr, "VS", "vs_4_0", compileFlags, 0, &blob, &errors);
     if (FAILED(hr))
     {
         LOG_ERROR("Internal error while compiling sprite shader: ", std::hex, hr, std::dec);
@@ -356,13 +329,6 @@ void D3D11ContextManager::LoadSpritesPrerequisites()
         LOG_FATAL_ERROR("Internal error: ", std::hex, hr, std::dec);
     }
 
-    desc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    desc.ByteWidth = 6 * sizeof(SpriteVertex);
-    desc.CPUAccessFlags = 0;
-    desc.MiscFlags = 0;
-    desc.StructureByteStride = 0;
-    desc.Usage = D3D11_USAGE_DEFAULT;
-
     std::vector<SpriteVertex> vertices =
     {
         { { -0.5f, -0.5f }, { 0.0f, 0.0f } },
@@ -374,20 +340,17 @@ void D3D11ContextManager::LoadSpritesPrerequisites()
         { { -0.5f, 0.5f },  { 0.0f, 1.0f } }
     };
 
-    D3D11_SUBRESOURCE_DATA initialData;
-    initialData.pSysMem = vertices.data();
-    initialData.SysMemPitch = sizeof(vertices) * sizeof(SpriteVertex);
-
-    hr = graphicsContext->Device->CreateBuffer(&desc, &initialData, &spriteGeometry);
-    if (FAILED(hr))
-    {
-        LOG_FATAL_ERROR("Internal error: ", std::hex, hr, std::dec);
-    }
+    spriteMesh = meshManager->CreateMeshFromVertices(vertices, {}, {});
 }
 
 void D3D11ContextManager::SetWireframeState(bool state)
 {
     SetRasterizerState(state ? RasterizerState::Wireframe : RasterizerState::Normal);
+}
+
+ShiftEngine::IMeshManager * D3D11ContextManager::GetMeshManager()
+{
+    return meshManager.get();
 }
 
 }

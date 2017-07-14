@@ -169,7 +169,10 @@ void GoingHomeApplication::SaveTechInfo()
     GlobalMemoryStatusEx(&memoryStatus);
     PerformanceLog.Message("Total physical memory: " + std::to_string((int64_t)memoryStatus.ullTotalPhys / 1024 / 1024) + " MBs");
     PerformanceLog.Message("Using: " + std::to_string((int)memoryStatus.dwMemoryLoad) + "%");
-    PerformanceLog.Message("GPU description: " + utils::narrow(ShiftEngine::GetContextManager()->GetGPUDescription()));
+
+    const auto& devicesDesc = ShiftEngine::GetDevicesDescription();
+    for (size_t i = 0; i < devicesDesc.size(); ++i)
+        PerformanceLog.Message("GPU" + std::to_string(i) + " description: " + devicesDesc[i]);
 }
 
 IAppState * GoingHomeApplication::GetTopState() const

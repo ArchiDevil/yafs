@@ -4,6 +4,8 @@
 #include "APIs/D3D11/D3D11ContextManager.h"
 #endif
 
+#include <Utilities/ut.h>
+
 namespace ShiftEngine
 {
 
@@ -47,6 +49,27 @@ void ShutdownEngine()
 {
     SceneGraphInstance.reset();
     ContextManagerInstance.reset();
+}
+
+std::vector<std::string> GetDevicesDescription()
+{
+    std::vector<std::string> output;
+
+    Microsoft::WRL::ComPtr<IDXGIFactory> factory;
+    Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
+    // Create a DirectX graphics interface factory.
+    CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&factory);
+
+    UINT i = 0;
+    while (factory->EnumAdapters(i++, &adapter) != DXGI_ERROR_NOT_FOUND)
+    {
+        DXGI_ADAPTER_DESC adapterDesc;
+        adapter->GetDesc(&adapterDesc);
+        std::wstring buffer = adapterDesc.Description;
+        output.push_back(utils::narrow(buffer + L" " + std::to_wstring(adapterDesc.DedicatedVideoMemory)));
+    }
+
+    return output;
 }
 
 }

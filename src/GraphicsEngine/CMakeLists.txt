@@ -1,8 +1,8 @@
-set(SRC 
-        #FontManager.cpp
-        #FontManager.h
+set(SRC FontManager.cpp
+        FontManager.h
         IContextManager.h
         IMeshData.h
+        IMeshManager.h
         ITexture.h
         ITextureManager.h
         RenderQueue.cpp
@@ -22,6 +22,7 @@ if(${RENDERER} STREQUAL D3D11_RENDER)
     set(LS  APIs/D3D11/D3D11Context.cpp
             APIs/D3D11/D3D11ContextManager.cpp
             APIs/D3D11/D3D11Mesh.cpp
+            APIs/D3D11/D3D11MeshManager.cpp
             APIs/D3D11/D3D11Texture.cpp
             APIs/D3D11/D3D11TextureManager.cpp)
     source_group("Source Files\\D3D11" FILES ${LS})
@@ -31,6 +32,8 @@ if(${RENDERER} STREQUAL D3D11_RENDER)
             APIs/D3D11/D3D11ContextManager.h
             APIs/D3D11/D3D11DepthStencil.h
             APIs/D3D11/D3D11RenderTarget.h
+            APIs/D3D11/D3D11Mesh.h
+            APIs/D3D11/D3D11MeshManager.h
             APIs/D3D11/D3D11Texture.h
             APIs/D3D11/D3D11TextureManager.h)
     source_group("Header Files\\D3D11" FILES ${LS})
@@ -62,10 +65,14 @@ list(APPEND SRC ${LS})
 set(LS TextLib/cFont.h)
 source_group("Header Files\\Text Lib" FILES ${LS})
 list(APPEND SRC ${LS})
-    
-include_directories(../../3rdparty/tinyxml2)
 
 add_library(GraphicsEngine STATIC ${SRC})
+
+target_include_directories(GraphicsEngine
+    PUBLIC
+        ../../3rdparty/tinyxml2
+        .
+    )
 
 if(WIN32)
     target_link_libraries(GraphicsEngine ${DXSDK_LIBS})

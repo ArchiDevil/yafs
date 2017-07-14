@@ -1,15 +1,17 @@
 #pragma once
 
-#include <exception>
-#include <vector>
-
 #include "D3D11Context.h"
 #include "D3D11TextureManager.h"
 #include "D3D11RenderTarget.h"
+#include "D3D11MeshManager.h"
 
-#include "../../IContextManager.h"
-#include "../../MiscTypes.h"
+#include <IContextManager.h>
+#include <MiscTypes.h>
 // #include "../../FontManager.h"
+
+#include <exception>
+#include <vector>
+#include <memory>
 
 namespace ShiftEngine
 {
@@ -32,12 +34,11 @@ class D3D11ContextManager final : public IContextManager
 {
 public:
     D3D11ContextManager(HWND hwnd);
-    ~D3D11ContextManager() override = default;
 
     bool                                Initialize(GraphicEngineSettings _Settings, PathSettings _Paths) override;
-    std::wstring                        GetGPUDescription() override;
     ITexturePtr                         LoadTexture(const std::wstring & FileName) override;
     ITextureManager *                   GetTextureManager() override;
+    IMeshManager *                      GetMeshManager() override;
     // FontManager*                        GetFontManager() override;
     const GraphicEngineSettings &       GetEngineSettings() const override;
     const PathSettings &                GetPaths() const override;
@@ -63,7 +64,8 @@ private:
 
     std::unique_ptr<D3D11Context>               graphicsContext;
     // FontManager*                        fontManager = nullptr;
-    D3D11TextureManager *                       textureManager = nullptr;
+    std::unique_ptr<D3D11TextureManager>        textureManager = nullptr;
+    std::unique_ptr<D3D11MeshManager>           meshManager = nullptr;
 
     RasterizerState                             currentRasterizerState = RasterizerState::Normal;
     BlendingState                               currentBlendingState = BlendingState::None;
@@ -78,17 +80,11 @@ private:
         float MaskColor[4];
     };
 
-    struct SpriteVertex
-    {
-        float position[2];
-        float texcoord[2];
-    };
-
     Microsoft::WRL::ComPtr<ID3D11VertexShader>  spriteVS = nullptr;
     Microsoft::WRL::ComPtr<ID3D11PixelShader>   spritePS = nullptr;
     Microsoft::WRL::ComPtr<ID3D11Buffer>        spriteCB = nullptr;
-    Microsoft::WRL::ComPtr<ID3D11Buffer>        spriteGeometry = nullptr;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>   spriteLayout = nullptr;
+    IMeshDataPtr                                spriteMesh = nullptr;
 };
 
 }   //end of ShiftEngine namespace
