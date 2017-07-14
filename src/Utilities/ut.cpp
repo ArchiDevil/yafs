@@ -9,17 +9,20 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
+#include <codecvt> 
 
 extern Log MainLog("Application.log");
 
-std::string utils::narrow(const std::wstring & str)
+std::string utils::narrow(const std::wstring& str)
 {
-    return std::string(str.begin(), str.end());
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> ucs2conv;
+    return ucs2conv.to_bytes(str);
 }
 
-std::wstring utils::widen(const std::string & str)
+std::wstring utils::widen(const std::string& str)
 {
-    return std::wstring(str.begin(), str.end());
+    std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> ucs2conv;
+    return ucs2conv.from_bytes(str);
 }
 
 std::vector<std::string> utils::filesystem::collect_file_names(const std::string & Path, const std::string & Extension)
