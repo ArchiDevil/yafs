@@ -1,7 +1,0 @@
-<materials>
-    <material name="genericEntity">
-        <params>
-            <param name="specularColor" value="rgb(0.0, 0.0, 0.0)"/>
-        </params>
-    </material>
-</materials>
