@@ -30,6 +30,7 @@
 
 # My own
 /build/
+/build_x64/
 /build_json/
 /bin/
 /3rdparty/fxc/
