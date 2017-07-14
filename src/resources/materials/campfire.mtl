@@ -1,9 +1,0 @@
-<materials>
-    <material name="default">
-		<params>
-			<param name="diffuseMap" type="texture2D">
-				<texture>campfire.jpg</texture>
-			</param>
-		</params>
-    </material>
-</materials>
