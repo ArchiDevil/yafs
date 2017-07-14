@@ -1,6 +1,4 @@
-set(SRC BackgroundManager.cpp
-        BackgroundManager.h
-        Common.h
+set(SRC Common.h
         Game.cpp
         Game.h
         GoingHomeApplication.cpp

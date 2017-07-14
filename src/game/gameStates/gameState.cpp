@@ -3,7 +3,6 @@
 #include "../Entities/EntityManager.h"
 #include "../AI/AISmallSpirit.h"
 #include "../Spells/SpellsDatabase.h"
-#include "../BackgroundManager.h"
 #include "../SceneManager.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
@@ -64,7 +63,6 @@ bool GameState::update(double dt)
     SceneGraph * pScene = GetSceneGraph();
     Game* pGame = GetGamePtr();
 
-    pGame->GetBackgroundMgr()->Update(dt);
     pGame->GetPhysicsMgr()->Update(dt);
     pGame->GetEntityMgr()->UpdateAllEntities(dt);
 
