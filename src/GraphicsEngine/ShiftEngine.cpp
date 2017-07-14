@@ -14,9 +14,7 @@ std::unique_ptr<SceneGraph> SceneGraphInstance;
 
 bool InitDX11Api(HWND hwnd, GraphicEngineSettings settings, PathSettings paths, SceneGraphType sceneGraphType)
 {
-    ContextManagerInstance.reset(new D3D11ContextManager(hwnd));
-    if (!ContextManagerInstance->Initialize(settings, paths))
-        return false;
+    ContextManagerInstance = std::make_unique<ShiftEngine::D3D11ContextManager>(hwnd, settings, paths);
     SceneGraphInstance = std::make_unique<ShiftEngine::SceneGraph>(sceneGraphType);
     return true;
 }

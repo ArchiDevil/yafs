@@ -7,7 +7,7 @@
 
 #include <IContextManager.h>
 #include <MiscTypes.h>
-// #include "../../FontManager.h"
+#include <FontManager.h>
 
 #include <exception>
 #include <vector>
@@ -33,13 +33,12 @@ enum class RasterizerState
 class D3D11ContextManager final : public IContextManager
 {
 public:
-    D3D11ContextManager(HWND hwnd);
+    D3D11ContextManager(HWND hwnd, GraphicEngineSettings settings, PathSettings paths);
 
-    bool                                Initialize(GraphicEngineSettings _Settings, PathSettings _Paths) override;
     ITexturePtr                         LoadTexture(const std::wstring & FileName) override;
     ITextureManager *                   GetTextureManager() override;
     IMeshManager *                      GetMeshManager() override;
-    // FontManager*                        GetFontManager() override;
+    FontManager*                        GetFontManager() override;
     const GraphicEngineSettings &       GetEngineSettings() const override;
     const PathSettings &                GetPaths() const override;
     void                                DrawAll(RenderQueue& queue, double dt) override;
@@ -55,7 +54,7 @@ private:
     void                                SetZState(bool enabled);
     void                                SetBlendingState(BlendingState bs);
     void                                SetRasterizerState(RasterizerState rs);
-    int                                 DrawSprite();
+    int                                 DrawMesh(const IMeshDataPtr& mesh);
     void                                LoadSpritesPrerequisites();
 
     HWND                                        windowHandle;
@@ -63,9 +62,9 @@ private:
     GraphicEngineSettings                       engineSettings;
 
     std::unique_ptr<D3D11Context>               graphicsContext;
-    // FontManager*                        fontManager = nullptr;
-    std::unique_ptr<D3D11TextureManager>        textureManager = nullptr;
-    std::unique_ptr<D3D11MeshManager>           meshManager = nullptr;
+    std::unique_ptr<FontManager>                fontManager;
+    std::unique_ptr<D3D11TextureManager>        textureManager;
+    std::unique_ptr<D3D11MeshManager>           meshManager;
 
     RasterizerState                             currentRasterizerState = RasterizerState::Normal;
     BlendingState                               currentBlendingState = BlendingState::None;

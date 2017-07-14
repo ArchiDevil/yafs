@@ -17,9 +17,20 @@ using namespace MathLib;
 namespace ShiftEngine
 {
 
-D3D11ContextManager::D3D11ContextManager(HWND hwnd)
+D3D11ContextManager::D3D11ContextManager(HWND hwnd, GraphicEngineSettings settings, PathSettings paths)
     : windowHandle(hwnd)
+    , engineSettings(settings)
+    , enginePaths(paths)
 {
+    if (enginePaths.FontsPath.empty() ||
+        enginePaths.ShaderPath.empty() ||
+        enginePaths.TexturePath.empty())
+        LOG_ERROR("Some settings paths are not filled");
+
+    graphicsContext = std::make_unique<D3D11Context>(windowHandle, engineSettings);
+    textureManager = std::make_unique<D3D11TextureManager>(graphicsContext->Device, graphicsContext->DeviceContext, enginePaths.TexturePath);
+    meshManager = std::make_unique<D3D11MeshManager>(graphicsContext->Device);
+    fontManager = std::make_unique<FontManager>(this);
 }
 
 void D3D11ContextManager::SetUserDebugMarker(const std::wstring & markerName)
@@ -49,9 +60,10 @@ void D3D11ContextManager::SetUserDebugEventEnd()
 
 void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
 {
+    fontManager->DrawAll(queue);
+
     BeginScene();
 
-    decltype(auto) sprites = queue.GetSpriteNodes();
     decltype(auto) currentCamera = queue.GetActiveCamera();
 
     auto spriteSortFunctor = [](SpriteSceneNode* left, SpriteSceneNode* right) { return left->GetDrawingMode() < right->GetDrawingMode(); };
@@ -72,7 +84,7 @@ void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
     graphicsContext->DeviceContext->VSSetConstantBuffers(0, 1, spriteCB.GetAddressOf());
     graphicsContext->DeviceContext->PSSetConstantBuffers(0, 1, spriteCB.GetAddressOf());
 
-    for (auto& spriteLayerPair : sprites)
+    for (auto& spriteLayerPair : queue.GetSpriteNodes())
     {
         std::sort(spriteLayerPair.second.begin(), spriteLayerPair.second.end(), spriteSortFunctor);
         SetBlendingState(BlendingState::AlphaEnabled);
@@ -88,10 +100,10 @@ void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
             if (currentBlendingState == BlendingState::AlphaEnabled && sprite->GetDrawingMode() == SpriteSceneNode::SpriteDrawingMode::Additive)
                 SetBlendingState(BlendingState::Additive);
 
-            const ITexturePtr & texture = sprite->GetTexture();
+            const ITexturePtr& texture = sprite->GetTexture();
 
             if (!texture)
-                return;
+                continue;
 
             const vec4f & maskColor = sprite->GetMaskColor();
             const mat4f & matWorld = sprite->GetWorldMatrix();
@@ -111,33 +123,50 @@ void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
             graphicsContext->DeviceContext->Unmap(spriteCB.Get(), 0);
 
             texture->Bind(0, BindingPoint::Pixel);
-            DrawSprite();
+            DrawMesh(spriteMesh);
         }
     }
 
     SetUserDebugEventEnd();
 
+    SetUserDebugEventBegin(L"Text drawing");
+
+    for (auto& textNode : queue.GetTextNodes())
+    {
+        ITexturePtr texture = textNode->GetTexture();
+
+        if (!texture)
+            continue;
+
+        constexpr vec4f maskColor = { 1.0, 1.0, 1.0, 1.0 };
+        const mat3f textureMatrix = matrixIdentity<float, 3>();
+
+        mat4f position = matrixTranslation(vec3f{ textNode->GetPosition().x, textNode->GetPosition().y, 0.0 });
+        mat4f projectionMatrix = matrixOrthoOffCenterLH<float>(0.0f, (float)engineSettings.screenWidth, (float)engineSettings.screenHeight, 0.0f, 0.0f, 1.0f);
+        mat4f matResult = position * projectionMatrix;
+
+        //TODO: ugly-ugly shit, need to do something with it D:<
+        SpriteCB cbufferToFill;
+        memcpy(cbufferToFill.WVPMatrix, (float*)matResult, sizeof(float) * 16);
+        memcpy(cbufferToFill.TextureMatrix[0], textureMatrix[0], sizeof(float) * 3);
+        memcpy(cbufferToFill.TextureMatrix[1], textureMatrix[1], sizeof(float) * 3);
+        memcpy(cbufferToFill.TextureMatrix[2], textureMatrix[2], sizeof(float) * 3);
+        memcpy(cbufferToFill.MaskColor, maskColor.el, sizeof(float) * 4);
+
+        D3D11_MAPPED_SUBRESOURCE ss;
+        graphicsContext->DeviceContext->Map(spriteCB.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ss);
+        memcpy(ss.pData, &cbufferToFill, sizeof(SpriteCB));
+        graphicsContext->DeviceContext->Unmap(spriteCB.Get(), 0);
+
+        texture->Bind(0, BindingPoint::Pixel);
+        IMeshDataPtr mesh = textNode->GetMesh();
+        if (mesh)
+            DrawMesh(mesh);
+    }
+
+    SetUserDebugEventEnd();
+
     EndScene();
-}
-
-bool D3D11ContextManager::Initialize(GraphicEngineSettings _Settings, PathSettings _Paths)
-{
-    engineSettings = _Settings;
-    enginePaths = _Paths;
-
-    if (enginePaths.FontsPath.empty() ||
-        enginePaths.ShaderPath.empty() ||
-        enginePaths.TexturePath.empty())
-        LOG_ERROR("Some settings paths are not filled");
-
-    graphicsContext = std::make_unique<D3D11Context>(windowHandle, engineSettings);
-    zBufferState = true;
-
-    textureManager = std::make_unique<D3D11TextureManager>(graphicsContext->Device, graphicsContext->DeviceContext, enginePaths.TexturePath);
-    meshManager = std::make_unique<D3D11MeshManager>(graphicsContext->Device);
-    // fontManager = new FontManager();
-
-    return true;
 }
 
 void D3D11ContextManager::BeginScene()
@@ -149,10 +178,6 @@ void D3D11ContextManager::BeginScene()
 
 void D3D11ContextManager::EndScene()
 {
-    SetUserDebugEventBegin(L"Text drawing");
-    //fontManager->DrawBatchedText();
-    SetUserDebugEventEnd();
-
     if (engineSettings.screenRate > 0)
         graphicsContext->SwapChain->Present(1, 0);
     else
@@ -198,9 +223,9 @@ const PathSettings & D3D11ContextManager::GetPaths() const
     return enginePaths;
 }
 
-int D3D11ContextManager::DrawSprite()
+int D3D11ContextManager::DrawMesh(const IMeshDataPtr& mesh)
 {
-    return spriteMesh->Draw();
+    return mesh->Draw();
 }
 
 void D3D11ContextManager::SetBlendingState(BlendingState bs)
@@ -244,14 +269,19 @@ void D3D11ContextManager::SetRasterizerState(RasterizerState rs)
     }
 }
 
-//FontManager * D3D11ContextManager::GetFontManager()
-//{
-//    return fontManager;
-//}
+FontManager * D3D11ContextManager::GetFontManager()
+{
+    return fontManager.get();
+}
 
 ITextureManager * D3D11ContextManager::GetTextureManager()
 {
     return textureManager.get();
+}
+
+ShiftEngine::IMeshManager * D3D11ContextManager::GetMeshManager()
+{
+    return meshManager.get();
 }
 
 void D3D11ContextManager::LoadSpritesPrerequisites()
@@ -346,11 +376,6 @@ void D3D11ContextManager::LoadSpritesPrerequisites()
 void D3D11ContextManager::SetWireframeState(bool state)
 {
     SetRasterizerState(state ? RasterizerState::Wireframe : RasterizerState::Normal);
-}
-
-ShiftEngine::IMeshManager * D3D11ContextManager::GetMeshManager()
-{
-    return meshManager.get();
 }
 
 }

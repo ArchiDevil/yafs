@@ -62,8 +62,13 @@ set(LS  SceneGraph/AnimatedSpriteSceneNode.h
 source_group("Header Files\\Scene Graph" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS TextLib/cFont.h)
+set(LS TextLib/cFont.h
+       TextLib/TextSceneNode.h)
 source_group("Header Files\\Text Lib" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS TextLib/TextSceneNode.cpp)
+source_group("Source Files\\Text Lib" FILES ${LS})
 list(APPEND SRC ${LS})
 
 add_library(GraphicsEngine STATIC ${SRC})

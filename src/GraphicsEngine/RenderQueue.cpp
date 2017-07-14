@@ -6,7 +6,8 @@ using namespace ShiftEngine;
 
 RenderQueue::RenderQueue(const MathLib::vec3f & _ambientColor)
     : ambientColor(_ambientColor)
-{}
+{
+}
 
 SpritesVault & RenderQueue::GetSpriteNodes()
 {
@@ -34,4 +35,14 @@ void RenderQueue::AddSpriteNode(SpriteSceneNode * node, int renderingLayer)
 MathLib::vec3f RenderQueue::GetAmbientColor() const
 {
     return ambientColor;
+}
+
+void ShiftEngine::RenderQueue::AddTextNode(TextSceneNode * node)
+{
+    textNodes.push_back(node);
+}
+
+const std::vector<TextSceneNode*> ShiftEngine::RenderQueue::GetTextNodes()
+{
+    return textNodes;
 }

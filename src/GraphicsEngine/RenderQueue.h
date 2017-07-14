@@ -2,6 +2,8 @@
 
 #include <MathLib/math.h>
 
+#include <Utilities/IManager.h>
+
 #include <vector>
 #include <map>
 
@@ -11,6 +13,7 @@ namespace ShiftEngine
 class ISceneNode;
 class CameraSceneNode;
 class SpriteSceneNode;
+class TextSceneNode;
 
 // custom functor to sort sprite layers from high to low 
 // in map to overdraw sprites with bigger layer number
@@ -26,20 +29,23 @@ struct greater
 // remove this shit with huge amount of allocations
 using SpritesVault = std::map<int, std::vector<SpriteSceneNode*>, greater<int>>;
 
-class RenderQueue
+class RenderQueue : public IManager
 {
 public:
     RenderQueue(const MathLib::vec3f & ambientColor);
 
     void SetCameraNode(CameraSceneNode * node);
     void AddSpriteNode(SpriteSceneNode * node, int renderingLayer);
+    void AddTextNode(TextSceneNode * node);
 
     SpritesVault& GetSpriteNodes();
+    const std::vector<TextSceneNode*> GetTextNodes();
     CameraSceneNode& GetActiveCamera() const;
     MathLib::vec3f GetAmbientColor() const;
 
 private:
     SpritesVault sprites;
+    std::vector<TextSceneNode*> textNodes;
 
     MathLib::vec3f ambientColor = {0.0f, 0.0f, 0.0f};
     CameraSceneNode * activeCamera = nullptr;
