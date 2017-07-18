@@ -74,11 +74,9 @@ struct GraphicEngineSettings
 // Relative paths to the resources
 struct PathSettings
 {
-    std::wstring MeshPath;
     std::wstring TexturePath;
     std::wstring ShaderPath;
     std::wstring FontsPath;
-    std::wstring MaterialsPath;
 };
 
 } // end of ShiftEngine namespace
