@@ -12,7 +12,7 @@ MineEntity::MineEntity(const LiveEntity * owner,
                        float explosionRadius,
                        float triggerDistance,
                        const std::shared_ptr<Physics::Entity>& physicsEntity)
-    : PhysicsEntity(position, GetSceneGraph()->AddSpriteNode(mineSpriteName), physicsEntity)
+    : PhysicsEntity(position, GetSceneGraph()->AddSpriteNode(mineSpriteName, SL_Entities), physicsEntity)
     , owner(owner)
     , explosionDamage(explosionDamage)
     , explosionRadius(explosionRadius)

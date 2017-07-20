@@ -18,7 +18,7 @@ LiveEntity::LiveEntity(vec2f position,
                        int expCount,
                        const std::shared_ptr<Physics::Entity>& physicsEntity,
                        Faction fact)
-    : PhysicsEntity(position, GetSceneGraph()->AddSpriteNode(textureName), physicsEntity)
+    : PhysicsEntity(position, GetSceneGraph()->AddSpriteNode(textureName, SL_Entities), physicsEntity)
     , maxHealth(health)
     , health(health)
     , experienceCount(expCount)

@@ -19,7 +19,7 @@ void ShieldBuff::OnActivation(LiveEntity * owner)
 
     shieldEntity = GoingHome::GetGamePtr()->GetEntityMgr()->CreateVisualStickerEntity(owner,
                                                                                       owner->GetPosition(),
-                                                                                      ShiftEngine::GetSceneGraph()->AddSpriteNode(L"shield.png"));
+                                                                                      ShiftEngine::GetSceneGraph()->AddSpriteNode(L"shield.png", ShiftEngine::SL_Entities));
     active = true;
 }
 

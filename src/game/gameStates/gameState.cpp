@@ -45,7 +45,7 @@ bool GameState::initState()
 
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
-    // just for example, let's create some enemies
+    // Create SceneGraph, Camera, Entities. Move Player to start point
     SceneManager::LoadScene("bliss");
 
     playerPtr->SetSpellController(database->GetSpellByName("projectile").CreateSpellController(playerPtr),      Player::CS_MainSlot);

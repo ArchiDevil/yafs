@@ -72,14 +72,14 @@ MeshSceneNode * SceneGraph::AddMeshNode(IMeshDataPtr dataPtr, const Material * m
 }
 
 SpriteSceneNode * SceneGraph::AddSpriteNode(const std::wstring & textureName,
-                                            int spriteLayer/* = 0*/,
+                                            SpriteLayer spriteLayer/* = 0*/,
                                             const MathLib::vec2f & leftTopTextureCoords/* = {0.0f, 0.0f}*/,
                                             const MathLib::vec2f & rightBottomTextureCoords/* = {1.0f, 1.0f}*/)
 {
     CreateSpriteRequisites();
 
     ITexturePtr texture = GetContextManager()->LoadTexture(textureName);
-    SpriteSceneNode * out = new SpriteSceneNode(texture, leftTopTextureCoords, rightBottomTextureCoords, this, spriteLayer);
+    SpriteSceneNode * out = new SpriteSceneNode(texture, leftTopTextureCoords, rightBottomTextureCoords, this, static_cast<int>(spriteLayer));
     rootNode->AddChild(out);
     return out;
 }

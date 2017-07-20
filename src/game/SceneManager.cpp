@@ -8,11 +8,15 @@
 #include "Entities/EntityManager.h"
 
 #include <fstream>
+#include <map>
+#include <codecvt>
 
 using namespace nlohmann;
 
 void SceneManager::LoadScene(std::string sceneName)
 {
+    // TODO Clean EntitiesManager and SceneGraph.
+
     std::string sceneFullPath = "resources/scenes/" + sceneName + ".json";
     std::ifstream jsonfile(sceneFullPath);
     if (jsonfile.fail() || jsonfile.bad())
@@ -63,6 +67,49 @@ void SceneManager::LoadScene(std::string sceneName)
                     Enemy::EnemyType::SmallSpirit);
                 break;
             }
+        }
+    }
+
+    if (jRoot.count("map") && !jRoot["map"].empty())
+    {
+        std::map<char, std::string> tiles;
+
+        auto jTilesArray = jRoot["map"]["tiles"];
+        for (json::iterator it = jTilesArray.begin(); it != jTilesArray.end(); ++it)
+        {
+            auto jTile = it.value();
+            const std::string s = jTile["symbol"];
+            const std::string t = jTile["tile"];
+            tiles[s[0]] = t;
+        }
+
+        const std::string mapFilePath = jRoot["map"]["file"];
+
+        std::string mapFullPath = "resources/scenes/" + mapFilePath;
+        std::ifstream mapStream(mapFullPath);
+        if (mapStream.fail() || mapStream.bad())
+        {
+            LOG_ERROR("Unable to open ", mapFullPath);
+            return;
+        }
+
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+        float y = 0.0f;
+        std::string line;
+        while (getline(mapStream, line))
+        {
+            float x = 0.0f;
+            for (char symbol : line)
+            {
+                std::wstring tilePath = converter.from_bytes(tiles[symbol]);
+                ShiftEngine::SpriteSceneNode * sprite = ShiftEngine::GetSceneGraph()->AddSpriteNode(tilePath, ShiftEngine::SL_Floor);
+                if (sprite != nullptr) {
+                    sprite->SetDrawingMode(ShiftEngine::SpriteSceneNode::SpriteDrawingMode::Additive);
+                    sprite->SetLocalPosition({ x, y, 0.0 });
+                }
+                ++x;
+            }
+            ++y;
         }
     }
 }

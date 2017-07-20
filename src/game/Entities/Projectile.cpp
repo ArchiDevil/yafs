@@ -5,13 +5,15 @@
 
 const std::wstring textureName = L"sprite.png";
 
+using namespace ShiftEngine;
+
 Projectile::Projectile(const MathLib::vec2f position,
                        float damage,
                        double lifetime,
                        const LiveEntity * producer,
                        const std::shared_ptr<Physics::Entity>& physicsEntity,
                        float size)
-    : PhysicsEntity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName), physicsEntity)
+    : PhysicsEntity(position, GetSceneGraph()->AddSpriteNode(textureName, SL_Entities), physicsEntity)
     , producer(producer)
     , remainingTime(lifetime)
     , damage(damage)
