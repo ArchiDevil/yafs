@@ -6,12 +6,22 @@
 #include "D3D11DepthStencil.h"
 #include "D3D11RenderTarget.h"
 
+#include "../../MiscTypes.h"
+
 namespace ShiftEngine
 {
 
 struct D3D11Context
 {
+    D3D11Context(HWND windowHandle, const GraphicEngineSettings &settings);
+
+    D3D11Context(const D3D11Context & ref) = delete;
+    D3D11Context(D3D11Context && ref) = delete;
+    D3D11Context & operator=(const D3D11Context & ref) = delete;
+    D3D11Context & operator=(D3D11Context && ref) = delete;
+
     ~D3D11Context();
+
     void ClearDefaultRenderTarget();
     HRESULT CreateStates();
     HRESULT CreateAnnotationsHandler();
@@ -35,11 +45,6 @@ struct D3D11Context
     Microsoft::WRL::ComPtr<ID3D11BlendState>            bsNormal = nullptr;
     Microsoft::WRL::ComPtr<ID3D11BlendState>            bsAdditive = nullptr;
 
-    D3D11Context() = default;
-    D3D11Context(const D3D11Context & ref) = delete;
-    D3D11Context(D3D11Context && ref) = delete;
-    D3D11Context & operator=(const D3D11Context & ref) = delete;
-    D3D11Context & operator=(D3D11Context && ref) = delete;
 };
 
 }

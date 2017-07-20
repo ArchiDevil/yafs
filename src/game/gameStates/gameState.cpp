@@ -39,7 +39,7 @@ bool GameState::initState()
     //LOG_INFO("HUD has been created");
 
     CameraSceneNode * pCamera = pScene->AddCameraSceneNode(CameraViewType::Orthographic);
-    pCamera->SetLocalPosition({0.0f, 0.0f, 0.0f});
+    pCamera->SetLocalPosition({ 0.0f, 0.0f, 0.0f });
     pCamera->SetScreenWidth(1024.0f / 600.0f * 6.0f);
     pCamera->SetScreenHeight(600.0f / 600.0f * 6.0f);
 
@@ -67,7 +67,7 @@ bool GameState::update(double dt)
     pGame->GetEntityMgr()->UpdateAllEntities(dt);
 
     auto playerPosition = pGame->GetPlayerPtr()->GetPosition();
-    pScene->GetActiveCamera()->SetLocalPosition({playerPosition.x, playerPosition.y, 0.0f});
+    pScene->GetActiveCamera()->SetLocalPosition({ playerPosition.x, playerPosition.y, 0.0f });
 
     ProcessInput(dt);
     // pGame->gameHud->Update(dt);
@@ -81,50 +81,66 @@ bool GameState::render(double dt)
 {
     SceneGraph * pScene = GetSceneGraph();
     IContextManager * pCtxMgr = GetContextManager();
-    Renderer * pRenderer = GetRenderer();
 
 #if defined (DEBUG) || (_DEBUG)
     const int infoSize = 7;
     std::ostringstream di[infoSize];
 
-    di[0] << "FPS: " << pRenderer->GetFPS();
-    di[1] << "Shader changes: " << pRenderer->GetShaderChanges();
-    di[2] << "Matrix bindings: " << pRenderer->GetMatricesBindings();
-    di[3] << "Uniform bindings: " << pRenderer->GetUniformsBindings();
-    di[4] << "Texture bindings: " << pRenderer->GetTextureBindings();
-    di[5] << "Draw calls: " << pRenderer->GetDrawCalls();
+    di[0] << "Test"; // << "FPS: " << pRenderer->GetFPS();
+    di[1] << "Test"; // << "Shader changes: " << pRenderer->GetShaderChanges();
+    di[2] << "Test"; // << "Matrix bindings: " << pRenderer->GetMatricesBindings();
+    di[3] << "Test"; // << "Uniform bindings: " << pRenderer->GetUniformsBindings();
+    di[4] << "Test"; // << "Texture bindings: " << pRenderer->GetTextureBindings();
+    di[5] << "Test"; // << "Draw calls: " << pRenderer->GetDrawCalls();
     di[6] << "Player position: " << GetGamePtr()->GetPlayerPtr()->GetPosition().x << " " << GetGamePtr()->GetPlayerPtr()->GetPosition().y;
 #else
     const int infoSize = 1;
     std::ostringstream di[infoSize];
-    di[0] << "FPS: " << pRenderer->GetFPS();
+    //di[0] << "FPS: " << pRenderer->GetFPS();
 #endif
 
     ////////////
     // RENDER //
     ////////////
 
+    static std::vector<TextSceneNodePtr> textNodes;
+
     FontManager * pFntMgr = pCtxMgr->GetFontManager();
-    pFntMgr->SetFont(L"2");
 
-    pCtxMgr->SetBlendingState(BlendingState::AlphaEnabled);
+    if (textNodes.empty())
+    {
+        for (int i = 0; i < std::size(di); ++i)
+        {
+            MathLib::vec2f position = {
+                5.0f,
+                5.0f + i * 16.0f
+            };
+            textNodes.emplace_back(pFntMgr->CreateTextSceneNode(di[i].str(), position, L"2"));
+        }
+    }
 
-    pCtxMgr->BeginScene(); //no more needed here, cause clear frame should be called from renderer
-
-    pScene->DrawAll(dt);
-
-    for (int i = 0; i < infoSize; i++)
-        pFntMgr->DrawTextTL(di[i].str(), 5.0f, 5.0f + i * 16.0f);
+    for (int i = 0; i < std::size(di); ++i)
+        textNodes[i]->SetText(di[i].str());
 
     std::ostringstream experienceCount;
     experienceCount << "Experience: " << GetGamePtr()->GetPlayerPtr()->GetExperienceCount();
-    pFntMgr->DrawTextTL(experienceCount.str(),
-                        pCtxMgr->GetEngineSettings().screenWidth - 160.0f,
-                        pCtxMgr->GetEngineSettings().screenHeight - 40.0f);
 
-                    //guiPlatform->getRenderManagerPtr()->drawOneFrame();
+    static TextSceneNodePtr experienceCountNode;
+    if (!experienceCountNode)
+    {
+        MathLib::vec2f position = {
+            pCtxMgr->GetEngineSettings().screenWidth - 160.0f,
+            pCtxMgr->GetEngineSettings().screenHeight - 40.0f
+        };
 
-    pCtxMgr->EndScene();
+        experienceCountNode = pFntMgr->CreateTextSceneNode(experienceCount.str(), position, L"2");
+    }
+
+    experienceCountNode->SetText(experienceCount.str());
+
+    pScene->DrawAll(dt);
+
+    //guiPlatform->getRenderManagerPtr()->drawOneFrame();
 
     return true; //return false if something wrong
 }
@@ -161,7 +177,7 @@ void GameState::ProcessInput(double dt)
     const float x = (float)mouseInfo.clientX - settings.screenWidth / 2;
     const float y = settings.screenHeight / 2 - (float)mouseInfo.clientY;
 
-    player->SetTargetDirection({x, y});
+    player->SetTargetDirection({ x, y });
 
     // TODO: we need some handler of this shit
     if (inputEngine.IsMouseDown(LButton))
@@ -206,7 +222,7 @@ void GameState::ProcessInput(double dt)
     {
         xVelocity = 1.0f;
     }
-    player->SetMoveVector({xVelocity, yVelocity});
+    player->SetMoveVector({ xVelocity, yVelocity });
 
     //MyGUI::InputManager& inputManager = MyGUI::InputManager::getInstance();
     //bool guiInjected = inputManager.injectMouseMove(mouseInfo.clientX, mouseInfo.clientY, 0);
@@ -257,10 +273,7 @@ void GameState::switchWireframe()
 
     static bool Wflag = false;
     Wflag = !Wflag;
-    if (Wflag)
-        pCtxMgr->SetRasterizerState(RasterizerState::Wireframe);
-    else
-        pCtxMgr->SetRasterizerState(RasterizerState::Normal);
+    pCtxMgr->SetWireframeState(Wflag);
 #endif
 }
 

@@ -1,48 +1,37 @@
 #pragma once
 
 #include "TextLib/cFont.h"
-#include "IProgram.h"
-#include "IMeshData.h"
+#include "TextLib/TextSceneNode.h"
+
+#include <IMeshData.h>
+#include <RenderQueue.h>
+
+#include <Utilities/IManager.h>
 
 #include <map>
 #include <vector>
-#include <Utilities/IManager.h>
+#include <string>
 
 namespace ShiftEngine
 {
 
+class IContextManager;
+
 class FontManager : public IManager
 {
-    struct TextPoint
-    {
-        float x, y, tu, tv;
-    };
-
 public:
-    FontManager();
+    FontManager(IContextManager* contextManager);
 
-    void DrawTextTL(const std::string & Text, float x, float y);
-
-    int GetFontHeight();
-    int GetStringWidth(const std::string & string);
-
-    void SetFont(const std::wstring & fontName);
-    std::wstring GetCurrentFontName() const;
-
-    void DrawBatchedText();
+    TextSceneNodePtr    CreateTextSceneNode(const std::string& text, MathLib::vec2f position, const std::wstring& fontName);
+    void                DrawAll(RenderQueue& queue) const;
 
 private:
-    void LoadFonts();
-    void BatchText(const std::string & text, float x, float y);
+    void                LoadFonts();
 
-    std::map<std::wstring, std::vector<TextPoint>> batchedVertices;
-    std::map<std::wstring, std::vector<uint32_t>> batchedIndices;
+    IContextManager*                                contextManager = nullptr;
+    std::vector<TextSceneNodePtr>                   textSceneNodes;
+    std::map<std::wstring, std::unique_ptr<cFont>>  fonts;
 
-    std::map<std::wstring, std::unique_ptr<cFont>> Fonts;
-    cFont * pCurrentFont = nullptr;
-    std::wstring currentFont = L"";
-    IProgramPtr textShader = nullptr;
-    IMeshDataPtr batchedMesh = nullptr;
 };
 
 }

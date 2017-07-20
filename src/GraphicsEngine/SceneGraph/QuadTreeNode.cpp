@@ -60,7 +60,7 @@ void QuadTreeNode::PushToRQ(RenderQueue & rq)
 
     for (auto elem : subtrees)
     {
-        CameraFrustum::CullingStatus visibilityStatus = elem->CheckVisibility(*rq.GetActiveCamera());
+        CameraFrustum::CullingStatus visibilityStatus = elem->CheckVisibility(rq.GetActiveCamera());
 
         if (visibilityStatus == CameraFrustum::CullingStatus::CS_Out) //out
             continue;

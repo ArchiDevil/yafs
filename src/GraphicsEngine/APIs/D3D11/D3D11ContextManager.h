@@ -1,87 +1,89 @@
 #pragma once
 
+#include "D3D11Context.h"
+#include "D3D11TextureManager.h"
+#include "D3D11RenderTarget.h"
+#include "D3D11MeshManager.h"
+
+#include <IContextManager.h>
+#include <MiscTypes.h>
+#include <FontManager.h>
+
 #include <exception>
 #include <vector>
-
-#include "D3D11Context.h"
-#include "D3D11Mesh.h"
-#include "D3D11ShaderManager.h"
-#include "D3D11ShaderGenerator.h"
-#include "D3D11TextureManager.h"
-#include "D3D11MeshManager.h"
-#include "D3D11RenderTarget.h"
-#include "D3D11VertexDeclaration.h"
-
-#include "../../IContextManager.h"
-#include "../../IProgram.h"
-#include "../../MiscTypes.h"
-#include "../../MaterialManager.h"
-#include "../../Material.h"
-#include "../../FontManager.h"
+#include <memory>
 
 namespace ShiftEngine
 {
 
-class D3D11ContextManager : public IContextManager
+enum class BlendingState
 {
-    friend class Renderer;
-public:
-    D3D11ContextManager(HWND hwnd);
-    ~D3D11ContextManager();
+    None,
+    AlphaEnabled,
+    Additive
+};
 
-    bool                                Initialize(GraphicEngineSettings _Settings, PathSettings _Paths) override;
-    std::wstring                        GetGPUDescription() override;
-    void                                BeginScene() override;
-    void                                EndScene() override;
-    void                                ResetPipeline() override;
-    void                                SetUserDebugMarker(const std::wstring & markerName) override;
-    void                                SetUserDebugEventBegin(const std::wstring & markerName) override;
-    void                                SetUserDebugEventEnd() override;
+enum class RasterizerState
+{
+    Wireframe,
+    Normal,
+    NoCulling
+};
+
+class D3D11ContextManager final : public IContextManager
+{
+public:
+    D3D11ContextManager(HWND hwnd, GraphicEngineSettings settings, PathSettings paths);
+
     ITexturePtr                         LoadTexture(const std::wstring & FileName) override;
-    MaterialPtr                         LoadMaterial(const std::wstring & FileName, const std::wstring & mtlName) override;
-    IProgramPtr                         LoadShader(const std::wstring & FileName) override;
-    IMeshDataPtr                        LoadMesh(const std::wstring & FileName) override;
-    IShaderManager *                    GetShaderManager() override;
-    IShaderGenerator *                  GetShaderGenerator() override;
     ITextureManager *                   GetTextureManager() override;
     IMeshManager *                      GetMeshManager() override;
     FontManager*                        GetFontManager() override;
-    void                                SetZState(bool enabled) override;
-    void                                SetBlendingState(BlendingState bs) override;
-    BlendingState                       GetBlendingState() const override;
-    void                                SetRasterizerState(RasterizerState rs) override;
-    RasterizerState                     GetRasterizerState() const override;
     const GraphicEngineSettings &       GetEngineSettings() const override;
     const PathSettings &                GetPaths() const override;
-    int                                 DrawMesh(IMeshDataPtr & mesh) override;
-    IVertexDeclarationPtr               GetVertexDeclaration(const VertexSemantic & semantic) override;
-
-    ID3D11Device*                       GetDevicePtr() const;
+    void                                DrawAll(RenderQueue& queue, double dt) override;
+    void                                SetWireframeState(bool state) override;
 
 private:
-    IVertexDeclarationPtr               CreateVDFromDescription(const VertexSemantic & semantic);
+    void                                BeginScene();
+    void                                EndScene();
+    void                                ResetPipeline();
+    void                                SetUserDebugMarker(const std::wstring & markerName);
+    void                                SetUserDebugEventBegin(const std::wstring & markerName);
+    void                                SetUserDebugEventEnd();
+    void                                SetZState(bool enabled);
+    void                                SetBlendingState(BlendingState bs);
+    void                                SetRasterizerState(RasterizerState rs);
+    int                                 DrawMesh(const IMeshDataPtr& mesh);
+    void                                LoadSpritesPrerequisites();
 
-    HWND                                windowHandle;
-    PathSettings                        enginePaths;
-    GraphicEngineSettings               engineSettings;
+    HWND                                        windowHandle;
+    PathSettings                                enginePaths;
+    GraphicEngineSettings                       engineSettings;
 
-    std::map<VertexSemantic, IVertexDeclarationPtr> declarations;
+    std::unique_ptr<D3D11Context>               graphicsContext;
+    std::unique_ptr<FontManager>                fontManager;
+    std::unique_ptr<D3D11TextureManager>        textureManager;
+    std::unique_ptr<D3D11MeshManager>           meshManager;
 
-    D3D11Context                        graphicsContext;
-    FontManager*                        fontManager = nullptr;
-    D3D11TextureManager *               textureManager = nullptr;
-    D3D11MeshManager *                  meshManager = nullptr;
-    D3D11ShaderManager *                shaderManager = nullptr;
-    D3D11ShaderGenerator *              shaderGenerator = nullptr;
-    MaterialManager *                   materialManager = nullptr;
+    RasterizerState                             currentRasterizerState = RasterizerState::Normal;
+    BlendingState                               currentBlendingState = BlendingState::None;
 
-    IProgramPtr                         currentProgram;
-    RasterizerState                     currentRasterizerState = RasterizerState::Normal;
-    BlendingState                       currentBlendingState = BlendingState::None;
-    IVertexDeclaration *                currentVertexDeclaration = nullptr;
+    bool                                        zBufferState = true;
+    bool                                        cullingEnabled = true;
 
-    bool                                zBufferState = true;
-    bool                                cullingEnabled = true;
+    struct SpriteCB
+    {
+        float WVPMatrix[4][4];
+        float TextureMatrix[3][4];
+        float MaskColor[4];
+    };
+
+    Microsoft::WRL::ComPtr<ID3D11VertexShader>  spriteVS = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader>   spritePS = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>        spriteCB = nullptr;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout>   spriteLayout = nullptr;
+    IMeshDataPtr                                spriteMesh = nullptr;
 };
 
 }   //end of ShiftEngine namespace
