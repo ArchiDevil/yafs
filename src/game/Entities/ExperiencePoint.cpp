@@ -2,6 +2,7 @@
 
 #include "EntityEventManager.h"
 #include "LiveEntity.h"
+#include "../Common.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 
@@ -13,7 +14,7 @@ ExperiencePoint::ExperiencePoint(MathLib::vec2f position,
                                  int expCount,
                                  const std::shared_ptr<Physics::Entity>& physicsEntity,
                                  float size)
-    : PhysicsEntity(position, GetSceneGraph()->AddSpriteNode(experienceTextureName), physicsEntity)
+    : PhysicsEntity(position, GetSceneGraph()->AddSpriteNode(experienceTextureName, SL_Entities), physicsEntity)
     , expCount(expCount)
 {
     sprite->SetLocalScale(size);
