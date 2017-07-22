@@ -1,11 +1,14 @@
-#include "SceneManager.h"
+#include "LevelManager.h"
 
-#include "../3rdparty/json/json.hpp"
-#include "Utilities/logger.hpp"
-#include "MathLib/math/vector2.h"
-#include "Game.h"
-#include "Entities/Player.h"
-#include "Entities/EntityManager.h"
+#include "../Entities/Player.h"
+#include "../Entities/EntityManager.h"
+#include "../Common.h"
+
+#include "../Game.h"
+
+#include <json/json.hpp>
+#include <MathLib/math.h>
+#include <Utilities/logger.hpp>
 
 #include <fstream>
 #include <map>
@@ -13,7 +16,7 @@
 
 using namespace nlohmann;
 
-void SceneManager::LoadScene(std::string sceneName)
+void LevelManager::LoadScene(const std::string& sceneName)
 {
     // TODO Clean EntitiesManager and SceneGraph.
 
@@ -56,11 +59,11 @@ void SceneManager::LoadScene(std::string sceneName)
         for (json::iterator it = jGameObj.begin(); it != jGameObj.end(); ++it)
         {
             auto gameObj = it.value();
-            switch(static_cast<GameObjectType>(gameObj["type"].get<int>()))
+            switch (static_cast<GameObjectType>(gameObj["type"].get<int>()))
             {
             case SmallSpiritEnemy:
                 GoingHome::GetGamePtr()->GetEntityMgr()->CreateEnemy(
-                    { gameObj["position"]["x"].get<float>(), gameObj["position"]["y"].get<float>() },
+                { gameObj["position"]["x"].get<float>(), gameObj["position"]["y"].get<float>() },
                     gameObj["health"].get<float>(),
                     gameObj["experience"].get<int>(),
                     gameObj["size"].get<float>(),
@@ -102,9 +105,9 @@ void SceneManager::LoadScene(std::string sceneName)
             for (char symbol : line)
             {
                 std::wstring tilePath = converter.from_bytes(tiles[symbol]);
-                ShiftEngine::SpriteSceneNode * sprite = ShiftEngine::GetSceneGraph()->AddSpriteNode(tilePath, ShiftEngine::SL_Floor);
-                if (sprite != nullptr) {
-                    sprite->SetDrawingMode(ShiftEngine::SpriteSceneNode::SpriteDrawingMode::Additive);
+                ShiftEngine::SpriteSceneNode * sprite = ShiftEngine::GetSceneGraph()->AddSpriteNode(tilePath, SL_Floor);
+                if (sprite != nullptr)
+                {
                     sprite->SetLocalPosition({ x, y, 0.0 });
                 }
                 ++x;

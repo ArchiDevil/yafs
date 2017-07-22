@@ -21,13 +21,6 @@ enum SceneGraphType
     //SGT_OctTree
 };
 
-// TODO Create something more flexible.
-enum SpriteLayer
-{
-    SL_Floor = 0,
-    SL_Entities,
-};
-
 enum class CameraViewType;
 
 class ISceneNode;
@@ -46,7 +39,7 @@ public:
 
     // MESHES
     SpriteSceneNode * AddSpriteNode(const std::wstring & textureName,
-                                    SpriteLayer spriteLayer = SL_Floor,
+                                    int spriteLayer = 0,
                                     const MathLib::vec2f & leftTopTextureCoords = {0.0f, 0.0f},
                                     const MathLib::vec2f & rightBottomTextureCoords = {1.0f, 1.0f});
     AnimatedSpriteSceneNode * AddAnimatedSpriteNode(const std::wstring & textureName,

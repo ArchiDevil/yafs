@@ -3,9 +3,7 @@ set(SRC Common.h
         Game.h
         GoingHomeApplication.cpp
         GoingHomeApplication.h
-        main.cpp
-        SceneManager.cpp
-        SceneManager.h)
+        main.cpp)
 
 set(LS  gameStates/gameState.cpp
         gameStates/MainMenuState.cpp)
@@ -96,6 +94,14 @@ set(LS  Spells/ISpellController.h
         Spells/SpellsDatabase.h
         Spells/SpellsDescription.h)
 source_group("Header Files\\Spells" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  LevelManagement/LevelManager.cpp)
+source_group("Source Files\\Scene Management" FILES ${LS})
+list(APPEND SRC ${LS})
+
+set(LS  LevelManagement/LevelManager.h)
+source_group("Header Files\\Level Management" FILES ${LS})
 list(APPEND SRC ${LS})
 
 if(${EX_PLATFORM} EQUAL 64)

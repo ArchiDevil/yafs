@@ -3,7 +3,7 @@
 #include "../Entities/EntityManager.h"
 #include "../AI/AISmallSpirit.h"
 #include "../Spells/SpellsDatabase.h"
-#include "../SceneManager.h"
+#include "../LevelManagement/LevelManager.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 #include <Utilities/inputConverter.h>
@@ -33,7 +33,6 @@ bool GameState::initState()
     SceneGraph * pScene = GetSceneGraph();
     Player* playerPtr = GetGamePtr()->GetPlayerPtr();
     SpellsDatabase* database = GetGamePtr()->GetSpellsDatabase();
-    EntityManager* entityMgrPtr = GetGamePtr()->GetEntityMgr();
 
     //pGame->gameHud.reset(new GameHUD(guiModule));
     //LOG_INFO("HUD has been created");
@@ -46,7 +45,7 @@ bool GameState::initState()
     pScene->SetAmbientColor(vec3f(0.1f, 0.1f, 0.15f));
 
     // Create SceneGraph, Camera, Entities. Move Player to start point
-    SceneManager::LoadScene("bliss");
+    LevelManager::LoadScene("bliss");
 
     playerPtr->SetSpellController(database->GetSpellByName("projectile").CreateSpellController(playerPtr),      Player::CS_MainSlot);
     playerPtr->SetSpellController(database->GetSpellByName("multiprojectile").CreateSpellController(playerPtr), Player::CS_AdditionalSlot);
@@ -158,7 +157,7 @@ void GameState::onResume()
 {
 }
 
-void GameState::ProcessInput(double dt)
+void GameState::ProcessInput(double)
 {
     InputEngine & inputEngine = InputEngine::GetInstance();
     auto settings = GetContextManager()->GetEngineSettings();

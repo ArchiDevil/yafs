@@ -1,5 +1,7 @@
 #include "Projectile.h"
+
 #include "EntityEventManager.h"
+#include "../Common.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 

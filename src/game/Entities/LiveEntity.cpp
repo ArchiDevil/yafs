@@ -1,12 +1,13 @@
 #include "LiveEntity.h"
 
-#include <GraphicsEngine/ShiftEngine.h>
-
+#include "../Common.h"
 #include "../Game.h"
 #include "EntityManager.h"
 #include "Projectile.h"
 #include "ExperiencePoint.h"
 #include "Buffs.h"
+
+#include <GraphicsEngine/ShiftEngine.h>
 
 using namespace MathLib;
 using namespace GoingHome;

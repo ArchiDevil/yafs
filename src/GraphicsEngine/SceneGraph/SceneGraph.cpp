@@ -48,12 +48,12 @@ void SceneGraph::DrawAll(double dt) const
 }
 
 SpriteSceneNode * SceneGraph::AddSpriteNode(const std::wstring & textureName,
-                                            SpriteLayer spriteLayer/* = 0*/,
+                                            int spriteLayer/* = 0*/,
                                             const MathLib::vec2f & leftTopTextureCoords/* = {0.0f, 0.0f}*/,
                                             const MathLib::vec2f & rightBottomTextureCoords/* = {1.0f, 1.0f}*/)
 {
     ITexturePtr texture = GetContextManager()->LoadTexture(textureName);
-    SpriteSceneNode * out = new SpriteSceneNode(texture, leftTopTextureCoords, rightBottomTextureCoords, this, static_cast<int>(spriteLayer));
+    SpriteSceneNode * out = new SpriteSceneNode(texture, leftTopTextureCoords, rightBottomTextureCoords, this, spriteLayer);
     rootNode->AddChild(out);
     return out;
 }

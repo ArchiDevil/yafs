@@ -1,8 +1,9 @@
 #include "Buffs.h"
 
-#include <GraphicsEngine/ShiftEngine.h>
-
+#include "../Common.h"
 #include "EntityManager.h"
+
+#include <GraphicsEngine/ShiftEngine.h>
 
 float ShieldBuff::GetDamageModificationRatio() const
 {
@@ -19,7 +20,7 @@ void ShieldBuff::OnActivation(LiveEntity * owner)
 
     shieldEntity = GoingHome::GetGamePtr()->GetEntityMgr()->CreateVisualStickerEntity(owner,
                                                                                       owner->GetPosition(),
-                                                                                      ShiftEngine::GetSceneGraph()->AddSpriteNode(L"shield.png", ShiftEngine::SL_Entities));
+                                                                                      ShiftEngine::GetSceneGraph()->AddSpriteNode(L"shield.png", SL_Entities));
     active = true;
 }
 

@@ -1,5 +1,7 @@
 #include "MineEntity.h"
 
+#include "../Common.h"
+
 #include <GraphicsEngine/ShiftEngine.h>
 
 const std::wstring mineSpriteName = L"mine.png";

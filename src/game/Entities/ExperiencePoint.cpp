@@ -2,6 +2,7 @@
 
 #include "EntityEventManager.h"
 #include "LiveEntity.h"
+#include "../Common.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 
