@@ -189,6 +189,4 @@ T distance(const vec3<T> & vec1, const vec3<T> & vec2)
                    (T)(vec1.z - vec2.z)*(vec1.z - vec2.z));
 }
 
-
-
 }

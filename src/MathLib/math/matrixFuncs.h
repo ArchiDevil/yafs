@@ -335,6 +335,7 @@ matrix<T, 4> matrixLookAtRH(const vec3<T> & eye, const vec3<T> & at, const vec3<
     return out;
 }
 
+// TODO: recheck, it just does not work in most cases, something is wrong here!
 template<typename T>
 matrix<T, 4> matrixOrthoLH(float w, float h, float zf, float zn)
 {
@@ -346,6 +347,7 @@ matrix<T, 4> matrixOrthoLH(float w, float h, float zf, float zn)
     return out;
 }
 
+// TODO: recheck, it just does not work in most cases, something is wrong here!
 template<typename T>
 matrix<T, 4> matrixOrthoRH(float w, float h, float zf, float zn)
 {

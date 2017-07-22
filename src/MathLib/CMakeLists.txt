@@ -8,6 +8,7 @@ set(SRC math.h
         math/matrixFuncs.h
         math/OOBB.cpp
         math/OOBB.h
+        math/oobb2d.h
         math/plane.h
         math/quaternion.h
         math/ray.h

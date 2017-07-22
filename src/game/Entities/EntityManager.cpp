@@ -95,7 +95,7 @@ std::shared_ptr<Enemy> EntityManager::CreateEnemy(MathLib::vec2f position,
     switch (type)
     {
     case Enemy::EnemyType::SmallSpirit:
-        ai = std::make_unique<AISmallSpirit>(0.3f);
+        //ai = std::make_unique<AISmallSpirit>(0.3f);
         break;
     default:
         assert(false);
