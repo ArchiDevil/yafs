@@ -13,6 +13,17 @@ double AllTime = 0.0f;
 
 Log PerformanceLog("Performance.log");
 
+ShiftEngine::SpriteFilterMode GetSpriteFilteringMode(const std::string& filteringMode)
+{
+    static const std::map<std::string, ShiftEngine::SpriteFilterMode> filters = {
+        { "point",      ShiftEngine::SpriteFilterMode::Point },
+        { "linear",     ShiftEngine::SpriteFilterMode::Linear },
+        { "anisotropy", ShiftEngine::SpriteFilterMode::Anisotropy },
+    };
+
+    return filters.at(filteringMode);
+}
+
 GoingHomeApplication::GoingHomeApplication(int Width, int Height, LPCWSTR AppName)
     : Application(Width, Height, AppName)
 {
@@ -36,9 +47,8 @@ bool GoingHomeApplication::Initialize()
     settings.multisampleQuality = settingsLoader.GetInteger("MultisampleQuality");
     settings.windowed           = settingsLoader.GetBoolean("Windowed");
     settings.screenRate         = settingsLoader.GetInteger("ScreenRate");
-    settings.zNear              = settingsLoader.GetFloat("zNear");
-    settings.zFar               = settingsLoader.GetFloat("zFar");
     settings.anisotropyLevel    = settingsLoader.GetInteger("AnisotropyLevel");
+    settings.spriteFiltering    = GetSpriteFilteringMode(settingsLoader.GetString("SpriteFiltering"));
 
     // Load paths settings
     ShiftEngine::PathSettings path;

@@ -72,9 +72,9 @@ CameraSceneNode * SceneGraph::AddCameraSceneNode(CameraViewType cameraType)
     auto engineSettings = GetContextManager()->GetEngineSettings();
 
     CameraSceneNode * cam = new CameraSceneNode((float)engineSettings.screenWidth,
-        (float)engineSettings.screenHeight,
-                                                engineSettings.zNear,
-                                                engineSettings.zFar,
+                                                (float)engineSettings.screenHeight,
+                                                0.0f,
+                                                1.0f,
                                                 60.0f,
                                                 cameraType,
                                                 this);

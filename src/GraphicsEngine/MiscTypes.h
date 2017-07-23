@@ -1,7 +1,5 @@
 #pragma once
 
-#include <MathLib/math.h>
-
 #include <string>
 #include <cstdint>
 
@@ -24,6 +22,13 @@ enum class TextureType : uint8_t
     Texture2DArray,
     TextureCubemap,
     Texture3D
+};
+
+enum class SpriteFilterMode
+{
+    Point,
+    Linear,
+    Anisotropy
 };
 
 // Mesh file header
@@ -49,26 +54,15 @@ struct gRect
 // Different settings for graphics engine
 struct GraphicEngineSettings
 {
-    GraphicEngineSettings()
-        : screenWidth(800)
-        , screenHeight(600)
-        , multisampleQuality(0)
-        , windowed(true)
-        , screenRate(0)
-        , zNear(0.1f)
-        , zFar(200.0f)
-        , anisotropyLevel(0)
-    {
-    }
+    GraphicEngineSettings() = default;
 
     int screenWidth = 800;
     int screenHeight = 600;
     int multisampleQuality = 0;
     bool windowed = true;
     int screenRate = 0;
-    float zNear = 0.1f;
-    float zFar = 200.0f;
     int anisotropyLevel = 0;
+    SpriteFilterMode spriteFiltering = SpriteFilterMode::Point;
 };
 
 // Relative paths to the resources

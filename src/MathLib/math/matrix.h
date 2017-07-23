@@ -165,13 +165,13 @@ struct matrix
         return *this;
     }
 
-    T * operator [] (const int scalar)
+    T * operator [] (size_t scalar)
     {
         //returns pointer to second array
         return arr[scalar];
     }
 
-    const T * operator [] (const int scalar) const
+    const T * operator [] (size_t scalar) const
     {
         return arr[scalar];
     }
