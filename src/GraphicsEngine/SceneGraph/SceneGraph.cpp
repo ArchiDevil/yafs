@@ -8,21 +8,9 @@
 
 using namespace ShiftEngine;
 
-SceneGraph::SceneGraph(SceneGraphType graphType /*= SGT_Plain*/)
-    : type(graphType)
+SceneGraph::SceneGraph()
 {
-    switch (graphType)
-    {
-    case SGT_Plain:
-        rootNode = new PlainTreeNode(this);
-        break;
-    case SGT_QuadTree:
-        rootNode = new QuadTreeNode(-2048.0f, 2048.0f, -2048.0f, 2048.0f, this);
-        break;
-    default:
-        assert(false);
-        break;
-    }
+    rootNode = new PlainTreeNode(this);
 }
 
 SceneGraph::~SceneGraph()
@@ -72,7 +60,7 @@ CameraSceneNode * SceneGraph::AddCameraSceneNode(CameraViewType cameraType)
     auto engineSettings = GetContextManager()->GetEngineSettings();
 
     CameraSceneNode * cam = new CameraSceneNode((float)engineSettings.screenWidth,
-                                                (float)engineSettings.screenHeight,
+        (float)engineSettings.screenHeight,
                                                 0.0f,
                                                 1.0f,
                                                 60.0f,
@@ -104,23 +92,4 @@ void SceneGraph::SetAmbientColor(const MathLib::vec3f & color)
 MathLib::vec3f SceneGraph::GetAmbientColor() const
 {
     return ambientColor;
-}
-
-void SceneGraph::MoveNodeCallback(ISceneNode * node)
-{
-    switch (type)
-    {
-    case SGT_Plain:
-        return;
-    case SGT_QuadTree:
-    {
-        node->addRef();
-        node->RemoveParent();
-        rootNode->AddChild(node);
-        node->release();
-    }
-    break;
-    default:
-        assert(false);
-    }
 }
