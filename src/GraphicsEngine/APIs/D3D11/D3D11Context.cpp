@@ -122,15 +122,23 @@ ShiftEngine::D3D11Context::D3D11Context(HWND windowHandle, const GraphicEngineSe
     sDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
     sDesc.BorderColor[0] = sDesc.BorderColor[1] = sDesc.BorderColor[2] = sDesc.BorderColor[3] = 0.0f;
     sDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-    if (settings.anisotropyLevel > 0)
+    switch (settings.spriteFiltering)
     {
-        sDesc.Filter = D3D11_FILTER_ANISOTROPIC;
-        sDesc.MaxAnisotropy = settings.anisotropyLevel;
-    }
-    else
-    {
+    case SpriteFilterMode::Point:
+        sDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
+        sDesc.MaxAnisotropy = 0;
+        break;
+    case SpriteFilterMode::Linear:
         sDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
         sDesc.MaxAnisotropy = 0;
+        break;
+    case SpriteFilterMode::Anisotropy:
+        sDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+        sDesc.MaxAnisotropy = settings.anisotropyLevel;
+        break;
+    default:
+        LOG_FATAL_ERROR("Unknown filtering type");
+        break;
     }
     sDesc.MaxLOD = 8;
     sDesc.MinLOD = 0.0f;

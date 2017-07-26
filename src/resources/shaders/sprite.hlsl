@@ -1,16 +1,13 @@
-cbuffer spriteConstants
+cbuffer spriteConstants : register(b0)
 {
     float4x4 WVPMatrix;
     float3x3 TextureMatrix;
     float4 MaskColor;
 };
 
-Texture2D Texture;
+Texture2D Texture : register(t0);
 
-SamplerState SS
-{
-    Filter = MIN_MAG_MIP_POINT;
-};
+SamplerState SS : register(s0);
 
 struct VS_I
 {

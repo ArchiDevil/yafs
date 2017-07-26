@@ -58,7 +58,7 @@ void D3D11ContextManager::SetUserDebugEventEnd()
 #endif
 }
 
-void D3D11ContextManager::DrawAll(RenderQueue& queue, double dt)
+void D3D11ContextManager::DrawAll(RenderQueue& queue, double /*dt*/)
 {
     fontManager->DrawAll(queue);
 
@@ -223,7 +223,7 @@ const PathSettings & D3D11ContextManager::GetPaths() const
     return enginePaths;
 }
 
-int D3D11ContextManager::DrawMesh(const IMeshDataPtr& mesh)
+size_t D3D11ContextManager::DrawMesh(const IMeshDataPtr& mesh)
 {
     return mesh->Draw();
 }

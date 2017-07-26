@@ -14,13 +14,6 @@
 namespace ShiftEngine
 {
 
-enum SceneGraphType
-{
-    SGT_Plain,
-    SGT_QuadTree,
-    //SGT_OctTree
-};
-
 enum class CameraViewType;
 
 class ISceneNode;
@@ -34,7 +27,7 @@ class EmptySceneNode;
 class SceneGraph final
 {
 public:
-    SceneGraph(SceneGraphType graphType = SGT_Plain);
+    SceneGraph();
     ~SceneGraph();
 
     // MESHES
@@ -56,12 +49,10 @@ public:
 
     // OTHER
     void DrawAll(double dt) const;
-    void MoveNodeCallback(ISceneNode * node);
 
 private:
     ISceneNode *                    rootNode = nullptr;
     CameraSceneNode *               activeCamera = nullptr;
-    SceneGraphType                  type = SGT_Plain;
     MathLib::vec3f                  ambientColor = {};
 
 };

@@ -2,6 +2,8 @@
 
 #include "MiscTypes.h"
 
+#include <MathLib/math.h>
+
 #include <string>
 #include <memory>
 #include <type_traits>

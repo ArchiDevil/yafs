@@ -1,9 +1,13 @@
 #include "Projectile.h"
+
 #include "EntityEventManager.h"
+#include "../Common.h"
 
 #include <GraphicsEngine/ShiftEngine.h>
 
 const std::wstring textureName = L"sprite.png";
+
+using namespace ShiftEngine;
 
 Projectile::Projectile(const MathLib::vec2f position,
                        float damage,
@@ -11,7 +15,7 @@ Projectile::Projectile(const MathLib::vec2f position,
                        const LiveEntity * producer,
                        const std::shared_ptr<Physics::Entity>& physicsEntity,
                        float size)
-    : PhysicsEntity(position, ShiftEngine::GetSceneGraph()->AddSpriteNode(textureName), physicsEntity)
+    : PhysicsEntity(position, GetSceneGraph()->AddSpriteNode(textureName, SL_Entities), physicsEntity)
     , producer(producer)
     , remainingTime(lifetime)
     , damage(damage)

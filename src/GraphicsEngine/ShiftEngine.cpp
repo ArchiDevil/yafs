@@ -12,24 +12,24 @@ namespace ShiftEngine
 std::unique_ptr<IContextManager> ContextManagerInstance;
 std::unique_ptr<SceneGraph> SceneGraphInstance;
 
-bool InitDX11Api(HWND hwnd, GraphicEngineSettings settings, PathSettings paths, SceneGraphType sceneGraphType)
+bool InitDX11Api(HWND hwnd, GraphicEngineSettings settings, PathSettings paths)
 {
     ContextManagerInstance = std::make_unique<ShiftEngine::D3D11ContextManager>(hwnd, settings, paths);
-    SceneGraphInstance = std::make_unique<ShiftEngine::SceneGraph>(sceneGraphType);
+    SceneGraphInstance = std::make_unique<ShiftEngine::SceneGraph>();
     return true;
 }
 
-bool InitOpenGLApi(HWND /*hwnd*/, GraphicEngineSettings /*settings*/, PathSettings /*paths*/, SceneGraphType /*sceneGraphType*/)
+bool InitOpenGLApi(HWND /*hwnd*/, GraphicEngineSettings /*settings*/, PathSettings /*paths*/)
 {
     return false;
 }
 
-bool InitEngine(const GraphicEngineSettings & settings, const PathSettings & paths, HWND hwnd, SceneGraphType sceneGraphType)
+bool InitEngine(const GraphicEngineSettings & settings, const PathSettings & paths, HWND hwnd)
 {
 #if defined(D3D11_RENDER)
-    return InitDX11Api(hwnd, settings, paths, sceneGraphType);
+    return InitDX11Api(hwnd, settings, paths);
 #elif defined(OPENGL_RENDER)
-    return InitOpenGLApi(hwnd, settings, paths, sceneGraphType);
+    return InitOpenGLApi(hwnd, settings, paths);
 #endif;
 }
 

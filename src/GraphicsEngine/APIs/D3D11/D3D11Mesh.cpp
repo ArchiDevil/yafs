@@ -35,7 +35,7 @@ bool D3D11MeshData::CreateBuffers(bool dynamic,
     ZeroMemory(&iBuffDesc, sizeof(D3D11_BUFFER_DESC));
 
     vBuffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vBuffDesc.ByteWidth = vDataSize;
+    vBuffDesc.ByteWidth = (UINT)vDataSize;
     vBuffDesc.MiscFlags = NULL;
 
     if (dynamic)
@@ -60,7 +60,7 @@ bool D3D11MeshData::CreateBuffers(bool dynamic,
     }
 
     iBuffDesc.BindFlags = D3D10_BIND_INDEX_BUFFER;
-    iBuffDesc.ByteWidth = iDataSize;
+    iBuffDesc.ByteWidth = (UINT)iDataSize;
     iBuffDesc.MiscFlags = NULL;
 
     if (dynamic)
@@ -100,18 +100,18 @@ size_t D3D11MeshData::Draw()
     if (!vertexSize || !verticesCount)
         return 0;
 
-    unsigned int stride = vertexSize;
+    unsigned int stride = (unsigned int)vertexSize;
     unsigned int offset = 0;
     pDeviceContext->IASetVertexBuffers(0, 1, VertexBuffer.GetAddressOf(), &stride, &offset);
     if (indicesCount > 0)
     {
         pDeviceContext->IASetIndexBuffer(IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-        pDeviceContext->DrawIndexed(indicesCount, 0, 0);
+        pDeviceContext->DrawIndexed((UINT)indicesCount, 0, 0);
         return indicesCount / 3;
     }
     else
     {
-        pDeviceContext->Draw(verticesCount, 0);
+        pDeviceContext->Draw((UINT)verticesCount, 0);
         return verticesCount;
     }
 }

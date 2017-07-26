@@ -1,0 +1,31 @@
+{
+    "starting_point": [
+        {
+            "x": 5.0,
+            "y": 5.0
+        }
+    ],
+    "game_objects": [
+        {
+            "id": 1,
+            "type": 1,
+            "position": {
+                "x": 10.0,
+                "y": 10.0
+            },
+            "health": 5.0,
+            "experience": 100,
+            "size": 0.2
+        }
+    ],
+    "map": {
+        "file": "bliss.map",
+        "tiles": [
+            { "symbol": "1", "tile": "grass1_tile.png" },
+            { "symbol": "2", "tile": "grass2_tile.png" },
+            { "symbol": "3", "tile": "grass3_tile.png" },
+            { "symbol": "4", "tile": "grass4_tile.png" },
+            { "symbol": "5", "tile": "grass5_tile.png" }
+        ]
+    }
+}

@@ -54,7 +54,7 @@ private:
     void                                SetZState(bool enabled);
     void                                SetBlendingState(BlendingState bs);
     void                                SetRasterizerState(RasterizerState rs);
-    int                                 DrawMesh(const IMeshDataPtr& mesh);
+    size_t                              DrawMesh(const IMeshDataPtr& mesh);
     void                                LoadSpritesPrerequisites();
 
     HWND                                        windowHandle;

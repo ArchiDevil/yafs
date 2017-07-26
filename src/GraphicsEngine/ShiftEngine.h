@@ -12,7 +12,7 @@ namespace ShiftEngine
 {
 
 //TODO: remove window handle and replace it by something cross-platform
-bool InitEngine(const GraphicEngineSettings & settings, const PathSettings & paths, HWND hwnd, SceneGraphType sceneGraphType);
+bool InitEngine(const GraphicEngineSettings & settings, const PathSettings & paths, HWND hwnd);
 void ShutdownEngine();
 
 std::vector<std::string> GetDevicesDescription();

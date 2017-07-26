@@ -4,7 +4,6 @@
 #include "../Game.h"
 #include "../Spells/SpellsDatabase.h"
 
-
 #include <algorithm>
 
 using namespace MathLib;
@@ -95,7 +94,7 @@ std::shared_ptr<Enemy> EntityManager::CreateEnemy(MathLib::vec2f position,
     switch (type)
     {
     case Enemy::EnemyType::SmallSpirit:
-        //ai = std::make_unique<AISmallSpirit>(0.3f);
+        ai = std::make_unique<AISmallSpirit>(0.3f);
         break;
     default:
         assert(false);
@@ -162,20 +161,6 @@ std::shared_ptr<MineTimedEntity> EntityManager::CreateTimedMine(const LiveEntity
 {
     auto physicsEntity = physicsMgr->CreateEntity(position, size, {});
     auto entity = factory.CreateEntity<MineTimedEntity>(owner, position, explosionDamage, explosionRadius, triggerDistance, timeToExplode, physicsEntity);
-    entitiesToAdd.push_back(entity);
-    return entity;
-}
-
-std::shared_ptr<BackgroundBlinker> EntityManager::CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode * sprite)
-{
-    auto entity = factory.CreateEntity<BackgroundBlinker>(sprite);
-    entitiesToAdd.push_back(entity);
-    return entity;
-}
-
-std::shared_ptr<BackgroundWanderer> EntityManager::CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode * sprite)
-{
-    auto entity = factory.CreateEntity<BackgroundWanderer>(sprite);
     entitiesToAdd.push_back(entity);
     return entity;
 }
