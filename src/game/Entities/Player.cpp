@@ -10,7 +10,7 @@ using namespace MathLib;
 using namespace GoingHome;
 using namespace ShiftEngine;
 
-const std::wstring playerTextureName = L"experience_sprite.png";
+const std::wstring playerTextureName = L"player_sprite.png";
 
 Player::Player(vec2f position,
                float health,
