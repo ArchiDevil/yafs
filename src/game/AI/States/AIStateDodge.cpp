@@ -15,7 +15,6 @@ AIStateDodge::AIStateDodge(float dodgeDistance, float dodgeDistanceToProjectileL
 
 void AIStateDodge::Do(double dt, LiveEntity* entity)
 {
-
     auto projectiles = GetGamePtr()->GetEntityMgr()->GetProjectiles();
 
     Projectile* nearestProjectile = nullptr;
