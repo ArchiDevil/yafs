@@ -1,7 +1,5 @@
 #pragma once
 
-#include "BackgroundBlinker.h"
-#include "BackgroundWanderer.h"
 #include "Enemy.h"
 #include "ExperiencePoint.h"
 #include "MineDetectorEntity.h"

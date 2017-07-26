@@ -41,9 +41,7 @@ set(LS  AI/States/AIState.h
 source_group("Header Files\\AI\\States" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  Entities/BackgroundBlinker.cpp
-        Entities/BackgroundWanderer.cpp
-        Entities/Buffs.cpp
+set(LS  Entities/Buffs.cpp
         Entities/Enemy.cpp
         Entities/Entity.cpp
         Entities/EntityFactory.cpp
@@ -59,9 +57,7 @@ set(LS  Entities/BackgroundBlinker.cpp
 source_group("Source Files\\Entities" FILES ${LS})
 list(APPEND SRC ${LS})
 
-set(LS  Entities/BackgroundBlinker.h
-        Entities/BackgroundWanderer.h
-        Entities/Buffs.h
+set(LS  Entities/Buffs.h
         Entities/Enemy.h
         Entities/Entity.h
         Entities/EntityEventManager.h
