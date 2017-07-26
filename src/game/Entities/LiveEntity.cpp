@@ -1,12 +1,13 @@
 #include "LiveEntity.h"
 
-#include <GraphicsEngine/ShiftEngine.h>
-
+#include "../Common.h"
 #include "../Game.h"
 #include "EntityManager.h"
 #include "Projectile.h"
 #include "ExperiencePoint.h"
 #include "Buffs.h"
+
+#include <GraphicsEngine/ShiftEngine.h>
 
 using namespace MathLib;
 using namespace GoingHome;
@@ -18,7 +19,7 @@ LiveEntity::LiveEntity(vec2f position,
                        int expCount,
                        const std::shared_ptr<Physics::Entity>& physicsEntity,
                        Faction fact)
-    : PhysicsEntity(position, GetSceneGraph()->AddSpriteNode(textureName), physicsEntity)
+    : PhysicsEntity(position, GetSceneGraph()->AddSpriteNode(textureName, SL_Entities), physicsEntity)
     , maxHealth(health)
     , health(health)
     , experienceCount(expCount)

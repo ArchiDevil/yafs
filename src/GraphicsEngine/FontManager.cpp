@@ -3,66 +3,24 @@
 #include "ShiftEngine.h"
 
 #include <Utilities/ut.h>
-
-#include <cassert>
+#include <Utilities/logger.hpp>
 
 using namespace ShiftEngine;
 
-FontManager::FontManager()
-    : currentFont(L"")
-    , textShader(nullptr)
+FontManager::FontManager(IContextManager* contextManager)
+    : contextManager(contextManager)
 {
-    IContextManager* pCntMng = GetContextManager();
-    textShader = pCntMng->LoadShader(L"text.fx");
     LoadFonts();
-    if (!Fonts.empty())
-        currentFont = Fonts.begin()->first;
-}
-
-void FontManager::DrawTextTL(const std::string & Text, float x, float y)
-{
-    if (!pCurrentFont || !Text.size())
-        return;
-
-    BatchText(Text, x, y);
-}
-
-int FontManager::GetFontHeight()
-{
-    if (!pCurrentFont)
-        return 0;
-    else
-        return pCurrentFont->LineHeight;
-}
-
-int FontManager::GetStringWidth(const std::string & string)
-{
-    int result = 0;
-
-    if (!pCurrentFont)
-        return 0;
-
-    for (unsigned char symbol : string)
-    {
-        auto cp = pCurrentFont->GetCharacterPtr(symbol);
-        if (!cp->Height)
-            return 0;
-
-        result += cp->XAdvance;
-    }
-
-    return result;
 }
 
 void FontManager::LoadFonts()
 {
-    IContextManager* pCntMng = GetContextManager();
     //TODO: добавить механизм, чтобы файл шрифта содержал имя текстуры
-    PathSettings pPaths = pCntMng->GetPaths();
+    PathSettings pPaths = contextManager->GetPaths();
     auto fontsNames = utils::filesystem::collect_file_names(pPaths.FontsPath, L"fnt2");
-    auto fontsTextureNames = utils::filesystem::collect_file_names(pPaths.TexturePath + L"fonts\\");
+    auto fontsTextureNames = utils::filesystem::collect_file_names(pPaths.TexturePath + L"fonts/");
 
-    if (fontsNames.size() == 0 || fontsTextureNames.size() == 0 || fontsNames.size() != fontsTextureNames.size())
+    if (fontsNames.empty() || fontsTextureNames.empty() || fontsNames.size() != fontsTextureNames.size())
         LOG_FATAL_ERROR("Unable to load textures for fonts");
 
     auto fontNamesIterator = fontsNames.begin();
@@ -70,162 +28,29 @@ void FontManager::LoadFonts()
 
     while (fontNamesIterator != fontsNames.end())
     {
-        cFont * font = nullptr;
+        cFont* font = nullptr;
         try
         {
-            font = new cFont(pPaths.FontsPath + *fontNamesIterator, pCntMng->LoadTexture(L"fonts\\" + *textureNamesIterator));
+            font = new cFont(pPaths.FontsPath + *fontNamesIterator, contextManager->LoadTexture(L"fonts/" + *textureNamesIterator));
         }
         catch (const std::exception&)
         {
             LOG_ERROR("Unable to load font: ", utils::narrow(*fontNamesIterator));
         }
-        Fonts[::utils::extract_name(*fontNamesIterator)].reset(font);
+        fonts[::utils::extract_name(*fontNamesIterator)].reset(font);
         ++textureNamesIterator;
         ++fontNamesIterator;
     }
 }
 
-void FontManager::SetFont(const std::wstring & fontName)
+TextSceneNodePtr FontManager::CreateTextSceneNode(const std::string& text, MathLib::vec2f position, const std::wstring& fontName)
 {
-    auto iter = Fonts.find(fontName);
-    if (iter != Fonts.end())
-    {
-        currentFont = fontName;
-        pCurrentFont = iter->second.get();
-    }
-    else
-    {
-        pCurrentFont = nullptr;
-        currentFont.clear();
-        LOG_ERROR("Unable to find font: ", utils::narrow(fontName));
-    }
+    textSceneNodes.emplace_back(std::make_shared<TextSceneNode>(text, position, fonts.at(fontName).get()));
+    return textSceneNodes.back();
 }
 
-std::wstring FontManager::GetCurrentFontName() const
+void FontManager::DrawAll(RenderQueue& queue) const
 {
-    return currentFont;
-}
-
-void FontManager::BatchText(const std::string & text, float x, float y)
-{
-    if (text.size() == 0)
-        return;
-
-    auto & v = batchedVertices[GetCurrentFontName()];
-    auto & i = batchedIndices[GetCurrentFontName()];
-
-    size_t vertSh = v.size();
-    size_t indSh = i.size();
-
-    i.resize(i.size() + text.size() * 6);
-    v.resize(v.size() + text.size() * 4);
-
-    int CurX = 0;
-
-    for (char symbol : text)
-    {
-        sChar * cp = pCurrentFont->GetCharacterPtr(symbol);
-        assert(cp->Height != 0);
-        int CharX = cp->x;
-        int CharY = cp->y;
-        int Width = cp->Width;
-        int Height = cp->Height;
-        int OffsetX = cp->XOffset;
-        int OffsetY = cp->YOffset;
-
-        //first triangle
-        i[indSh++] = vertSh;
-        i[indSh++] = vertSh + 1;
-        i[indSh++] = vertSh + 2;
-
-        //second triangle
-        i[indSh++] = vertSh;
-        i[indSh++] = vertSh + 2;
-        i[indSh++] = vertSh + 3;
-
-        /*
-        0   1
-        -----
-        |\  |
-        | \ |
-        |  \|
-        -----
-        3   2
-        */
-
-        //upper left
-        v[vertSh].tu = (float)CharX / (float)pCurrentFont->Width;
-        v[vertSh].tv = (float)CharY / (float)pCurrentFont->Height;
-        v[vertSh].x = (float)CurX + OffsetX + x;
-        v[vertSh++].y = (float)OffsetY + y;
-
-        //upper right
-        v[vertSh].tu = (float)(CharX + Width) / (float)pCurrentFont->Width;
-        v[vertSh].tv = (float)CharY / (float)pCurrentFont->Height;
-        v[vertSh].x = (float)Width + CurX + OffsetX + x;
-        v[vertSh++].y = (float)OffsetY + y;
-
-        //lower right
-        v[vertSh].tu = (float)(CharX + Width) / (float)pCurrentFont->Width;
-        v[vertSh].tv = (float)(CharY + Height) / (float)pCurrentFont->Height;
-        v[vertSh].x = (float)Width + CurX + OffsetX + x;
-        v[vertSh++].y = (float)Height + OffsetY + y;
-
-        //lower left
-        v[vertSh].tu = (float)CharX / (float)pCurrentFont->Width;
-        v[vertSh].tv = (float)(CharY + Height) / (float)pCurrentFont->Height;
-        v[vertSh].x = (float)CurX + OffsetX + x;
-        v[vertSh++].y = (float)Height + OffsetY + y;
-
-        CurX += cp->XAdvance;
-    }
-}
-
-void FontManager::DrawBatchedText()
-{
-    for (auto & p : batchedVertices)
-    {
-        auto & v = batchedVertices[p.first];
-        auto & i = batchedIndices[p.first];
-
-        if (v.empty() || i.empty())
-            return;
-
-        auto* pCtxMgr = GetContextManager();
-
-        batchedMesh = pCtxMgr->GetMeshManager()->CreateMeshFromVertices((uint8_t*)v.data(), v.size() * sizeof(TextPoint), i, &plainSpriteVertexSemantic, {});
-
-        auto cbs = pCtxMgr->GetBlendingState();
-        pCtxMgr->SetBlendingState(BlendingState::AlphaEnabled);
-        auto crs = pCtxMgr->GetRasterizerState();
-        pCtxMgr->SetRasterizerState(RasterizerState::Normal);
-
-        GraphicEngineSettings pSettings = pCtxMgr->GetEngineSettings();
-        MathLib::mat4f matOrtho = MathLib::matrixOrthoOffCenterLH<float>(0.0f, (float)pSettings.screenWidth, (float)pSettings.screenHeight, 0.0f, 0.0f, 1.0f);
-        textShader->SetMatrixConstantByName("matOrtho", matOrtho);
-
-        MathLib::vec4f vec;
-        vec.x = 0.0f;
-        vec.y = 0.0f;
-        vec.z = 16000.0f;
-        vec.w = 16000.0f;
-
-        textShader->SetVectorConstantByName("Rect", vec.el);
-        SetFont(p.first);
-        textShader->SetTextureByName("FontTexture", pCurrentFont->GetTexturePtr());
-        textShader->Apply(true);
-
-        batchedMesh->GetVertexDeclaration()->Bind();
-        batchedMesh->Draw();
-
-        pCtxMgr->SetRasterizerState(crs);
-        pCtxMgr->SetBlendingState(cbs);
-
-        //for fix a lot of DXDEBUG warnings
-        pCtxMgr->ResetPipeline();
-
-        v.clear();
-        i.clear();
-        batchedMesh->Clear();
-    }
+    for (auto& node : textSceneNodes)
+        queue.AddTextNode(node.get());
 }

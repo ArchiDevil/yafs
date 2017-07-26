@@ -9,7 +9,6 @@
 // this should make user to think twice if he really needs to use this class
 class EntityManager;
 class Player;
-class BackgroundManager;
 class SpellsDatabase;
 
 namespace GoingHome
@@ -23,7 +22,6 @@ public:
 
     Player*                     GetPlayerPtr() const;
     EntityManager*              GetEntityMgr() const;
-    BackgroundManager*          GetBackgroundMgr() const;
     SpellsDatabase*             GetSpellsDatabase() const;
     Physics::PhysicsManager*    GetPhysicsMgr() const;
 
@@ -31,7 +29,6 @@ private:
     std::unique_ptr<Physics::PhysicsManager>    physicsMgr;
     Player*                                     player;
     std::unique_ptr<EntityManager>              entityMgr;
-    std::unique_ptr<BackgroundManager>          backgroundMgr;
     std::unique_ptr<SpellsDatabase>             spellsDatabase;
     // std::unique_ptr<GameEventHandler>        gameEventHandler;
     // std::unique_ptr<GameHUD>                 gameHud;

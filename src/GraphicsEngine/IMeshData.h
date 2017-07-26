@@ -1,44 +1,70 @@
 #pragma once
 
+#include "MiscTypes.h"
+
+#include <MathLib/math.h>
+
 #include <string>
 #include <memory>
-
-#include "IVertexDeclaration.h"
-
-#include "VertexTypes.h"
-#include "MiscTypes.h"
+#include <type_traits>
 
 namespace ShiftEngine
 {
+enum class VertexType
+{
+    SpriteVertexType
+};
+
+struct SpriteVertex
+{
+    float position[2];
+    float texcoord[2];
+};
+
+inline size_t GetVertexSizeForVertexType(VertexType type)
+{
+    switch (type)
+    {
+    case ShiftEngine::VertexType::SpriteVertexType:
+        return sizeof(SpriteVertex);
+    default:
+        return 0;
+    }
+}
+
+template<typename vertex_t>
+struct vertex_type_match : std::enable_if<false>
+{
+};
+
+template<>
+struct vertex_type_match<SpriteVertex>
+{
+    static constexpr VertexType value = VertexType::SpriteVertexType;
+};
 
 class IMeshData
 {
 public:
     virtual ~IMeshData() = default;
 
-    virtual uint32_t Draw() = 0;
-    virtual void Clear() = 0;
+    virtual size_t Draw() = 0;
 
     size_t GetVerticesCount() const
     {
         return verticesCount;
     }
+
     size_t GetIndicesCount() const
     {
         return indicesCount;
     }
+
     size_t GetVertexSize() const
     {
         return vertexSize;
     }
-    const VertexSemantic * GetVertexSemantic() const
-    {
-        return vertexSemantic;
-    }
-    ShiftEngine::IVertexDeclarationPtr GetVertexDeclaration() const
-    {
-        return vertexDeclaration;
-    }
+
     MathLib::AABB GetBBox() const
     {
         return bbox;
@@ -49,8 +75,7 @@ public:
                                size_t vDataSize,
                                const uint32_t * iData,
                                size_t iDataSize,
-                               const VertexSemantic * semantic,
-                               const IVertexDeclarationPtr & declaration,
+                               VertexType vertexType,
                                const MathLib::AABB & bbox) = 0;
 
     IMeshData() = default;
@@ -58,11 +83,9 @@ public:
     IMeshData & operator=(IMeshData & other) = default;
 
 protected:
-    const VertexSemantic * vertexSemantic = nullptr;
     size_t verticesCount = 0;
     size_t indicesCount = 0;
     size_t vertexSize = 0;
-    IVertexDeclarationPtr vertexDeclaration = nullptr;
     MathLib::AABB bbox = {};
 };
 

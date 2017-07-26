@@ -1,5 +1,7 @@
 #include "GoingHomeApplication.h"
 
+#include <Utilities/logger.hpp>
+
 //TEMPORARY
 
 int PerfCounter = 0;
@@ -10,6 +12,17 @@ double AllTime = 0.0f;
 //END OF TEMPORARY
 
 Log PerformanceLog("Performance.log");
+
+ShiftEngine::SpriteFilterMode GetSpriteFilteringMode(const std::string& filteringMode)
+{
+    static const std::map<std::string, ShiftEngine::SpriteFilterMode> filters = {
+        { "point",      ShiftEngine::SpriteFilterMode::Point },
+        { "linear",     ShiftEngine::SpriteFilterMode::Linear },
+        { "anisotropy", ShiftEngine::SpriteFilterMode::Anisotropy },
+    };
+
+    return filters.at(filteringMode);
+}
 
 GoingHomeApplication::GoingHomeApplication(int Width, int Height, LPCWSTR AppName)
     : Application(Width, Height, AppName)
@@ -34,20 +47,17 @@ bool GoingHomeApplication::Initialize()
     settings.multisampleQuality = settingsLoader.GetInteger("MultisampleQuality");
     settings.windowed           = settingsLoader.GetBoolean("Windowed");
     settings.screenRate         = settingsLoader.GetInteger("ScreenRate");
-    settings.zNear              = settingsLoader.GetFloat("zNear");
-    settings.zFar               = settingsLoader.GetFloat("zFar");
     settings.anisotropyLevel    = settingsLoader.GetInteger("AnisotropyLevel");
+    settings.spriteFiltering    = GetSpriteFilteringMode(settingsLoader.GetString("SpriteFiltering"));
 
     // Load paths settings
     ShiftEngine::PathSettings path;
-    path.MeshPath      = settingsLoader.GetWString("MeshPath");
     path.TexturePath   = settingsLoader.GetWString("TexturePath");
     path.ShaderPath    = settingsLoader.GetWString("ShaderPath");
     path.FontsPath     = settingsLoader.GetWString("FontsPath");
-    path.MaterialsPath = settingsLoader.GetWString("MaterialsPath");
 
     // Graphics engine initialization
-    if (!ShiftEngine::InitEngine(settings, path, GetHWND(), ShiftEngine::SceneGraphType::SGT_Plain))
+    if (!ShiftEngine::InitEngine(settings, path, GetHWND()))
         LOG_FATAL_ERROR("Unable to inititalize graphics engine");
     else
         LOG_INFO("Graphics engine has been initialized");
@@ -110,12 +120,12 @@ bool GoingHomeApplication::Frame()
     AllTime += elapsedTime;
     gameTimer.tick();
 
-    int curFPS = ShiftEngine::GetRenderer()->GetFPS();
+    //int curFPS = ShiftEngine::GetRenderer()->GetFPS();
 
-    if (curFPS > maxFPS)
-        maxFPS = curFPS;
-    if (curFPS < minFPS)
-        minFPS = curFPS;
+    //if (curFPS > maxFPS)
+    //    maxFPS = curFPS;
+    //if (curFPS < minFPS)
+    //    minFPS = curFPS;
 
     return stateMachine.Frame(elapsedTime);
 }
@@ -169,7 +179,10 @@ void GoingHomeApplication::SaveTechInfo()
     GlobalMemoryStatusEx(&memoryStatus);
     PerformanceLog.Message("Total physical memory: " + std::to_string((int64_t)memoryStatus.ullTotalPhys / 1024 / 1024) + " MBs");
     PerformanceLog.Message("Using: " + std::to_string((int)memoryStatus.dwMemoryLoad) + "%");
-    PerformanceLog.Message("GPU description: " + utils::narrow(ShiftEngine::GetContextManager()->GetGPUDescription()));
+
+    const auto& devicesDesc = ShiftEngine::GetDevicesDescription();
+    for (size_t i = 0; i < devicesDesc.size(); ++i)
+        PerformanceLog.Message("GPU" + std::to_string(i) + " description: " + devicesDesc[i]);
 }
 
 IAppState * GoingHomeApplication::GetTopState() const

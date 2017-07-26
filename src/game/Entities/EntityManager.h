@@ -53,10 +53,6 @@ public:
                                                         double timeToExplode,
                                                         float size);
 
-    std::shared_ptr<BackgroundBlinker>  CreateBackgroundBlinker(ShiftEngine::SpriteSceneNode * sprite);
-
-    std::shared_ptr<BackgroundWanderer> CreateBackgroundWanderer(ShiftEngine::SpriteSceneNode * sprite);
-
     std::shared_ptr<VisualStickerEntity>CreateVisualStickerEntity(const LiveEntity * owner,
                                                                   MathLib::vec2f position,
                                                                   ShiftEngine::SpriteSceneNode * sprite);

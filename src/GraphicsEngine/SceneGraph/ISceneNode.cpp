@@ -141,9 +141,6 @@ void ISceneNode::SetLocalPosition(const vec3f & val)
 {
     position = val;
     CreateMatrices();
-
-    if (pSceneGraph)
-        pSceneGraph->MoveNodeCallback(this);
 }
 
 vec3f ISceneNode::GetWorldScale() const
@@ -163,8 +160,6 @@ void ISceneNode::SetLocalScale(const vec3f & val)
 {
     scale = val;
     CreateMatrices();
-    if (pSceneGraph)
-        pSceneGraph->MoveNodeCallback(this);
 }
 
 void ISceneNode::SetLocalScale(float val)

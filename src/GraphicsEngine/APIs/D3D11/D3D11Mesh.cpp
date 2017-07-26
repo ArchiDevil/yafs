@@ -4,29 +4,29 @@
 
 using namespace ShiftEngine;
 
-D3D11MeshData::D3D11MeshData(Microsoft::WRL::ComPtr<ID3D11Buffer> _VB /*= nullptr*/, 
+D3D11MeshData::D3D11MeshData(Microsoft::WRL::ComPtr<ID3D11Buffer> _VB /*= nullptr*/,
                              Microsoft::WRL::ComPtr<ID3D11Buffer> _IB /*= nullptr*/,
-                             Microsoft::WRL::ComPtr<ID3D11Device> pDevice /*= nullptr*/, 
+                             Microsoft::WRL::ComPtr<ID3D11Device> pDevice /*= nullptr*/,
                              Microsoft::WRL::ComPtr<ID3D11DeviceContext> pDeviceContext /*= nullptr*/)
     : VertexBuffer(_VB)
     , IndexBuffer(_IB)
     , pDevice(pDevice)
     , pDeviceContext(pDeviceContext)
-{}
+{
+}
 
-bool D3D11MeshData::CreateBuffers(bool dynamic, 
-                                               const uint8_t * vData, 
-                                               size_t vDataSize, 
-                                               const uint32_t * iData, 
-                                               size_t iDataSize, 
-                                               const VertexSemantic * semantic, 
-                                               const IVertexDeclarationPtr & declaration, 
-                                               const MathLib::AABB & _bbox)
+bool D3D11MeshData::CreateBuffers(bool dynamic,
+                                  const uint8_t * vData,
+                                  size_t vDataSize,
+                                  const uint32_t * iData,
+                                  size_t iDataSize,
+                                  VertexType type,
+                                  const MathLib::AABB & _bbox)
 {
     assert(pDevice);
     assert(pDeviceContext);
 
-    if (!vData || !vDataSize || !semantic)
+    if (!vData || !vDataSize)
         return false;
 
     D3D11_BUFFER_DESC vBuffDesc;
@@ -35,7 +35,7 @@ bool D3D11MeshData::CreateBuffers(bool dynamic,
     ZeroMemory(&iBuffDesc, sizeof(D3D11_BUFFER_DESC));
 
     vBuffDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-    vBuffDesc.ByteWidth = vDataSize;
+    vBuffDesc.ByteWidth = (UINT)vDataSize;
     vBuffDesc.MiscFlags = NULL;
 
     if (dynamic)
@@ -60,7 +60,7 @@ bool D3D11MeshData::CreateBuffers(bool dynamic,
     }
 
     iBuffDesc.BindFlags = D3D10_BIND_INDEX_BUFFER;
-    iBuffDesc.ByteWidth = iDataSize;
+    iBuffDesc.ByteWidth = (UINT)iDataSize;
     iBuffDesc.MiscFlags = NULL;
 
     if (dynamic)
@@ -84,20 +84,12 @@ bool D3D11MeshData::CreateBuffers(bool dynamic,
             return false;
     }
 
-    vertexSemantic = semantic;
-    vertexDeclaration = declaration;
-    vertexSize = vertexSemantic->getVertexSize();
+    vertexSize = GetVertexSizeForVertexType(type);
     verticesCount = vDataSize / vertexSize;
     indicesCount = iDataSize / sizeof(uint32_t);
     bbox = _bbox;
 
     return true;
-}
-
-void D3D11MeshData::Clear()
-{
-    VertexBuffer.Reset();
-    IndexBuffer.Reset();
 }
 
 size_t D3D11MeshData::Draw()
@@ -108,18 +100,18 @@ size_t D3D11MeshData::Draw()
     if (!vertexSize || !verticesCount)
         return 0;
 
-    unsigned int stride = vertexSize;
+    unsigned int stride = (unsigned int)vertexSize;
     unsigned int offset = 0;
     pDeviceContext->IASetVertexBuffers(0, 1, VertexBuffer.GetAddressOf(), &stride, &offset);
     if (indicesCount > 0)
     {
         pDeviceContext->IASetIndexBuffer(IndexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
-        pDeviceContext->DrawIndexed(indicesCount, 0, 0);
+        pDeviceContext->DrawIndexed((UINT)indicesCount, 0, 0);
+        return indicesCount / 3;
     }
     else
     {
-        pDeviceContext->Draw(verticesCount, 0);
+        pDeviceContext->Draw((UINT)verticesCount, 0);
+        return verticesCount;
     }
-
-    return indicesCount / 3;
 }
