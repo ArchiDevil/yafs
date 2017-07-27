@@ -26,7 +26,7 @@ protected:
         return CameraFrustum::CullingStatus::CS_In;
     }
 
-    MathLib::AABB GetBBox() const override
+    MathLib::aabb3f GetBBox() const override
     {
         return {};
     }

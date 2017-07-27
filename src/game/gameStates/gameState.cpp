@@ -276,7 +276,7 @@ void GameState::switchWireframe()
 #endif
 }
 
-MathLib::Ray GameState::getUnprojectedRay(const MathLib::vec2i & clientMouseCoords) const
+MathLib::ray3f GameState::getUnprojectedRay(const MathLib::vec2i & clientMouseCoords) const
 {
     SceneGraph * pScene = GetSceneGraph();
     IContextManager * pCtxMgr = GetContextManager();
@@ -289,7 +289,7 @@ MathLib::Ray GameState::getUnprojectedRay(const MathLib::vec2i & clientMouseCoor
     mat4f viewMatrix = pScene->GetActiveCamera()->GetViewMatrix();
     vec3f resultNear = getUnprojectedVector(vec3f((float)clientMouseCoords.x, (float)clientMouseCoords.y, 0.0f), projMatrix, viewMatrix, sizes);
     vec3f resultFar = getUnprojectedVector(vec3f((float)clientMouseCoords.x, (float)clientMouseCoords.y, 1.0f), projMatrix, viewMatrix, sizes);
-    Ray unprojectedRay = Ray(resultNear, normalize(resultFar - resultNear));
+    ray3f unprojectedRay = ray3f(resultNear, normalize(resultFar - resultNear));
 
     return unprojectedRay;
 }

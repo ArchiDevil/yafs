@@ -172,7 +172,7 @@ CameraFrustum::CullingStatus QuadTreeNode::CheckVisibility(const CameraSceneNode
     MathLib::vec4f vecMax = {bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f};
     vecMin = MathLib::vec4Transform(vecMin, matWorld);
     vecMax = MathLib::vec4Transform(vecMax, matWorld);
-    MathLib::AABB newBbox({vecMin.x, vecMin.y, vecMin.z}, {vecMax.x, vecMax.y, vecMax.z});
+    MathLib::aabb3f newBbox({vecMin.x, vecMin.y, vecMin.z}, {vecMax.x, vecMax.y, vecMax.z});
 
     return activeCam.GetFrustum().CheckQTreeNode(newBbox);
 }
@@ -190,7 +190,7 @@ unsigned int QuadTreeNode::GetChildsCount() const
     return count;
 }
 
-MathLib::AABB QuadTreeNode::GetBBox() const
+MathLib::aabb3f QuadTreeNode::GetBBox() const
 {
     return bbox;
 }

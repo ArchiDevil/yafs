@@ -21,7 +21,7 @@ bool D3D11MeshData::CreateBuffers(bool dynamic,
                                   const uint32_t * iData,
                                   size_t iDataSize,
                                   VertexType type,
-                                  const MathLib::AABB & _bbox)
+                                  const MathLib::aabb3f & _bbox)
 {
     assert(pDevice);
     assert(pDeviceContext);

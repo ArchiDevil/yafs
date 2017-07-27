@@ -25,7 +25,7 @@ public:
                        const uint32_t * iData,
                        size_t iDataSize,
                        VertexType type,
-                       const MathLib::AABB & bbox) override;
+                       const MathLib::aabb3f & bbox) override;
     
     size_t Draw() override;
 

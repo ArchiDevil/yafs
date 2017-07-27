@@ -22,7 +22,7 @@ public:
                                         size_t verticesDataSize,
                                         const std::vector<uint32_t> & indicesData,
                                         VertexType type,
-                                        const MathLib::AABB & bbox) override;
+                                        const MathLib::aabb3f & bbox) override;
 
     using IMeshManager::CreateMeshFromVertices;
 

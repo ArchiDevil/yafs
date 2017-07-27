@@ -20,9 +20,9 @@ public:
 
     void BuildFrustum(const MathLib::mat4f & matView, const MathLib::mat4f & matProj);
 
-    CullingStatus CheckAABB(const MathLib::AABB & bbox) const;
-    CullingStatus CheckOOBB(const MathLib::OOBB & bbox) const;
-    CullingStatus CheckQTreeNode(const MathLib::AABB & bbox) const;
+    CullingStatus CheckAABB(const MathLib::aabb3f & bbox) const;
+    CullingStatus CheckOOBB(const MathLib::oobb3f & bbox) const;
+    CullingStatus CheckQTreeNode(const MathLib::aabb3f & bbox) const;
 
     //not implemented
     bool CheckPoint(const MathLib::vec3f & point) const;

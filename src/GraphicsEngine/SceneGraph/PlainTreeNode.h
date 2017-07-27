@@ -12,9 +12,9 @@ public:
         : ISceneNode(sceneGraph)
     {}
 
-    virtual MathLib::AABB GetBBox() const override
+    virtual MathLib::aabb3f GetBBox() const override
     {
-        return MathLib::AABB();
+        return {};
     }
 
 protected:

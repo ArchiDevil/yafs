@@ -28,7 +28,7 @@ public:
     void                        SetMaskColor(const MathLib::vec4f & color);
     void                        SetDrawingMode(SpriteDrawingMode mode);
 
-    MathLib::AABB               GetBBox() const override;
+    MathLib::aabb3f             GetBBox() const override;
     MathLib::vec4f              GetMaskColor() const;
     SpriteDrawingMode           GetDrawingMode() const;
     const ITexturePtr &         GetTexture() const;

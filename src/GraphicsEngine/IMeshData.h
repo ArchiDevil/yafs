@@ -65,7 +65,7 @@ public:
         return vertexSize;
     }
 
-    MathLib::AABB GetBBox() const
+    MathLib::aabb3f GetBBox() const
     {
         return bbox;
     }
@@ -76,7 +76,7 @@ public:
                                const uint32_t * iData,
                                size_t iDataSize,
                                VertexType vertexType,
-                               const MathLib::AABB & bbox) = 0;
+                               const MathLib::aabb3f & bbox) = 0;
 
     IMeshData() = default;
     IMeshData(IMeshData & other) = default;
@@ -86,7 +86,7 @@ protected:
     size_t verticesCount = 0;
     size_t indicesCount = 0;
     size_t vertexSize = 0;
-    MathLib::AABB bbox = {};
+    MathLib::aabb3f bbox = {};
 };
 
 using IMeshDataPtr = std::shared_ptr<IMeshData>;

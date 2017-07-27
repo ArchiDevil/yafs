@@ -27,7 +27,7 @@ public:
     void SetLocalPosition(const MathLib::vec3f & pos) override;
     void RotateByLocalQuaternion(const MathLib::qaFloat & val) override;
     void PushToRQ(RenderQueue & rq) override;
-    MathLib::AABB GetBBox() const override;
+    MathLib::aabb3f GetBBox() const override;
 
     void Update();
     void MoveUpDown(float units);

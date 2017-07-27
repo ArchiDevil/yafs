@@ -193,13 +193,13 @@ void ISceneNode::RotateByLocalQuaternion(const qaFloat & val)
 CameraFrustum::CullingStatus ISceneNode::CheckVisibility(const CameraSceneNode & activeCam) const
 {
     mat4f matWorld = GetWorldMatrix();
-    AABB bbox = GetBBox();
+    aabb3f bbox = GetBBox();
 
     vec4f vecMin = {bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f};
     vec4f vecMax = {bbox.bMax.x, bbox.bMax.y, bbox.bMax.z, 1.0f};
     vecMin = vec4Transform(vecMin, matWorld);
     vecMax = vec4Transform(vecMax, matWorld);
-    AABB newBbox(vec3f(vecMin.x, vecMin.y, vecMin.z), vec3f(vecMax.x, vecMax.y, vecMax.z));
+    aabb3f newBbox(vec3f(vecMin.x, vecMin.y, vecMin.z), vec3f(vecMax.x, vecMax.y, vecMax.z));
 
     return activeCam.GetFrustum().CheckAABB(newBbox);
 }

@@ -14,7 +14,7 @@ public:
     virtual void AddChild(ISceneNode * node) override;
     virtual void PushToRQ(RenderQueue & rq) override;
     virtual MathLib::mat4f GetWorldMatrix() const override;
-    virtual MathLib::AABB GetBBox() const override;
+    virtual MathLib::aabb3f GetBBox() const override;
 
 private:
     void CreateChildSubtrees();
@@ -27,7 +27,7 @@ private:
     CameraFrustum::CullingStatus CheckVisibility(const CameraSceneNode & activeCam) const override;
 
     QuadTreeNode * subtrees[4];
-    MathLib::AABB bbox = {};
+    MathLib::aabb3f bbox = {};
 };
 
 }

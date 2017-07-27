@@ -16,7 +16,7 @@ IMeshDataPtr D3D11MeshManager::CreateMeshFromVertices(const uint8_t * verticesDa
                                                       size_t verticesDataSize,
                                                       const std::vector<uint32_t> & indicesData,
                                                       VertexType type,
-                                                      const MathLib::AABB & bbox)
+                                                      const MathLib::aabb3f & bbox)
 {
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> pImmediate = nullptr;
     pDevice->GetImmediateContext(&pImmediate);

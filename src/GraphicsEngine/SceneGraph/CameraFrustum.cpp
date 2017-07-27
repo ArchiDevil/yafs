@@ -55,13 +55,13 @@ void CameraFrustum::BuildFrustum(const MathLib::mat4f & matView, const MathLib::
     planes[bottomPlane] = normalize(planes[bottomPlane]);
 }
 
-CameraFrustum::CullingStatus CameraFrustum::CheckAABB(const MathLib::AABB & bbox) const
+CameraFrustum::CullingStatus CameraFrustum::CheckAABB(const MathLib::aabb3f & bbox) const
 {
     MathLib::vec3f vCorner[8];
     int totalIn = 0;
 
     // get the corners of the box into the vCorner array
-    bbox.GetVertices(vCorner);
+    bbox.getVertices(vCorner);
 
     // test all 8 corners against the 6 sides 
     // if all points are behind 1 specific plane, we are out
@@ -97,7 +97,7 @@ CameraFrustum::CullingStatus CameraFrustum::CheckAABB(const MathLib::AABB & bbox
     return CullingStatus::CS_Intersect;
 }
 
-CameraFrustum::CullingStatus CameraFrustum::CheckOOBB(const MathLib::OOBB & bbox) const
+CameraFrustum::CullingStatus CameraFrustum::CheckOOBB(const MathLib::oobb3f & bbox) const
 {
     MathLib::vec3f vCorner[8];
     int totalIn = 0;
@@ -130,7 +130,7 @@ CameraFrustum::CullingStatus CameraFrustum::CheckOOBB(const MathLib::OOBB & bbox
     return CullingStatus::CS_Intersect;
 }
 
-CameraFrustum::CullingStatus CameraFrustum::CheckQTreeNode(const MathLib::AABB & bbox) const
+CameraFrustum::CullingStatus CameraFrustum::CheckQTreeNode(const MathLib::aabb3f & bbox) const
 {
     int totalIn = 0;
     MathLib::vec3f buffer[4];

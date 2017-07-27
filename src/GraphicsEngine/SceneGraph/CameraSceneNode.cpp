@@ -185,7 +185,7 @@ void CameraSceneNode::SetSphericalCoords(const vec3f & center, float phi, float 
     matView = matrixLookAtLH<float>(position, at, upVector);
 }
 
-AABB CameraSceneNode::GetBBox() const
+aabb3f CameraSceneNode::GetBBox() const
 {
     return {};
 }

@@ -40,11 +40,11 @@ void SpriteSceneNode::CalculateTextureMatrix(const vec2f& leftTopCoords, const v
     textureMatrix = matrixScaling(x_scale, y_scale) * matrixTranslation(x_shift, y_shift);
 }
 
-AABB SpriteSceneNode::GetBBox() const
+aabb3f SpriteSceneNode::GetBBox() const
 {
     mat4f matWorld = GetWorldMatrix();
     vec4f points[8];
-    AABB bbox = {{}, {}};
+    aabb3f bbox = {{}, {}};
 
     points[0] = {bbox.bMin.x, bbox.bMin.y, bbox.bMin.z, 1.0f};
     points[1] = {bbox.bMin.x, bbox.bMin.y, bbox.bMax.z, 1.0f};

@@ -55,7 +55,7 @@ public:
     SceneGraph * GetSceneGraph() const;
     virtual MathLib::mat4f GetWorldMatrix() const;
     virtual MathLib::mat4f GetLocalMatrix() const;
-    virtual MathLib::AABB GetBBox() const = 0;
+    virtual MathLib::aabb3f GetBBox() const = 0;
 
     void Update(double dt);
 
