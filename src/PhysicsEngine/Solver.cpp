@@ -1,5 +1,7 @@
 #include "Solver.h"
 
+#include <MathLib/math.h>
+
 #include <cassert>
 
 void Physics::Solver::UpdateEntities(double dt, std::vector<std::weak_ptr<Entity>>& entities)

@@ -8,7 +8,7 @@ namespace Physics
 class Entity;
 class IPhysicsEntityHolder;
 
-class Entity
+class Entity final
 {
 public:
     Entity(MathLib::vec2f position, MathLib::vec2f initialSpeed, float size);
