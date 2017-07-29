@@ -1,7 +1,7 @@
 if(MSVC)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /ignore:4099")
 else()
-    add_definitions(-std=c++11)
+    add_definitions(-std=c++14)
 endif()
 
 add_definitions(-DNOMINMAX)
