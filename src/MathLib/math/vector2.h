@@ -110,6 +110,16 @@ struct vec2
     {
         return !((this->x == ref.x) && (this->y == ref.y));
     }
+
+    constexpr T& operator[] (const int index)
+    {
+        return el[index];
+    }
+
+    constexpr const T& operator[] (const int index) const
+    {
+        return el[index];
+    }
 };
 
 using vec2d = vec2<double>;

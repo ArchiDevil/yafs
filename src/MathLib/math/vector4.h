@@ -121,6 +121,16 @@ struct vec4
     {
         return !((this->x == ref.x) && (this->y == ref.y) && (this->z == ref.z) && (this->w == ref.w));
     }
+
+    constexpr T& operator[] (const int index)
+    {
+        return el[index];
+    }
+
+    constexpr const T& operator[] (const int index) const
+    {
+        return el[index];
+    }
 };
 
 using vec4f = vec4<float>;

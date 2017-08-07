@@ -32,7 +32,7 @@ bool compareFloats(const float a, const float b)
     return abs(a - b) < 0.0001f;
 }
 
-namespace UnitTests
+namespace MathLibTests
 {
     TEST_CLASS(MathLibMatrixTests)
     {

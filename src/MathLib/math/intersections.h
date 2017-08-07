@@ -6,6 +6,8 @@
 #include "aabb3.h"
 #include "oobb3.h"
 
+#include <bitset>
+
 namespace MathLib
 {
 
@@ -15,30 +17,131 @@ namespace intersections
 // first - first box to check intersection with
 // second - second box to check intersection with
 template<typename T>
-std::enable_if_t<std::is_floating_point<T>::value, bool> AABBsIntersection(const aabb3<T>& first, const aabb3<T>& second)
-{
-    return
-        (first.bMin.x <= second.bMax.x) && (first.bMax.x >= second.bMin.x) &&
-        (first.bMin.y <= second.bMax.y) && (first.bMax.y >= second.bMin.y) &&
-        (first.bMin.z <= second.bMax.z) && (first.bMax.z >= second.bMin.z);
-}
-
-template<typename T>
 std::enable_if_t<std::is_floating_point<T>::value, bool> AABBsIntersection(const aabb2<T>& first, const aabb2<T>& second)
 {
+    return std::abs(first.position.x - second.position.x) < first.sizes.x + second.sizes.x
+        || std::abs(first.position.y - second.position.y) < first.sizes.y + second.sizes.y;
+}
+
+// first - first box to check intersection with
+// second - second box to check intersection with
+template<typename T>
+std::enable_if_t<std::is_floating_point<T>::value, bool> AABBsIntersection(const aabb3<T>& first, const aabb3<T>& second)
+{
+    return (first.bMin.x <= second.bMax.x) && (first.bMax.x >= second.bMin.x)
+        && (first.bMin.y <= second.bMax.y) && (first.bMax.y >= second.bMin.y)
+        && (first.bMin.z <= second.bMax.z) && (first.bMax.z >= second.bMin.z);
+}
+
+template<typename T, template <typename> typename U, template <typename> typename V, size_t axisCount>
+std::enable_if_t<std::is_floating_point<T>::value, bool> InternalAABBSphereIntersection(const U<T>& box, V<T> sphereCenter, T sphereRadius)
+{
+    T d = 0.0;
+
+    for (int i = 0; i < axisCount; ++i)
+    {
+        T mina = box.position[i] - box.sizes[i];
+        if (sphereCenter[i] < mina)
+        {
+            T a = sphereCenter[i] - mina;
+            d += a * a;
+        }
+
+        T maxa = box.position[i] + box.sizes[i];
+        if (sphereCenter[i] > maxa)
+        {
+            T a = sphereCenter[i] - maxa;
+            d += a * a;
+        }
+    }
+
+    return d <= (sphereRadius * sphereRadius);
 }
 
 template<typename T>
 std::enable_if_t<std::is_floating_point<T>::value, bool> AABBSphereIntersection(const aabb2<T>& box, vec2<T> sphereCenter, T sphereRadius)
 {
-    return false;
+    return InternalAABBSphereIntersection<T, aabb2, vec2, 2>(box, sphereCenter, sphereRadius);
+}
+
+template<typename T>
+std::enable_if_t<std::is_floating_point<T>::value, bool> AABBSphereIntersection(const aabb3<T>& box, vec3<T> sphereCenter, T sphereRadius)
+{
+    return InternalAABBSphereIntersection<T, aabb3, vec3, 3>(box, sphereCenter, sphereRadius);
+}
+
+template<typename T>
+std::enable_if_t<std::is_floating_point<T>::value, bool> AABBPointIntersection(const aabb2<T>& aabb, vec2<T> point)
+{
+    return point.x > aabb.position.x - aabb.sizes.x && point.x < aabb.position.x + aabb.sizes.x
+        && point.y > aabb.position.y - aabb.sizes.y && point.y < aabb.position.y + aabb.sizes.y;
 }
 
 template<typename T>
 std::enable_if_t<std::is_floating_point<T>::value, bool> AABBOOBBIntersection(const aabb2<T>& aabb, const oobb2<T>& oobb)
 {
-    return false;
+    // first, check projection of OOBB on AABB coordinates
+    matrix<T, 4> transformationMatrix = matrixRotationZ(oobb.angle) * matrixTranslation<T>(vec3<T>{oobb.position.x - aabb.position.x, oobb.position.y - aabb.position.y, 1.0f});
+    vec2<T> points[4] = {
+        { -oobb.sizes.x, -oobb.sizes.y },
+        {  oobb.sizes.x, -oobb.sizes.y },
+        { -oobb.sizes.x,  oobb.sizes.y },
+        {  oobb.sizes.x,  oobb.sizes.y }
+    };
+
+    for (auto& point : points)
+        point = vec2Transform(point, transformationMatrix);
+
+    std::bitset<4> intersections{ 0 };
+
+    for (auto& point : points)
+    {
+        if (point.x > -aabb.sizes.x &&
+            point.x < aabb.sizes.x)
+            intersections[0] = true;
+
+        if (point.y > -aabb.sizes.y &&
+            point.y < aabb.sizes.y)
+            intersections[1] = true;
+
+        if (intersections[0] && intersections[1])
+            break;
+    }
+
+    if (intersections.count() < 2)
+        return false;
+
+    transformationMatrix = matrixTranslation<T>(vec3<T>{aabb.position.x - oobb.position.x, aabb.position.y - oobb.position.y, 1.0f}) * matrixRotationZ(-oobb.angle);
+    points[0] = { -aabb.sizes.x, -aabb.sizes.y };
+    points[1] = {  aabb.sizes.x, -aabb.sizes.y };
+    points[2] = { -aabb.sizes.x,  aabb.sizes.y };
+    points[3] = {  aabb.sizes.x,  aabb.sizes.y };
+
+    for (auto& point : points)
+        point = vec2Transform(point, transformationMatrix);
+
+    for (auto& point : points)
+    {
+        if (point.x > -oobb.sizes.x &&
+            point.x < oobb.sizes.x)
+            intersections[2] = true;
+
+        if (point.y > -oobb.sizes.y &&
+            point.y < oobb.sizes.y)
+            intersections[3] = true;
+
+        if (intersections[2] && intersections[3])
+            break;
+    }
+
+    return intersections.all();
 }
+
+//template<typename T>
+//std::enable_if_t<std::is_floating_point<T>::value, bool> AABBOOBBIntersection(const oobb3<T>& oobb, const aabb3<T>& aabb)
+//{
+//    throw std::runtime_error("Not implemented yet!");
+//}
 
 template<typename T>
 std::enable_if_t<std::is_floating_point<T>::value, bool> AABBLineSegmentIntersection(const vec3<T> &mid, const vec3<T> &dir, const int hl)
@@ -72,131 +175,41 @@ template<typename T>
 std::enable_if_t<std::is_floating_point<T>::value, bool> OOBBPointIntersection(const oobb2<T>& box, vec2<T> point)
 {
     // we need 3x3 matrix here, not 4x4
-    matrix<T, 3> translationMatrix = matrixTranslation(center.x, center.y);
-    matrix<T, 3> scalingMatrix = matrixScaling(sizes.x, sizes.y);
-    matrix<T, 3> rotationMatrix = matrixRotationZ(angle);
-    matrix<T, 3> total = scalingMatrix * rotationMatrix * translationMatrix;
-    point = normalize(vec2Transform(point, total));
+    matrix<T, 4> translationMatrix = matrixTranslation(box.position.x, box.position.y);
+    matrix<T, 4> scalingMatrix = matrixScaling(box.sizes.x, box.sizes.y);
+    matrix<T, 4> rotationMatrix = matrixRotationZ(box.angle);
+    matrix<T, 4> total = scalingMatrix * rotationMatrix * translationMatrix;
+    point = vec2Transform(point, total);
 
     return (point.x >= -0.5f || point.x <= 0.5f)
         && (point.y >= -0.5f || point.y <= 0.5f);
 }
 
 template<typename T>
-std::enable_if_t<std::is_floating_point<T>::value, bool> OOBBSphereIntersection(const oobb2<T>& box, vec2<T> sphereCenter, T sphereRadius)
+std::enable_if_t<std::is_floating_point<T>::value, bool> OOBBsIntersection(const oobb2<T>& first, const oobb2<T>& second)
 {
-    matrix<T, 3> translationMatrix = matrixTranslation(center.x, center.y);
-    matrix<T, 3> scalingMatrix = matrixScaling(sizes.x, sizes.y);
-    matrix<T, 3> rotationMatrix = matrixRotationZ(angle);
-    matrix<T, 3> total = scalingMatrix * rotationMatrix * translationMatrix;
-    point = normalize(vec2Transform(sphereCenter, total));
-
-    return false;
+    throw std::runtime_error("Not implemented yet!");
 }
+
+//template<typename T>
+//std::enable_if_t<std::is_floating_point<T>::value, bool> OOBBsIntersection(const oobb3<T>& first, const oobb3<T>& second)
+//{
+//    throw std::runtime_error("Not implemented yet!");
+//}
 
 template<typename T>
-std::enable_if_t<std::is_floating_point<T>::value, bool> OOBBAABBIntersection(const oobb3<T>& oobb, const aabb3<T>& aabb)
+std::enable_if_t<std::is_floating_point<T>::value, bool> OOBBSphereIntersection(const oobb2<T>& box, const vec2<T>& sphereCenter, T sphereRadius)
 {
-    throw;
+    matrix<T, 4> rotationMatrix = matrixRotationZ(box.angle);
+    auto transformedCenter = vec2Transform(sphereCenter, rotationMatrix);
+    return AABBSphereIntersection({ box.position, box.sizes }, transformedCenter, sphereRadius);
 }
 
-template<typename T>
-std::enable_if_t<std::is_floating_point<T>::value, bool> OOBBsIntesection(const oobb3<T>& first, const oobb3<T>& second)
-{
-    vec3<T> a = this->size;
-    vec3<T> b = bbox.size;
-    vec3<T> Pa = this->position;
-    vec3<T> Pb = bbox.position;
-
-    matrix<T, 3> A = this->rotation;
-    matrix<T, 3> B = bbox.rotation;
-
-    vec3<T> v = Pb - Pa;
-    vec3<T> p = A * v;
-    const mat3f R(A * B.transpose());
-
-    float ra, rb, t;
-
-    for (int i = 0; i < 3; i++)
-    {
-        ra = a.el[i];
-        rb = b.el[0] * fabs(R[i][0]) + b.el[1] * fabs(R[i][1]) + b.el[2] * fabs(R[i][2]);
-        t = fabs(p.el[i]);
-        if (t > ra + rb)
-            return false;
-    }
-
-    for (int k = 0; k < 3; k++)
-    {
-        ra = a.el[0] * fabs(R[0][k]) + a.el[1] * fabs(R[1][k]) + a.el[2] * fabs(R[2][k]);
-        rb = b.el[k];
-        t = fabs(p.el[0] * R[0][k] + p.el[1] * R[1][k] + p.el[2] * R[2][k]);
-        if (t > ra + rb)
-            return false;
-    }
-
-    ra = a.el[1] * fabs(R[2][0]) + a.el[2] * fabs(R[1][0]);
-    rb = b.el[1] * fabs(R[0][2]) + b.el[2] * fabs(R[0][1]);
-    t = fabs(p.el[2] * R[1][0] - p.el[1] * R[2][0]);
-    if (t > ra + rb)
-        return false;
-
-    ra = a.el[1] * fabs(R[2][1]) + a.el[2] * fabs(R[1][1]);
-    rb = b.el[0] * fabs(R[0][2]) + b.el[2] * fabs(R[0][0]);
-    t = fabs(p.el[2] * R[1][1] - p.el[1] * R[2][1]);
-    if (t > ra + rb)
-        return false;
-
-    ra = a.el[1] * fabs(R[2][2]) + a.el[2] * fabs(R[1][2]);
-    rb = b.el[0] * fabs(R[0][1]) + b.el[1] * fabs(R[0][0]);
-    t = fabs(p.el[2] * R[1][2] - p.el[1] * R[2][2]);
-    if (t > ra + rb)
-        return false;
-
-    ra = a.el[0] * fabs(R[2][0]) + a.el[2] * fabs(R[0][0]);
-    rb = b.el[1] * fabs(R[1][2]) + b.el[2] * fabs(R[1][1]);
-    t = fabs(p.el[0] * R[2][0] - p.el[2] * R[0][0]);
-    if (t > ra + rb)
-        return false;
-
-    ra = a.el[0] * fabs(R[2][1]) + a.el[2] * fabs(R[0][1]);
-    rb = b.el[0] * fabs(R[1][2]) + b.el[2] * fabs(R[1][0]);
-    t = fabs(p.el[0] * R[2][1] - p.el[2] * R[0][1]);
-    if (t > ra + rb)
-        return false;
-
-    ra = a.el[0] * fabs(R[2][2]) + a.el[2] * fabs(R[0][2]);
-    rb = b.el[0] * fabs(R[1][1]) + b.el[1] * fabs(R[1][0]);
-    t = fabs(p.el[0] * R[2][2] - p.el[2] * R[0][2]);
-    if (t > ra + rb)
-        return false;
-
-    ra = a.el[0] * fabs(R[1][0]) + a.el[1] * fabs(R[0][0]);
-    rb = b.el[1] * fabs(R[2][2]) + b.el[2] * fabs(R[2][1]);
-    t = fabs(p.el[1] * R[0][0] - p.el[0] * R[1][0]);
-    if (t > ra + rb)
-        return false;
-
-    ra = a.el[0] * fabs(R[1][1]) + a.el[1] * fabs(R[0][1]);
-    rb = b.el[0] * fabs(R[2][2]) + b.el[2] * fabs(R[2][0]);
-    t = fabs(p.el[1] * R[0][1] - p.el[0] * R[1][1]);
-    if (t > ra + rb)
-        return false;
-
-    ra = a.el[0] * fabs(R[1][2]) + a.el[1] * fabs(R[0][2]);
-    rb = b.el[0] * fabs(R[2][1]) + b.el[1] * fabs(R[2][0]);
-    t = fabs(p.el[1] * R[0][2] - p.el[0] * R[1][2]);
-    if (t > ra + rb)
-        return false;
-
-    return true;
-}
-
-template<typename T>
-std::enable_if_t<std::is_floating_point<T>::value, bool> OOBBSphereIntersection(const oobb3<T>& box, const vec3<T> & sphereCenter, T sphereRadius)
-{
-    throw;
-}
+//template<typename T>
+//std::enable_if_t<std::is_floating_point<T>::value, bool> OOBBSphereIntersection(const oobb3<T>& box, const vec3<T>& sphereCenter, T sphereRadius)
+//{
+//    throw std::runtime_error("Not implemented yet!");
+//}
 
 template<typename T>
 std::enable_if_t<std::is_floating_point<T>::value, bool> OOBBLineSegmentIntersection(const vec3<T> &mid, const vec3<T> &dir, const int hl)
@@ -239,7 +252,7 @@ std::enable_if_t<std::is_floating_point<T>::value, bool> RayAABBIntersection(con
 {
     T tmin, tmax, tymin, tymax, tzmin, tzmax;
 
-    T divx = 1.0 / ray.direction.x;
+    T divx = T{ 1.0 } / ray.direction.x;
     if (divx >= 0.0)
     {
         tmin = (bbox.bMin.x - ray.origin.x) * divx;
@@ -251,7 +264,7 @@ std::enable_if_t<std::is_floating_point<T>::value, bool> RayAABBIntersection(con
         tmax = (bbox.bMin.x - ray.origin.x) * divx;
     }
 
-    T divy = 1.0 / ray.direction.y;
+    T divy = T{ 1.0 } / ray.direction.y;
     if (divy >= 0.0)
     {
         tymin = (bbox.bMin.y - ray.origin.y) * divy;
@@ -272,7 +285,7 @@ std::enable_if_t<std::is_floating_point<T>::value, bool> RayAABBIntersection(con
     if (tymax < tmax)
         tmax = tymax;
 
-    T divz = 1.0 / ray.direction.z;
+    T divz = T{ 1.0 } / ray.direction.z;
     if (divz >= 0.0)
     {
         tzmin = (bbox.bMin.z - ray.origin.z) * divz;
@@ -299,25 +312,34 @@ std::enable_if_t<std::is_floating_point<T>::value, bool> RayAABBIntersection(con
 // s1, s2 - centers of spheres to test
 // r1, r2 - radiuses of spheres
 template<typename T>
+std::enable_if_t<std::is_floating_point<T>::value, bool> SphereSphereIntersection(vec2<T> s1, vec2<T> s2, T r1, T r2)
+{
+    return distance(s1, s2) <= r1 + r2;
+}
+
+// s1, s2 - centers of spheres to test
+// r1, r2 - radiuses of spheres
+template<typename T>
 std::enable_if_t<std::is_floating_point<T>::value, bool> SphereSphereIntersection(vec3<T> s1, vec3<T> s2, T r1, T r2)
 {
     return distance(s1, s2) <= r1 + r2;
 }
 
 // ray - ray which check to intersection
-// s1 - sphere center
-// r1 - sphere radius
+// sphereCenter - sphere center
+// sphereRadius - sphere radius
 template<typename T>
-std::enable_if_t<std::is_floating_point<T>::value, bool> RaySphereIntersection(const ray3<T> & r, const vec3<T> & s1, T r1)
+std::enable_if_t<std::is_floating_point<T>::value, bool> RaySphereIntersection(const ray3<T> & ray, const vec3<T> & sphereCenter, T sphereRadius)
 {
-    vec3<T> diff = s1 - r.origin;
+    vec3<T> diff = sphereCenter - ray.origin;
 
-    if (MathLib::distance(s1, r.origin) > r1 && MathLib::dot(diff, r.direction) < 0.0f)
+    if (MathLib::distance(sphereCenter, ray.origin) > sphereRadius &&
+        MathLib::dot(diff, ray.direction) < 0.0f)
         return false;
 
-    vec3<T> res = MathLib::cross(diff, r.direction);
-    float distance = (res.length()) / (r.direction.length());
-    if (distance < r1)
+    vec3<T> res = MathLib::cross(diff, ray.direction);
+    float distance = (res.length()) / (ray.direction.length());
+    if (distance < sphereRadius)
         return true;
 
     return false;

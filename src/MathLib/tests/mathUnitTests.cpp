@@ -14,7 +14,7 @@ template<> static std::wstring Microsoft::VisualStudio::CppUnitTestFramework::To
     std::wostringstream s; s << t.vector.x << " " << t.vector.y << " " << t.vector.z << " " << t.w; return s.str();
 }
 
-namespace UnitTests
+namespace MathLibTests
 {
     TEST_CLASS(MathLibUnitTests)
     {
@@ -140,34 +140,6 @@ namespace UnitTests
 
         TEST_METHOD(MathLibTest_NOT_IMPLEMENTED)
         {
-        }
-
-        TEST_METHOD(IntersectionsTests)
-        {
-            //sphere-sphere intersection test
-            bool result = intersections::SphereSphereIntersection(vec3f(1.0f, 0.0f, 0.0f), vec3f(0.0f, 0.0f, 0.0f), 1.0f, 1.0f);
-            Assert::AreEqual(result, true);
-
-            result = intersections::SphereSphereIntersection(vec3f(1.0f, 2.0f, 15.0f), vec3f(0.0f, 0.0f, 0.0f), 1.0f, 1.0f);
-            Assert::AreEqual(result, false);
-
-            //ray-bbox intersection test
-            aabb3f bbox(vec3f(10.0f, -15.0f, -15.0f), vec3f(20.0f, 15.0f, 15.0f));
-            ray3<float> r(vec3f(0.0f, 0.0f, 0.0f), vec3f(1.0f, 0.0f, 0.0f));
-            result = intersections::RayAABBIntersection(r, bbox, 0.0f, 100.0f);
-            Assert::AreEqual(result, true);
-
-            r.direction = vec3f(-1.0f, 0.0f, 0.0f);
-            result = intersections::RayAABBIntersection(r, bbox, 0.0f, 100.0f);
-            Assert::AreEqual(result, false);
-
-            //ray-sphere intersection test
-            result = intersections::RaySphereIntersection(r, vec3f(10.0f, 0.0f, 0.0f), 1.0f);
-            Assert::AreEqual(result, false);
-
-            r.direction = vec3f(1.0f, 0.0f, 0.0f);
-            result = intersections::RaySphereIntersection(r, vec3f(10.0f, 0.0f, 0.0f), 1.0f);
-            Assert::AreEqual(result, true);
         }
 
         TEST_METHOD(QuaternionTests)

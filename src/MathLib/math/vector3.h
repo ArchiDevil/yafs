@@ -116,6 +116,16 @@ struct vec3
     {
         return !((this->x == ref.x) && (this->y == ref.y) && (this->z == ref.z));
     }
+
+    constexpr T& operator[] (const int index)
+    {
+        return el[index];
+    }
+
+    constexpr const T& operator[] (const int index) const
+    {
+        return el[index];
+    }
 };
 
 using vec3f = vec3<float>;

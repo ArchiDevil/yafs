@@ -26,4 +26,7 @@ public:
     vec2<T> sizes;
 };
 
+using aabb2f = aabb2<float>;
+using aabb2d = aabb2<double>;
+
 }
